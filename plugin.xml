@@ -1,0 +1,75 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<?eclipse version="3.4"?>
+<plugin>
+
+   <extension
+         id="graspBuilder"
+         name="Grasp Builder"
+         point="org.eclipse.core.resources.builders">
+      <builder
+            hasNature="true">
+         <run
+               class="uk.ac.standrews.grasp.ide.builder.GraspBuilder">
+         </run>
+      </builder>
+   </extension>
+   <extension
+         id="graspNature"
+         name="Grasp Project Nature"
+         point="org.eclipse.core.resources.natures">
+      <runtime>
+         <run
+               class="uk.ac.standrews.grasp.ide.builder.GraspNature">
+         </run>
+      </runtime>
+      <builder
+            id="uk.ac.standrews.grasp.ide.graspBuilder">
+      </builder>
+   </extension>
+   <extension
+         id="xmlProblem"
+         name="XML Problem"
+         point="org.eclipse.core.resources.markers">
+      <super
+            type="org.eclipse.core.resources.problemmarker">
+      </super>
+      <persistent
+            value="true">
+      </persistent>
+   </extension>
+   <extension
+         point="org.eclipse.ui.editors">
+      <editor
+            name="Grasp Editor"
+            extensions="grasp"
+            icon="icons/sample.gif"
+            contributorClass="uk.ac.standrews.grasp.ide.editors.GraspEditorContributor"
+            class="uk.ac.standrews.grasp.ide.editors.GraspEditor"
+            id="uk.ac.standrews.grasp.ide.editors.GraspEditor">
+      </editor>
+   </extension>
+   <extension
+         point="org.eclipse.ui.perspectives">
+      <perspective
+            name="Grasp Perspective"
+            icon="icons/releng_gears.gif"
+            class="uk.ac.standrews.grasp.ide.perspectives.GraspPerspective"
+            id="uk.ac.standrews.grasp.ide.perspectives.GraspPerspective">
+      </perspective>
+   </extension>
+   <extension
+         point="org.eclipse.ui.views">
+      <category
+            name="Grasp"
+            id="uk.ac.standrews.grasp.ide">
+      </category>
+      <view
+            name="Architecture Preview"
+            icon="icons/sample.gif"
+            category="uk.ac.standrews.grasp.ide"
+            class="uk.ac.standrews.grasp.ide.views.GefView"
+            id="uk.ac.standrews.grasp.ide.views.GefView">
+      </view>
+   </extension>
+
+</plugin>
