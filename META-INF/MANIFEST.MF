@@ -15,3 +15,5 @@ Require-Bundle: org.eclipse.ui,
  org.eclipse.jdt.ui
 Bundle-RequiredExecutionEnvironment: JavaSE-1.6
 Bundle-ActivationPolicy: lazy
+Bundle-ClassPath: graspc.jar,
+ .

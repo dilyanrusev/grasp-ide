@@ -1,0 +1,82 @@
+//
+// A simple Grasp architecture specification of a WSN simulator
+//
+architecture WsnSimulator
+{
+	// Rationale descriptors
+	rationale R1() {
+		reason #'Use layered architecture style';
+		reason #'Achieve clear seperation of concerns';
+	}
+	rationale R2() {
+		reason #'Use MVC design pattern';
+	}
+	rationale R3() {
+		reason #'Simulator engine must perform event logging';
+	}
+
+	// Templates
+	template ViewComponent() because R2() {
+		provides IView;
+		requires IModel;
+	}
+	template ControllerComponent() because R2() {
+		requires IView vt;
+		requires IView vg;
+		requires IModel;
+	}
+	template ModelComponent() because R2() {
+		provides IModel;
+		requires ISequencer;
+		requires INetwork;
+	}
+	template SensorNetworkComponent() {
+		provides INetwork;
+		requires ISequencer;
+		requires ILogger;
+	}
+	template SequencerComponent() {
+		provides ISequencer;
+		requires ILogger;
+	}
+	template LoggerComponent() {
+		provides ILogger;
+//		check isConnected();
+	}
+
+	// Runtime static model
+	@Visualiser(Canvas = [1000,1000])
+	system StaticModel
+	{
+		layer UtilityLayer because R1()
+		{
+			component logger = LoggerComponent();
+		}
+		
+		layer SimulatorLayer over UtilityLayer because R1()
+		{
+			component network = SensorNetworkComponent();
+			component sequencer = SequencerComponent();
+			link network.ISequencer to sequencer.ISequencer;
+		}
+		
+		layer PresentationLayer over SimulatorLayer, UtilityLayer because R1()
+		{
+			component model = ModelComponent();
+			component controller = ControllerComponent();
+			component textView = ViewComponent();
+			component graphicView = ViewComponent();
+			
+			link controller.IModel to model.IModel;
+			link textView.IModel to model.IModel;
+			link graphicView.IModel to model.IModel;
+			link controller.vt to textView.IView;
+			link controller.vg to graphicView.IView;			
+		}
+		
+		link PresentationLayer.model.INetwork to SimulatorLayer.network.INetwork;
+		link PresentationLayer.model.ISequencer to SimulatorLayer.sequencer.ISequencer;		
+		link SimulatorLayer.network.ILogger to UtilityLayer.logger.ILogger because R3();
+		link SimulatorLayer.sequencer.ILogger to UtilityLayer.logger.ILogger because R3();
+	}
+}
