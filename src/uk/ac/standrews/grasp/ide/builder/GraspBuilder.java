@@ -129,7 +129,9 @@ public class GraspBuilder extends IncrementalProjectBuilder  {
 				lineNumber = 1;
 			}
 			marker.setAttribute(IMarker.LINE_NUMBER, lineNumber);
-			marker.setAttribute(IMarker.CHAR_START, error.getColumn());
+			// TODO: Set both IMarker.CHAR_START and IMarker.CHAR_END
+			//marker.setAttribute(IMarker.CHAR_START, error.getColumn());
+			
 		} catch (CoreException e) {
 			Log.error(e);
 		}

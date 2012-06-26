@@ -33,6 +33,9 @@
       <super
             type="org.eclipse.core.resources.problemmarker">
       </super>
+      <super
+            type="org.eclipse.core.resources.textmarker">
+      </super>
       <persistent
             value="true">
       </persistent>
