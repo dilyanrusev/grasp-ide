@@ -6,10 +6,6 @@ import grasp.lang.ICompiler;
 
 import java.util.Map;
 
-import javax.xml.parsers.ParserConfigurationException;
-import javax.xml.parsers.SAXParser;
-import javax.xml.parsers.SAXParserFactory;
-
 import org.eclipse.core.resources.IFile;
 import org.eclipse.core.resources.IMarker;
 import org.eclipse.core.resources.IProject;
@@ -20,14 +16,12 @@ import org.eclipse.core.resources.IResourceVisitor;
 import org.eclipse.core.resources.IncrementalProjectBuilder;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IProgressMonitor;
-import org.xml.sax.SAXException;
-import org.xml.sax.SAXParseException;
-import org.xml.sax.helpers.DefaultHandler;
 
 import shared.error.IError;
-import shared.io.FileSource;
+import shared.error.IErrorReport;
 import shared.io.ISource;
 import shared.logging.ILogger;
+import shared.logging.ILogger.Level;
 import uk.ac.standrews.grasp.ide.Log;
 
 /**
@@ -35,20 +29,9 @@ import uk.ac.standrews.grasp.ide.Log;
  * @author Dilyan Rusev
  *
  */
-public class GraspBuilder extends IncrementalProjectBuilder implements IGraspBuilder {	
+public class GraspBuilder extends IncrementalProjectBuilder  {	
 	public static final String BUILDER_ID = "uk.ac.standrews.grasp.ide.graspBuilder";
-	public static final String MARKER_TYPE = "uk.ac.standrews.grasp.ide.graspProblem";
-	
-	private final IResourceVisitor resourceVisitor;
-	private final IResourceDeltaVisitor resourceDeltaVisitor;
-	
-	public GraspBuilder() {
-		GraspBuilderResourceVisitor impl = new GraspBuilderResourceVisitor(this);
-		this.resourceDeltaVisitor = impl;
-		this.resourceVisitor = impl;
-	}
-		
-	
+	public static final String MARKER_TYPE = "uk.ac.standrews.grasp.ide.graspProblem";	
 	
 	private void deleteMarkers(IFile file) {
 		try {
@@ -65,8 +48,7 @@ public class GraspBuilder extends IncrementalProjectBuilder implements IGraspBui
 	 *      java.util.Map, org.eclipse.core.runtime.IProgressMonitor)
 	 */
 	@Override
-	protected IProject[] build(int kind, Map args, IProgressMonitor monitor)
-			throws CoreException {
+	protected IProject[] build(int kind, Map<String,String> args, IProgressMonitor monitor) throws CoreException {
 		if (kind == FULL_BUILD) {
 			fullBuild(monitor);
 		} else {
@@ -80,43 +62,76 @@ public class GraspBuilder extends IncrementalProjectBuilder implements IGraspBui
 		return null;
 	}
 
-	@Override
-	public void performBuild(IResource resource) {
+	private void performBuild(IResource resource, final IProgressMonitor monitor, boolean buildXml) {
 		if (resource instanceof IFile && resource.getName().endsWith(".grasp")) {
 			IFile file = (IFile) resource;
 			deleteMarkers(file);
-			buildIndividualFile(file);
+			buildIndividualFile(file, buildXml);
 		}
 	}
 	
-	private void buildIndividualFile(IFile file) {
+	private void buildIndividualFile(IFile file, boolean buildXml) {		
 		ISource source = new GraspSourceFile(file);
-		ILogger logger = new GraspCompilationLogger(file, MARKER_TYPE);
+		ILogger logger = new GraspCompilationLogger().initialize(file.getName(), Level.ERROR, false);
 		ICompiler compiler = new Compiler();
-		IArchitecture graph = compiler.compile(source, logger);
 		
-//		for (IError error: compiler.getErrors().getErrors()) {
-//			error.getLine()
-//		}
-		
-		if (compiler.getErrors().isAny() || graph == null) {
-			logger.print("%s failed to compile due to erors", source);
-		} else {
-			logger.print("%s compiled successfully", source);
-		}
+		try {		
+			IArchitecture graph = compiler.compile(source, logger);
+			
+			IErrorReport errorReport = compiler.getErrors();
+			
+			for (IError error: errorReport.getErrors()) {
+				createProblemMarker(file, error);
+			}
+			
+			if (errorReport.isAny() || graph == null) {
+				logger.print("%s failed to compile due to erors", source.getName());
+			} else {
+				logger.print("%s compiled successfully", source);
+			}
+		} finally {
+			logger.shutdown();
+		}		
 	}
 
-	private void fullBuild(final IProgressMonitor monitor)
-			throws CoreException {
+	private void fullBuild(final IProgressMonitor monitor) throws CoreException {		
+		getProject().accept(new IResourceVisitor() {				
+			@Override
+			public boolean visit(IResource resource) throws CoreException {
+				// full build -> build xml
+				performBuild(resource, monitor, true);
+				return true;
+			}
+		});		
+	}
+
+	private void incrementalBuild(IResourceDelta delta, final IProgressMonitor monitor) throws CoreException {
+		delta.accept(new IResourceDeltaVisitor() {			
+			@Override
+			public boolean visit(IResourceDelta delta) throws CoreException {
+				// ignore remove/add for now
+				if (delta.getKind() == IResourceDelta.CHANGED) {
+					// syntax checking only
+					performBuild(delta.getResource(), monitor, false);
+				}
+				return true;
+			}
+		});
+	}
+	
+	private void createProblemMarker(IFile file, IError error) {
 		try {
-			getProject().accept(resourceVisitor);
+			IMarker marker = file.createMarker(MARKER_TYPE);
+			marker.setAttribute(IMarker.MESSAGE, error.getMessage());
+			marker.setAttribute(IMarker.SEVERITY, IMarker.SEVERITY_ERROR);
+			int lineNumber = error.getLine();
+			if (lineNumber == -1) {
+				lineNumber = 1;
+			}
+			marker.setAttribute(IMarker.LINE_NUMBER, lineNumber);
+			marker.setAttribute(IMarker.CHAR_START, error.getColumn());
 		} catch (CoreException e) {
 			Log.error(e);
 		}
-	}
-
-	private void incrementalBuild(IResourceDelta delta,
-			IProgressMonitor monitor) throws CoreException {
-		delta.accept(resourceDeltaVisitor);
 	}
 }
