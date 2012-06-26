@@ -46,6 +46,9 @@
             contributorClass="uk.ac.standrews.grasp.ide.editors.GraspEditorContributor"
             class="uk.ac.standrews.grasp.ide.editors.GraspEditor"
             id="uk.ac.standrews.grasp.ide.editors.GraspEditor">
+         <contentTypeBinding
+               contentTypeId="uk.ac.standrews.grasp.ide.graspSourceFile">
+         </contentTypeBinding>
       </editor>
    </extension>
    <extension
@@ -70,6 +73,35 @@
             class="uk.ac.standrews.grasp.ide.views.GefView"
             id="uk.ac.standrews.grasp.ide.views.GefView">
       </view>
+   </extension>
+   <extension
+         point="org.eclipse.core.contenttype.contentTypes">
+      <content-type
+            base-type="org.eclipse.core.runtime.text"
+            default-charset="UTF-8"
+            file-extensions="grasp"
+            id="uk.ac.standrews.grasp.ide.graspSourceFile"
+            name="Grasp Source File"
+            priority="high">
+      </content-type>
+   </extension>
+   <extension
+         point="org.eclipse.ui.newWizards">
+      <category
+            id="uk.ac.standrews.grasp.ide.newWizardCategory"
+            name="Grasp">
+      </category>
+      <wizard
+            canFinishEarly="false"
+            category="uk.ac.standrews.grasp.ide.newWizardCategory"
+            class="uk.ac.standrews.grasp.ide.wizards.NewProjectWizard"
+            finalPerspective="uk.ac.standrews.grasp.ide.perspectives.GraspPerspective"
+            hasPages="true"
+            icon="icons/sample.gif"
+            id="uk.ac.standrews.grasp.ide.wizards.newProject"
+            name="Grasp Project"
+            project="true">
+      </wizard>
    </extension>
 
 </plugin>

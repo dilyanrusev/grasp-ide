@@ -13,7 +13,8 @@ import org.eclipse.jdt.ui.JavaUI;
  *  referred to as API constants while others are hardcoded and may be subject 
  *  to change. 
  */
-public class GraspPerspective implements IPerspectiveFactory {
+public class GraspPerspective implements IPerspectiveFactory {	
+	public static final String ID = "uk.ac.standrews.grasp.ide.perspectives.GraspPerspective";
 
 	private IPageLayout factory;
 
