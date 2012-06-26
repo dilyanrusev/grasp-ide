@@ -119,6 +119,7 @@ public class GraspEditor extends MultiPageEditorPart implements IResourceChangeL
 	/**
 	 * Creates the pages of the multi-page editor.
 	 */
+	@Override
 	protected void createPages() {
 		createPage0();
 		createPage1();
@@ -129,6 +130,7 @@ public class GraspEditor extends MultiPageEditorPart implements IResourceChangeL
 	 * <code>IWorkbenchPart</code> method disposes all nested editors.
 	 * Subclasses may extend.
 	 */
+	@Override
 	public void dispose() {
 		ResourcesPlugin.getWorkspace().removeResourceChangeListener(this);
 		super.dispose();
@@ -136,6 +138,7 @@ public class GraspEditor extends MultiPageEditorPart implements IResourceChangeL
 	/**
 	 * Saves the multi-page editor's document.
 	 */
+	@Override
 	public void doSave(IProgressMonitor monitor) {
 		getEditor(0).doSave(monitor);
 	}
@@ -144,6 +147,7 @@ public class GraspEditor extends MultiPageEditorPart implements IResourceChangeL
 	 * Also updates the text for page 0's tab, and updates this multi-page editor's input
 	 * to correspond to the nested editor's.
 	 */
+	@Override
 	public void doSaveAs() {
 		IEditorPart editor = getEditor(0);
 		editor.doSaveAs();
@@ -152,7 +156,7 @@ public class GraspEditor extends MultiPageEditorPart implements IResourceChangeL
 	}
 	/* (non-Javadoc)
 	 * Method declared on IEditorPart
-	 */
+	 */	
 	public void gotoMarker(IMarker marker) {
 		setActivePage(0);
 		IDE.gotoMarker(getEditor(0), marker);
@@ -161,30 +165,37 @@ public class GraspEditor extends MultiPageEditorPart implements IResourceChangeL
 	 * The <code>MultiPageEditorExample</code> implementation of this method
 	 * checks that the input is an instance of <code>IFileEditorInput</code>.
 	 */
+	@Override
 	public void init(IEditorSite site, IEditorInput editorInput)
 		throws PartInitException {
 		if (!(editorInput instanceof IFileEditorInput))
 			throw new PartInitException("Invalid Input: Must be IFileEditorInput");
 		super.init(site, editorInput);
 	}
+	
 	/* (non-Javadoc)
 	 * Method declared on IEditorPart.
 	 */
+	@Override
 	public boolean isSaveAsAllowed() {
 		return true;
 	}
+	
 	/**
 	 * Calculates the contents of page 2 when the it is activated.
 	 */
+	@Override
 	protected void pageChange(int newPageIndex) {
 		super.pageChange(newPageIndex);
 		if (newPageIndex == 2) {
 			sortWords();
 		}
 	}
+	
 	/**
 	 * Closes all project files on project close.
 	 */
+	@Override
 	public void resourceChanged(final IResourceChangeEvent event){
 		if(event.getType() == IResourceChangeEvent.PRE_CLOSE){
 			Display.getDefault().asyncExec(new Runnable(){
@@ -200,6 +211,7 @@ public class GraspEditor extends MultiPageEditorPart implements IResourceChangeL
 			});
 		}
 	}
+	
 	/**
 	 * Sets the font related data to be applied to the text in page 2.
 	 */
@@ -214,6 +226,7 @@ public class GraspEditor extends MultiPageEditorPart implements IResourceChangeL
 			text.setFont(font);
 		}
 	}
+	
 	/**
 	 * Sorts the words in page 0, and shows them in page 2.
 	 */

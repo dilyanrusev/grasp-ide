@@ -27,8 +27,8 @@
       </builder>
    </extension>
    <extension
-         id="xmlProblem"
-         name="XML Problem"
+         id="graspProblem"
+         name="Grasp Problem"
          point="org.eclipse.core.resources.markers">
       <super
             type="org.eclipse.core.resources.problemmarker">
