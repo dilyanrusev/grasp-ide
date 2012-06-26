@@ -14,7 +14,9 @@ import org.eclipse.ui.IPerspectiveRegistry;
 import org.eclipse.ui.IWorkbench;
 import org.eclipse.ui.IWorkbenchPage;
 import org.eclipse.ui.IWorkbenchWindow;
+import org.eclipse.ui.PartInitException;
 import org.eclipse.ui.PlatformUI;
+import org.eclipse.ui.ide.IDE;
 import org.eclipse.ui.wizards.newresource.BasicNewResourceWizard;
 
 import uk.ac.standrews.grasp.ide.Log;
@@ -27,6 +29,11 @@ import uk.ac.standrews.grasp.ide.perspectives.GraspPerspective;
  *
  */
 public class NewProjectWizard extends Wizard implements INewWizard {
+	/**
+	 * ID of the wizard in plugin.xml
+	 */
+	public static final String ID = "uk.ac.standrews.grasp.ide.wizards.newProject";
+	
 	private IWorkbench workbench;
 	private NewProjectWizardPage page;	
 
@@ -83,6 +90,13 @@ public class NewProjectWizard extends Wizard implements INewWizard {
 		openGraspPerspective();
 		
 		BasicNewResourceWizard.selectAndReveal(project, workbench.getActiveWorkbenchWindow());
+		
+		try {
+			IDE.openEditor(workbench.getActiveWorkbenchWindow().getActivePage(), 
+					project.getFile("src/wsa_simulator.grasp"));
+		} catch (PartInitException e) {
+			Log.error(e);
+		}
 			
 		return true;
 	}

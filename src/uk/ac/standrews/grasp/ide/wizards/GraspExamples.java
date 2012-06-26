@@ -58,7 +58,7 @@ class WsnSimulatorExample {
 			"	// Rationale descriptors\n" +
 			"	rationale R1() {\n" +
 			"		reason #'Use layered architecture style';\n" +
-			"		reason #'Achieve clear seperation of concerns';\n" +
+			"		reason #'Achieve clear separation of concerns';\n" +
 			"	}\n" +
 			"	rationale R2() {\n" +
 			"		reason #'Use MVC design pattern';\n" +

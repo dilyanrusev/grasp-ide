@@ -3,6 +3,8 @@
  */
 package uk.ac.standrews.grasp.ide;
 
+import java.lang.reflect.InvocationTargetException;
+
 import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.Status;
 import org.eclipse.jface.dialogs.ErrorDialog;
@@ -43,7 +45,11 @@ public final class Msg {
 	 * Status for error message boxes
 	 */
 	private static IStatus errorStatus(String message, Throwable exception) {
-		return new Status(IStatus.ERROR, GraspActivator.PLUGIN_ID, message, exception);
+		Throwable reason = exception;
+		while (reason instanceof InvocationTargetException) {
+			reason = reason.getCause();
+		}
+		return new Status(IStatus.ERROR, GraspActivator.PLUGIN_ID, message, reason);
 	}
 	
 	/*

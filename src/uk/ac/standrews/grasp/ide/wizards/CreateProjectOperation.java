@@ -2,10 +2,7 @@ package uk.ac.standrews.grasp.ide.wizards;
 
 import java.io.ByteArrayInputStream;
 import java.io.InputStream;
-import java.io.StringReader;
-import java.io.UnsupportedEncodingException;
 import java.lang.reflect.InvocationTargetException;
-import java.nio.charset.Charset;
 
 import org.eclipse.core.resources.IFile;
 import org.eclipse.core.resources.IFolder;
@@ -18,7 +15,6 @@ import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.SubMonitor;
 import org.eclipse.ui.actions.WorkspaceModifyOperation;
 
-import uk.ac.standrews.grasp.ide.Log;
 import uk.ac.standrews.grasp.ide.builder.GraspNature;
 
 /**
@@ -75,12 +71,20 @@ class CreateProjectOperation extends WorkspaceModifyOperation {
 	 */
 	private static void createProjectStructure(IProject project, SubMonitor progress) throws CoreException {
 		IFolder srcFolder = project.getFolder("src");
-		srcFolder.create(true, true, progress.newChild(1));
+		if (!srcFolder.exists()) {
+			srcFolder.create(true, true, progress.newChild(1));
+		} else {
+			progress.setWorkRemaining(2);
+		}
 		
 		IFile sampleFile = srcFolder.getFile("wsa_simulator.grasp");
 		InputStream contents = new ByteArrayInputStream(GraspExamples.WSN_SIMULATOR.getText().getBytes());
-		sampleFile.create(contents, true, progress.newChild(1));
-		sampleFile.setCharset("utf-8", progress.newChild(1));		
+		if (!sampleFile.exists()) {
+			sampleFile.create(contents, true, progress.newChild(1));			
+		} else {
+			sampleFile.setContents(contents, true, false, progress.newChild(1));
+		}
+		sampleFile.setCharset("utf-8", progress.newChild(1));
 	}
 		
 	/**

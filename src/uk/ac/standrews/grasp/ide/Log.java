@@ -5,7 +5,7 @@ import org.eclipse.core.runtime.Status;
 
 /**
  * Provides a cleaner interface to Eclipse's logging facilities
- * @author Dilyan Rusev &lt;der2@st-andrews.ac.uk&gt;
+ * @author Dilyan Rusev
  * 
  * @see org.eclipse.core.runtime.ILog
  */

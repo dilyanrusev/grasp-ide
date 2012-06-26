@@ -6,10 +6,15 @@ import org.eclipse.core.resources.IProjectDescription;
 import org.eclipse.core.resources.IProjectNature;
 import org.eclipse.core.runtime.CoreException;
 
+/**
+ * Grasp nature. Associates <code>GraspBuilder</code> with a project
+ * @author Dilyan Rusev
+ * @see GraspBuilder
+ */
 public class GraspNature implements IProjectNature {
 
 	/**
-	 * ID of this project nature
+	 * Grasp nature ID
 	 */
 	public static final String NATURE_ID = "uk.ac.standrews.grasp.ide.graspNature";
 

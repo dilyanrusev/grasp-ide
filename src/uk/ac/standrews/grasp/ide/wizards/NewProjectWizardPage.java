@@ -20,6 +20,8 @@ import org.eclipse.swt.widgets.Text;
  */
 public class NewProjectWizardPage extends WizardPage {
 	private String projectName;
+	private Text projectText;
+	private Label projectLabel;
 
 	/**
 	 * Initialize the new Grasp project page
@@ -35,7 +37,7 @@ public class NewProjectWizardPage extends WizardPage {
 	 */
 	@Override
 	public void createControl(Composite parent) {
-		final Composite container = new Composite(parent, SWT.NONE);
+		final Composite container = new Composite(parent, SWT.NONE) ;
 		setControl(container);
 		{
 			GridLayout rootLayout = new GridLayout();
@@ -43,11 +45,11 @@ public class NewProjectWizardPage extends WizardPage {
 			container.setLayout(rootLayout);
 		}
 		
-		final Label projectLabel = new Label(container, SWT.NONE);
+		projectLabel = new Label(container, SWT.NONE);
 		projectLabel.setText("Project name: ");
 		projectLabel.setLayoutData(new GridData());	
 
-		final Text projectText = new Text(container, SWT.BORDER);
+		projectText = new Text(container, SWT.BORDER);
 		projectText.setLayoutData(new GridData(GridData.FILL_HORIZONTAL));
 		projectText.addModifyListener(new ModifyListener() {			
 			@Override
@@ -56,6 +58,14 @@ public class NewProjectWizardPage extends WizardPage {
 				validate();
 			}
 		});		
+	}
+	
+	@Override
+	public void setVisible(boolean visible) {
+		super.setVisible(visible);
+		if (visible) {
+			projectText.setFocus();
+		}
 	}
 	
 	private void validate() {				
@@ -74,6 +84,8 @@ public class NewProjectWizardPage extends WizardPage {
 		setErrorMessage(null);
 		setPageComplete(true);
 	}
+	
+	
 	
 	/**
 	 * Project name selected by wizard

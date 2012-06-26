@@ -6,6 +6,8 @@ import org.osgi.framework.BundleContext;
 
 /**
  * The activator class controls the plug-in life cycle
+ * 
+ * @author Dilyan Rusev
  */
 public class GraspActivator extends AbstractUIPlugin {
 
