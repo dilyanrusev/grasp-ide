@@ -53,6 +53,12 @@
                contentTypeId="uk.ac.standrews.grasp.ide.graspSourceFile">
          </contentTypeBinding>
       </editor>
+      <editor
+            class="uk.ac.standrews.grasp.ide.editors.GraspTextEditor"
+            default="false"
+            id="uk.ac.standrews.grasp.ide.editors.GraspTextEditor"
+            name="Grasp Text Editor">
+      </editor>
    </extension>
    <extension
          point="org.eclipse.ui.perspectives">
