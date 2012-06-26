@@ -16,20 +16,20 @@ import org.osgi.framework.BundleContext;
  * 
  * @author Dilyan Rusev
  */
-public class GraspActivator extends AbstractUIPlugin {
+public class GraspPlugin extends AbstractUIPlugin {
 
 	// The plug-in ID
 	public static final String PLUGIN_ID = "uk.ac.standrews.grasp.ide"; //$NON-NLS-1$
 	
 	// The shared instance
-	private static GraspActivator plugin;
+	private static GraspPlugin plugin;
 	
 	private List<String> createdConsoleNames;
 	
 	/**
 	 * The constructor
 	 */
-	public GraspActivator() {
+	public GraspPlugin() {
 	}
 
 	/*
@@ -59,7 +59,7 @@ public class GraspActivator extends AbstractUIPlugin {
 	 *
 	 * @return the shared instance
 	 */
-	public static GraspActivator getDefault() {
+	public static GraspPlugin getDefault() {
 		return plugin;
 	}
 

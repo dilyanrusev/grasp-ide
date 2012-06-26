@@ -49,7 +49,7 @@ public final class Msg {
 		while (reason instanceof InvocationTargetException) {
 			reason = reason.getCause();
 		}
-		return new Status(IStatus.ERROR, GraspActivator.PLUGIN_ID, message, reason);
+		return new Status(IStatus.ERROR, GraspPlugin.PLUGIN_ID, message, reason);
 	}
 	
 	/*

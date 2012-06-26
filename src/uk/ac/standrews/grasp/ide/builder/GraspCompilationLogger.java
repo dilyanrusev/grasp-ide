@@ -9,7 +9,7 @@ import org.eclipse.ui.console.MessageConsole;
 import org.eclipse.ui.console.MessageConsoleStream;
 
 import shared.logging.ILogger;
-import uk.ac.standrews.grasp.ide.GraspActivator;
+import uk.ac.standrews.grasp.ide.GraspPlugin;
 import uk.ac.standrews.grasp.ide.Log;
 
 /**
@@ -37,7 +37,7 @@ final class GraspCompilationLogger implements ILogger {
 		// ignore level - print all messages regardless of severity
 		this.debug = debug;	
 		
-		MessageConsole console = GraspActivator.getDefault().getConsole("Grasp compiler output");	
+		MessageConsole console = GraspPlugin.getDefault().getConsole("Grasp compiler output");	
 		this.messageStream = console.newMessageStream();
 		
 		return this;

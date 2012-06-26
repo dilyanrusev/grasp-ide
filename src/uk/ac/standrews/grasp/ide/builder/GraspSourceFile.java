@@ -14,6 +14,7 @@ import shared.io.ISource;
 /**
  * Adapts <code>IFile</code> to <code>ISource</code>
  * @author Dilyan Rusev
+ *
  * @see org.eclipse.core.resources.IFile
  * @see shared.io.ISource
  */
@@ -53,6 +54,6 @@ class GraspSourceFile implements ISource {
 
 	@Override
 	public String toString() {
-		return "GraspSource " + adapted.getName();
+		return adapted.getName();
 	}
 }

@@ -62,11 +62,11 @@ public final class Log {
 	 * @see org.eclipse.core.runtime.IStatus
 	 */
 	public static void logStatus(IStatus status) {
-		GraspActivator.getDefault().getLog().log(status);
+		GraspPlugin.getDefault().getLog().log(status);
 	}
 	
 	// look up org.eclipse.core.runtime.Status#Constructor(int,int,String,Throwable)
 	private static IStatus createStatus(int severity, int code, String message, Throwable exception) {
-		return new Status(severity, GraspActivator.PLUGIN_ID, code, message, exception);
+		return new Status(severity, GraspPlugin.PLUGIN_ID, code, message, exception);
 	}	
 }

@@ -16,6 +16,7 @@ import org.eclipse.core.resources.IResourceVisitor;
 import org.eclipse.core.resources.IncrementalProjectBuilder;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IProgressMonitor;
+import org.eclipse.core.runtime.SubMonitor;
 
 import shared.error.IError;
 import shared.error.IErrorReport;
@@ -30,16 +31,14 @@ import uk.ac.standrews.grasp.ide.Log;
  *
  */
 public class GraspBuilder extends IncrementalProjectBuilder  {	
+	/**
+	 * Builder ID, as per plugin.xml
+	 */
 	public static final String BUILDER_ID = "uk.ac.standrews.grasp.ide.graspBuilder";
+	/**
+	 * Problem and text marker ID used to report compilation errors
+	 */
 	public static final String MARKER_TYPE = "uk.ac.standrews.grasp.ide.graspProblem";	
-	
-	private void deleteMarkers(IFile file) {
-		try {
-			file.deleteMarkers(MARKER_TYPE, false, IResource.DEPTH_ZERO);
-		} catch (CoreException ce) {
-			Log.error(ce);
-		}
-	}
 
 	/*
 	 * (non-Javadoc)
@@ -66,11 +65,13 @@ public class GraspBuilder extends IncrementalProjectBuilder  {
 		if (resource instanceof IFile && resource.getName().endsWith(".grasp")) {
 			IFile file = (IFile) resource;
 			deleteMarkers(file);
-			buildIndividualFile(file, buildXml);
+			// TODO: hard-coded task number
+			buildIndividualFile(file, SubMonitor.convert(monitor), buildXml);
 		}
 	}
 	
-	private void buildIndividualFile(IFile file, boolean buildXml) {		
+	private void buildIndividualFile(IFile file, SubMonitor progress, boolean buildXml) {	
+		// TODO: use progress monitor
 		ISource source = new GraspSourceFile(file);
 		ILogger logger = new GraspCompilationLogger().initialize(file.getName(), Level.ERROR, false);
 		ICompiler compiler = new Compiler();
@@ -85,8 +86,11 @@ public class GraspBuilder extends IncrementalProjectBuilder  {
 			}
 			
 			if (errorReport.isAny() || graph == null) {
-				logger.print("%s failed to compile due to erors", source.getName());
+				logger.print("%s failed to compile due to erors", source);
 			} else {
+				if (buildXml) {
+					// TODO: Build XML
+				}
 				logger.print("%s compiled successfully", source);
 			}
 		} finally {
@@ -98,7 +102,7 @@ public class GraspBuilder extends IncrementalProjectBuilder  {
 		getProject().accept(new IResourceVisitor() {				
 			@Override
 			public boolean visit(IResource resource) throws CoreException {
-				// full build -> build xml
+				// full build -> build XML
 				performBuild(resource, monitor, true);
 				return true;
 			}
@@ -109,8 +113,9 @@ public class GraspBuilder extends IncrementalProjectBuilder  {
 		delta.accept(new IResourceDeltaVisitor() {			
 			@Override
 			public boolean visit(IResourceDelta delta) throws CoreException {
-				// ignore remove/add for now
-				if (delta.getKind() == IResourceDelta.CHANGED) {
+				// ignore remove
+				int kind = delta.getKind();
+				if (kind == IResourceDelta.CHANGED || kind == IResourceDelta.ADDED) {
 					// syntax checking only
 					performBuild(delta.getResource(), monitor, false);
 				}
@@ -134,6 +139,14 @@ public class GraspBuilder extends IncrementalProjectBuilder  {
 			
 		} catch (CoreException e) {
 			Log.error(e);
+		}
+	}
+	
+	private void deleteMarkers(IFile file) {
+		try {
+			file.deleteMarkers(MARKER_TYPE, false, IResource.DEPTH_ZERO);
+		} catch (CoreException ce) {
+			Log.error(ce);
 		}
 	}
 }

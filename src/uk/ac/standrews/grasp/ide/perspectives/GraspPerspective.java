@@ -1,12 +1,10 @@
 package uk.ac.standrews.grasp.ide.perspectives;
 
+import org.eclipse.jdt.ui.JavaUI;
 import org.eclipse.ui.IFolderLayout;
 import org.eclipse.ui.IPageLayout;
 import org.eclipse.ui.IPerspectiveFactory;
-import org.eclipse.ui.PlatformUI;
 import org.eclipse.ui.console.IConsoleConstants;
-import org.eclipse.core.internal.runtime.PlatformActivator;
-import org.eclipse.jdt.ui.JavaUI;
 
 import uk.ac.standrews.grasp.ide.views.GefView;
 import uk.ac.standrews.grasp.ide.wizards.NewProjectWizard;
