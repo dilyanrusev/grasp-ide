@@ -119,7 +119,12 @@ public class GraspPlugin extends AbstractUIPlugin {
 	}
 	
 	private void disposeOfConsoles() {
-		IConsoleManager consoleManager = ConsolePlugin.getDefault().getConsoleManager();		
+		// could be disposed before our plugin
+		ConsolePlugin plugin = ConsolePlugin.getDefault();
+		if (plugin == null) {
+			return;
+		}
+		IConsoleManager consoleManager = plugin.getConsoleManager();		
 		List<IConsole> toRemove = new ArrayList<IConsole>(createdConsoleNames.size());
 		for (String name: createdConsoleNames) {
 			IConsole existing = findConsole(consoleManager, name);
