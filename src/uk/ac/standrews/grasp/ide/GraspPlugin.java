@@ -18,8 +18,18 @@ import org.osgi.framework.BundleContext;
  */
 public class GraspPlugin extends AbstractUIPlugin {
 
-	// The plug-in ID
+	/** Plug-in ID */
 	public static final String PLUGIN_ID = "uk.ac.standrews.grasp.ide"; //$NON-NLS-1$
+	/** ID of the Grasp content type */
+	public static final String ID_GRASP_CONTENT_TYPE = "uk.ac.standrews.grasp.ide.graspSourceFile";
+	/** ID of the multi-page Grasp Editor */
+	public static final String ID_GRASP_EDITOR = "uk.ac.standrews.grasp.ide.editors.GraspEditor";
+	/** ID of the Grasp source code editor */
+	public static final String ID_GRASP_TEXT_EDITOR = "uk.ac.standrews.grasp.ide.editors.GraspTextEditor";
+	/** Builder ID, as per plugin.xml */
+	public static final String ID_BUILDER = "uk.ac.standrews.grasp.ide.graspBuilder";
+	/** Problem and text marker ID used to report compilation errors */
+	public static final String ID_MARKER = "uk.ac.standrews.grasp.ide.graspProblem";	
 	
 	// The shared instance
 	private static GraspPlugin plugin;

@@ -1,38 +1,28 @@
 package uk.ac.standrews.grasp.ide.editors;
 
 
-import java.io.StringWriter;
-import java.text.Collator;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.StringTokenizer;
-
 import org.eclipse.core.resources.IMarker;
 import org.eclipse.core.resources.IResourceChangeEvent;
 import org.eclipse.core.resources.IResourceChangeListener;
 import org.eclipse.core.resources.ResourcesPlugin;
+import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IProgressMonitor;
-import org.eclipse.jface.dialogs.ErrorDialog;
 import org.eclipse.swt.SWT;
-import org.eclipse.swt.custom.StyledText;
-import org.eclipse.swt.events.SelectionAdapter;
-import org.eclipse.swt.events.SelectionEvent;
-import org.eclipse.swt.graphics.Font;
-import org.eclipse.swt.graphics.FontData;
-import org.eclipse.swt.layout.FillLayout;
-import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.GridLayout;
-import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Display;
-import org.eclipse.swt.widgets.FontDialog;
 import org.eclipse.swt.widgets.Label;
-import org.eclipse.ui.*;
-import org.eclipse.ui.editors.text.TextEditor;
+import org.eclipse.ui.IEditorInput;
+import org.eclipse.ui.IEditorPart;
+import org.eclipse.ui.IEditorSite;
+import org.eclipse.ui.IFileEditorInput;
+import org.eclipse.ui.IWorkbenchPage;
+import org.eclipse.ui.PartInitException;
+import org.eclipse.ui.ide.IDE;
 import org.eclipse.ui.part.FileEditorInput;
 import org.eclipse.ui.part.MultiPageEditorPart;
-import org.eclipse.ui.ide.IDE;
 
+import uk.ac.standrews.grasp.ide.GraspPlugin;
 import uk.ac.standrews.grasp.ide.Log;
 
 /**
@@ -53,6 +43,51 @@ public class GraspEditor extends MultiPageEditorPart implements IResourceChangeL
 	public GraspEditor() {
 		super();
 		ResourcesPlugin.getWorkspace().addResourceChangeListener(this);
+	}
+	
+	/**
+	 * The <code>MultiPageEditorExample</code> implementation of this method
+	 * checks that the input is an instance of <code>IFileEditorInput</code>.
+	 */
+	@Override
+	public void init(IEditorSite site, IEditorInput editorInput) throws PartInitException {
+		assertInputIsGraspContent(editorInput);
+		super.init(site, editorInput);
+		setPartName(((IFileEditorInput)editorInput).getFile().getName());
+	}
+	
+	/**
+	 * Asserts that the editor input is a Grasp file
+	 * @param input Editor input, as passed by <code>MultiPageEditorPart.init(IEditorSite, IEditorInput)</code>
+	 * @throws PartInitException When the content type of <code>input</code> is not Grasp
+	 * @see {@link org.eclipse.ui.part.MultiPageEditorPart#init(IEditorSite, IEditorInput)}
+	 */
+	static void assertInputIsGraspContent(IEditorInput input) throws PartInitException {
+		if (!(input instanceof IFileEditorInput))
+			throw new PartInitException("Input is not a file");
+		IFileEditorInput fileInput = (IFileEditorInput)input;
+		String contentID;
+		try {
+			contentID = fileInput.getFile().getContentDescription().getContentType().getId();
+		} catch (CoreException e) {
+			throw new PartInitException("Cannot determine content type for " + input, e);
+		}
+		if (!GraspPlugin.ID_GRASP_CONTENT_TYPE.equals(contentID)) {
+			throw new PartInitException("Input must be a Grasp file");
+		}
+	}
+	
+	/**
+	 * Creates the pages of the multi-page editor.
+	 */
+	@Override
+	protected void createPages() {
+		try {
+			createTextEditorPage();
+			createGraphicalEditorPage();
+		} catch (PartInitException e) {
+			Log.error(e);
+		}		
 	}
 	
 	/**
@@ -78,18 +113,7 @@ public class GraspEditor extends MultiPageEditorPart implements IResourceChangeL
 		setPageText(pageIndex, "Designer");
 	}	
 	
-	/**
-	 * Creates the pages of the multi-page editor.
-	 */
-	@Override
-	protected void createPages() {
-		try {
-			createTextEditorPage();
-		} catch (PartInitException e) {
-			Log.error(e);
-		}
-		createGraphicalEditorPage();
-	}
+	
 	
 	/**
 	 * The <code>MultiPageEditorPart</code> implementation of this 
@@ -127,17 +151,7 @@ public class GraspEditor extends MultiPageEditorPart implements IResourceChangeL
 		IDE.gotoMarker(getEditor(0), marker);
 	}
 	
-	/**
-	 * The <code>MultiPageEditorExample</code> implementation of this method
-	 * checks that the input is an instance of <code>IFileEditorInput</code>.
-	 */
-	@Override
-	public void init(IEditorSite site, IEditorInput editorInput)
-		throws PartInitException {
-		if (!(editorInput instanceof IFileEditorInput))
-			throw new PartInitException("Invalid Input: Must be IFileEditorInput");
-		super.init(site, editorInput);
-	}
+	
 	
 	/* (non-Javadoc)
 	 * Method declared on IEditorPart.

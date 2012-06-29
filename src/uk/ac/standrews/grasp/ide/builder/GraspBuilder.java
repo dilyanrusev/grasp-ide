@@ -23,6 +23,7 @@ import shared.error.IErrorReport;
 import shared.io.ISource;
 import shared.logging.ILogger;
 import shared.logging.ILogger.Level;
+import uk.ac.standrews.grasp.ide.GraspPlugin;
 import uk.ac.standrews.grasp.ide.Log;
 
 /**
@@ -31,15 +32,6 @@ import uk.ac.standrews.grasp.ide.Log;
  *
  */
 public class GraspBuilder extends IncrementalProjectBuilder  {	
-	/**
-	 * Builder ID, as per plugin.xml
-	 */
-	public static final String BUILDER_ID = "uk.ac.standrews.grasp.ide.graspBuilder";
-	/**
-	 * Problem and text marker ID used to report compilation errors
-	 */
-	public static final String MARKER_TYPE = "uk.ac.standrews.grasp.ide.graspProblem";	
-
 	/*
 	 * (non-Javadoc)
 	 * 
@@ -85,13 +77,8 @@ public class GraspBuilder extends IncrementalProjectBuilder  {
 				createProblemMarker(file, error);
 			}
 			
-			if (errorReport.isAny() || graph == null) {
-				logger.print("%s failed to compile due to erors", source);
-			} else {
-				if (buildXml) {
-					// TODO: Build XML
-				}
-				logger.print("%s compiled successfully", source);
+			if (!errorReport.isAny() && graph != null && buildXml) {
+				// TODO: Build XML
 			}
 		} finally {
 			logger.shutdown();
@@ -126,7 +113,7 @@ public class GraspBuilder extends IncrementalProjectBuilder  {
 	
 	private void createProblemMarker(IFile file, IError error) {
 		try {
-			IMarker marker = file.createMarker(MARKER_TYPE);
+			IMarker marker = file.createMarker(GraspPlugin.ID_MARKER);
 			marker.setAttribute(IMarker.MESSAGE, error.getMessage());
 			marker.setAttribute(IMarker.SEVERITY, IMarker.SEVERITY_ERROR);
 			int lineNumber = error.getLine();
@@ -144,7 +131,7 @@ public class GraspBuilder extends IncrementalProjectBuilder  {
 	
 	private void deleteMarkers(IFile file) {
 		try {
-			file.deleteMarkers(MARKER_TYPE, false, IResource.DEPTH_ZERO);
+			file.deleteMarkers(GraspPlugin.ID_MARKER, false, IResource.DEPTH_ZERO);
 		} catch (CoreException ce) {
 			Log.error(ce);
 		}

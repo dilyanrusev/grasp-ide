@@ -6,6 +6,8 @@ import org.eclipse.core.resources.IProjectDescription;
 import org.eclipse.core.resources.IProjectNature;
 import org.eclipse.core.runtime.CoreException;
 
+import uk.ac.standrews.grasp.ide.GraspPlugin;
+
 /**
  * Grasp nature. Associates <code>GraspBuilder</code> with a project
  * @author Dilyan Rusev
@@ -30,7 +32,7 @@ public class GraspNature implements IProjectNature {
 		ICommand[] commands = desc.getBuildSpec();
 
 		for (int i = 0; i < commands.length; ++i) {
-			if (commands[i].getBuilderName().equals(GraspBuilder.BUILDER_ID)) {
+			if (commands[i].getBuilderName().equals(GraspPlugin.ID_BUILDER)) {
 				return;
 			}
 		}
@@ -38,7 +40,7 @@ public class GraspNature implements IProjectNature {
 		ICommand[] newCommands = new ICommand[commands.length + 1];
 		System.arraycopy(commands, 0, newCommands, 0, commands.length);
 		ICommand command = desc.newCommand();
-		command.setBuilderName(GraspBuilder.BUILDER_ID);
+		command.setBuilderName(GraspPlugin.ID_BUILDER);
 		newCommands[newCommands.length - 1] = command;
 		desc.setBuildSpec(newCommands);
 		project.setDescription(desc, null);
@@ -53,7 +55,7 @@ public class GraspNature implements IProjectNature {
 		IProjectDescription description = getProject().getDescription();
 		ICommand[] commands = description.getBuildSpec();
 		for (int i = 0; i < commands.length; ++i) {
-			if (commands[i].getBuilderName().equals(GraspBuilder.BUILDER_ID)) {
+			if (commands[i].getBuilderName().equals(GraspPlugin.ID_BUILDER)) {
 				ICommand[] newCommands = new ICommand[commands.length - 1];
 				System.arraycopy(commands, 0, newCommands, 0, i);
 				System.arraycopy(commands, i + 1, newCommands, i,
