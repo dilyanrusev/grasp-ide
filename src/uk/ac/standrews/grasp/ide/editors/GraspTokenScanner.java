@@ -3,10 +3,13 @@
  */
 package uk.ac.standrews.grasp.ide.editors;
 
+import org.eclipse.jdt.internal.ui.wizards.buildpaths.CreateMultipleSourceFoldersDialog;
 import org.eclipse.jface.text.TextAttribute;
+import org.eclipse.jface.text.rules.EndOfLineRule;
 import org.eclipse.jface.text.rules.IRule;
 import org.eclipse.jface.text.rules.IToken;
 import org.eclipse.jface.text.rules.MultiLineRule;
+import org.eclipse.jface.text.rules.PatternRule;
 import org.eclipse.jface.text.rules.RuleBasedScanner;
 import org.eclipse.jface.text.rules.SingleLineRule;
 import org.eclipse.jface.text.rules.Token;
@@ -33,7 +36,12 @@ public class GraspTokenScanner extends RuleBasedScanner {
 			new SingleLineRule("'", "'", getToken(GraspTextEditor.RGB_STRING_LITERAL, 0), '\\'),
 			new SingleLineRule("#\"", "\"", getToken(GraspTextEditor.RGB_DECLARATIVE_LITERAL, 0), '\\'),
 			new SingleLineRule("#'", "'", getToken(GraspTextEditor.RGB_DECLARATIVE_LITERAL, 0), '\\'),
-			new MultiLineRule("/*", "*/", getToken(GraspTextEditor.RGB_BLOCK_COMMENT, 0))
+			createBlockCommentsRule(),
+			// mistyped
+			new EndOfLineRule("\"", getToken(GraspTextEditor.RGB_STRING_LITERAL, 0), '\\'),
+			new EndOfLineRule("'", getToken(GraspTextEditor.RGB_STRING_LITERAL, 0), '\\'),
+			new EndOfLineRule("#\"", getToken(GraspTextEditor.RGB_DECLARATIVE_LITERAL, 0), '\\'),
+			new EndOfLineRule("#'", getToken(GraspTextEditor.RGB_DECLARATIVE_LITERAL, 0), '\\'),
 		};
 		setRules(rules);
 	}
@@ -56,8 +64,15 @@ public class GraspTokenScanner extends RuleBasedScanner {
 	
 	private IRule createCommentsRule() {
 		IToken token = getToken(GraspTextEditor.RGB_INLINE_COMMENT, SWT.NONE);
-		SingleLineRule rule = new SingleLineRule("//", null, token);
+		IRule rule = new EndOfLineRule("//", token);
 		return rule;
+	}
+	
+	private IRule createBlockCommentsRule() {
+		//return new BlockCommentsRule();
+		IToken token = getToken(GraspTextEditor.RGB_BLOCK_COMMENT, 0);
+		char terminator = (char)0;
+		return new PatternRule("/*", "*/", token, terminator, false, false, true);
 	}
 	
 }

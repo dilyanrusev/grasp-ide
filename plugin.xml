@@ -112,5 +112,12 @@
             project="true">
       </wizard>
    </extension>
+   <extension
+         point="org.eclipse.core.filebuffers.documentSetup">
+      <participant
+            class="uk.ac.standrews.grasp.ide.editors.DocumentSetupParticipant"
+            contentTypeId="uk.ac.standrews.grasp.ide.graspSourceFile">
+      </participant>
+   </extension>
 
 </plugin>
