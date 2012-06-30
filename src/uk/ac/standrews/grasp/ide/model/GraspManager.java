@@ -31,7 +31,8 @@ public final class GraspManager {
 				"architecture", "requirement", "quality_attribute", "property",
 				"rationale", "reason", "template", "system", "layer", "over",
 				"component", "connector", "provides", "requires", "check",
-				"link", "extends", "because", "supports", "inhibits"
+				"link", "extends", "because", "supports", "inhibits", "to", 
+				"true", "false"
 		})));
 	}
 	
