@@ -1,8 +1,8 @@
 package uk.ac.standrews.grasp.ide.editors;
 
+import org.eclipse.jface.text.IDocument;
 import org.eclipse.jface.text.presentation.IPresentationReconciler;
 import org.eclipse.jface.text.presentation.PresentationReconciler;
-import org.eclipse.jface.text.reconciler.IReconciler;
 import org.eclipse.jface.text.rules.DefaultDamagerRepairer;
 import org.eclipse.jface.text.source.ISourceViewer;
 import org.eclipse.jface.text.source.SourceViewerConfiguration;
@@ -18,7 +18,8 @@ class GraspSourceViewerConfiguration extends SourceViewerConfiguration {
 	private static final String[] CONTENT_TYPES;
 	
 	static {
-		CONTENT_TYPES = new String[] { GraspPlugin.ID_GRASP_CONTENT_TYPE };
+		CONTENT_TYPES = new String[] { IDocument.DEFAULT_CONTENT_TYPE, 
+				GraspPlugin.ID_GRASP_CONTENT_TYPE };
 	}
 	
 	@Override
@@ -31,8 +32,10 @@ class GraspSourceViewerConfiguration extends SourceViewerConfiguration {
 		// Add support for syntax colouring
 		PresentationReconciler reconciler = new PresentationReconciler();
 		DefaultDamagerRepairer repairer = new DefaultDamagerRepairer(new GraspTokenScanner());
-		reconciler.setDamager(repairer, GraspPlugin.ID_GRASP_CONTENT_TYPE);
-		reconciler.setRepairer(repairer, GraspPlugin.ID_GRASP_CONTENT_TYPE);		
+		reconciler.setDamager(repairer, IDocument.DEFAULT_CONTENT_TYPE);
+		reconciler.setRepairer(repairer, IDocument.DEFAULT_CONTENT_TYPE);		
+//		reconciler.setDamager(repairer, GraspPlugin.ID_GRASP_CONTENT_TYPE);
+//		reconciler.setRepairer(repairer, GraspPlugin.ID_GRASP_CONTENT_TYPE);		
 		return reconciler;
 	}
 }

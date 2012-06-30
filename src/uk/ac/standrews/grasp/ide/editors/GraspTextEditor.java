@@ -3,9 +3,7 @@
  */
 package uk.ac.standrews.grasp.ide.editors;
 
-import org.eclipse.jface.text.source.AnnotationRulerColumn;
-import org.eclipse.jface.text.source.CompositeRuler;
-import org.eclipse.jface.text.source.IVerticalRuler;
+import org.eclipse.swt.graphics.RGB;
 import org.eclipse.ui.IEditorInput;
 import org.eclipse.ui.IEditorSite;
 import org.eclipse.ui.PartInitException;
@@ -17,7 +15,8 @@ import org.eclipse.ui.editors.text.TextEditor;
  *
  */
 public class GraspTextEditor extends TextEditor {
-
+	public static final RGB RGB_KEYWORD = new RGB(127, 0, 85);
+	
 	public GraspTextEditor() {
 		super();
 		setSourceViewerConfiguration(new GraspSourceViewerConfiguration());
@@ -28,4 +27,11 @@ public class GraspTextEditor extends TextEditor {
 		GraspEditor.assertInputIsGraspContent(input);
 		super.init(site, input);
 	}
+	
+	@Override
+	public void dispose() {
+		super.dispose();
+	}	
+	
+	
 }

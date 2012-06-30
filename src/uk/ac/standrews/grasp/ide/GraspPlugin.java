@@ -1,9 +1,15 @@
 package uk.ac.standrews.grasp.ide;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
+import org.eclipse.core.runtime.Assert;
 import org.eclipse.jface.resource.ImageDescriptor;
+import org.eclipse.swt.graphics.Color;
+import org.eclipse.swt.graphics.RGB;
+import org.eclipse.swt.widgets.Display;
 import org.eclipse.ui.console.ConsolePlugin;
 import org.eclipse.ui.console.IConsole;
 import org.eclipse.ui.console.IConsoleManager;
@@ -35,6 +41,7 @@ public class GraspPlugin extends AbstractUIPlugin {
 	private static GraspPlugin plugin;
 	
 	private List<String> createdConsoleNames;
+	private Map<RGB, Color> colours;
 	
 	/**
 	 * The constructor
@@ -50,6 +57,7 @@ public class GraspPlugin extends AbstractUIPlugin {
 		super.start(context);
 		plugin = this;
 		createdConsoleNames = new ArrayList<String>(1);
+		colours = new HashMap<RGB, Color>();
 	}
 
 	/*
@@ -57,7 +65,8 @@ public class GraspPlugin extends AbstractUIPlugin {
 	 * @see org.eclipse.ui.plugin.AbstractUIPlugin#stop(org.osgi.framework.BundleContext)
 	 */
 	public void stop(BundleContext context) throws Exception {
-		disposeOfConsoles();		
+		disposeOfConsoles();	
+		disposeOfColours();
 		plugin = null;
 		super.stop(context);
 		
@@ -133,5 +142,38 @@ public class GraspPlugin extends AbstractUIPlugin {
 			}
 		}
 		consoleManager.removeConsoles(toRemove.toArray(new IConsole[toRemove.size()]));
+	}
+	
+	/**
+	 * Retrieve a colour that will be disposed when the plug-in closes
+	 * @param rgb Red, Green and Blue components of the desired colour
+	 * @return Cached colour that will be disposed of when the plug-in shuts down
+	 */
+	public Color getColour(RGB rgb) {
+		Assert.isNotNull(rgb);
+		Color color = colours.get(rgb);
+		if (color == null) {
+			color = new Color(Display.getDefault(), rgb);
+			colours.put(rgb, color);
+		}
+		return color;
+	}
+	
+	/**
+	 * Retrieve a colour that will be disposed when the plug-in shuts down
+	 * @param red Red component
+	 * @param green Green component
+	 * @param blue Blue component
+	 * @return Cached colour that will be disposed of when the plug-in shuts down
+	 */
+	public Color getColour(int red, int green, int blue) {
+		return getColour(new RGB(red, green, blue));
+	}
+	
+	private void disposeOfColours() {
+		for (Color color: colours.values()) {
+			color.dispose();
+		}
+		colours.clear();
 	}
 }

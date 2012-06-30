@@ -131,6 +131,8 @@ final class GraspCompilationLogger implements ILogger {
 		} else {
 			txt = message;
 		}
-		this.messageStream.println(txt);
+		if (!messageStream.isClosed()) {
+			messageStream.println(txt);
+		}
 	}
 }
