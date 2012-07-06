@@ -3,10 +3,13 @@
  */
 package uk.ac.standrews.grasp.ide.editors;
 
-import org.eclipse.swt.graphics.RGB;
+import org.eclipse.core.runtime.CoreException;
+import org.eclipse.jface.text.IDocument;
+import org.eclipse.jface.text.IDocumentPartitioner;
 import org.eclipse.ui.IEditorInput;
 import org.eclipse.ui.IEditorSite;
 import org.eclipse.ui.PartInitException;
+import org.eclipse.ui.editors.text.FileDocumentProvider;
 import org.eclipse.ui.editors.text.TextEditor;
 
 /**
@@ -15,15 +18,11 @@ import org.eclipse.ui.editors.text.TextEditor;
  *
  */
 public class GraspTextEditor extends TextEditor {
-	public static final RGB RGB_KEYWORD = new RGB(127, 0, 85);
-	public static final RGB RGB_INLINE_COMMENT = new RGB(63, 127, 95);
-	public static final RGB RGB_BLOCK_COMMENT = new RGB(63, 127, 95);
-	public static final RGB RGB_STRING_LITERAL = new RGB(42, 0, 255);
-	public static final RGB RGB_DECLARATIVE_LITERAL = new RGB(63, 95, 191);
 	
 	public GraspTextEditor() {
 		super();
 		setSourceViewerConfiguration(new GraspSourceViewerConfiguration());
+		setDocumentProvider(new GraspDocumentProvider());
 	}
 	
 	@Override
@@ -37,5 +36,18 @@ public class GraspTextEditor extends TextEditor {
 		super.dispose();
 	}	
 	
-	
+	private static class GraspDocumentProvider extends FileDocumentProvider {
+		@Override
+		protected IDocument createDocument(Object element) throws CoreException {
+			IDocument document = super.createDocument(element);
+		    if (document != null)
+		    {
+		        IDocumentPartitioner partitioner = new DocumentPartitioner(
+		        		PartitionScanner.INSTANCE, new String[] { PartitionScanner.BLOCK_COMMENT });
+		        partitioner.connect(document);
+		        document.setDocumentPartitioner(partitioner);
+		    }
+		    return document;
+		}
+	}
 }
