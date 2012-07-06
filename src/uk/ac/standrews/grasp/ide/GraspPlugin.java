@@ -1,10 +1,12 @@
 package uk.ac.standrews.grasp.ide;
 
-import java.util.ArrayList;
+import grasp.lang.IArchitecture;
+
+import java.util.Collections;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 
+import org.eclipse.core.resources.IFile;
 import org.eclipse.core.runtime.Assert;
 import org.eclipse.jface.resource.ImageDescriptor;
 import org.eclipse.swt.graphics.Color;
@@ -35,13 +37,15 @@ public class GraspPlugin extends AbstractUIPlugin {
 	/** Builder ID, as per plugin.xml */
 	public static final String ID_BUILDER = "uk.ac.standrews.grasp.ide.graspBuilder";
 	/** Problem and text marker ID used to report compilation errors */
-	public static final String ID_MARKER = "uk.ac.standrews.grasp.ide.graspProblem";	
+	public static final String ID_PROBLEM_MARKER = "uk.ac.standrews.grasp.ide.graspProblem";	
 	
 	// The shared instance
 	private static GraspPlugin plugin;
+	private static Map<IFile, IArchitecture> architectures = 
+			Collections.synchronizedMap(new HashMap<IFile, IArchitecture>());
 	
-	private List<String> createdConsoleNames;
 	private Map<RGB, Color> colours;
+	
 	
 	/**
 	 * The constructor
@@ -55,23 +59,21 @@ public class GraspPlugin extends AbstractUIPlugin {
 	 */
 	public void start(BundleContext context) throws Exception {
 		super.start(context);
-		plugin = this;
-		createdConsoleNames = new ArrayList<String>(1);
+		plugin = this;		
 		colours = new HashMap<RGB, Color>();
+		architectures.clear();
 	}
 
 	/*
 	 * (non-Javadoc)
 	 * @see org.eclipse.ui.plugin.AbstractUIPlugin#stop(org.osgi.framework.BundleContext)
 	 */
-	public void stop(BundleContext context) throws Exception {
-		disposeOfConsoles();	
+	public void stop(BundleContext context) throws Exception {	
 		disposeOfColours();
 		plugin = null;
 		super.stop(context);
 		
-	}
-	
+	}	
 
 	/**
 	 * Returns the shared instance
@@ -91,9 +93,25 @@ public class GraspPlugin extends AbstractUIPlugin {
 	 */
 	public static ImageDescriptor getImageDescriptor(String path) {
 		return imageDescriptorFromPlugin(PLUGIN_ID, path);
+	}	
+	
+	/**
+	 * Retrieve the compiled architecture for a file
+	 * @param file File whose architecture is requested
+	 * @return Compiled architecture for the file or null
+	 */
+	public static IArchitecture getFileArchitecture(IFile file) {
+		return file != null ? architectures.get(file) : null;
 	}
 	
-	
+	/**
+	 * Associate an architecture with a file
+	 * @param file File that was compiled
+	 * @param architecture AST of the file
+	 */
+	public static void setFileArchitecture(IFile file, IArchitecture architecture) {
+		architectures.put(file, architecture);
+	}
 	
 	/**
 	 * Get or create a console by name
@@ -121,28 +139,10 @@ public class GraspPlugin extends AbstractUIPlugin {
 	}
 	
 	private MessageConsole createConsole(IConsoleManager consoleManager, String name) {
-		MessageConsole newConsole = new MessageConsole(name, null);
-		createdConsoleNames.add(name);
+		MessageConsole newConsole = new MessageConsole(name, null);		
 		consoleManager.addConsoles(new IConsole[] { newConsole });
 		return newConsole;
-	}
-	
-	private void disposeOfConsoles() {
-		// could be disposed before our plugin
-		ConsolePlugin plugin = ConsolePlugin.getDefault();
-		if (plugin == null) {
-			return;
-		}
-		IConsoleManager consoleManager = plugin.getConsoleManager();		
-		List<IConsole> toRemove = new ArrayList<IConsole>(createdConsoleNames.size());
-		for (String name: createdConsoleNames) {
-			IConsole existing = findConsole(consoleManager, name);
-			if (existing != null) {
-				toRemove.add(existing);
-			}
-		}
-		consoleManager.removeConsoles(toRemove.toArray(new IConsole[toRemove.size()]));
-	}
+	}	
 	
 	/**
 	 * Retrieve a colour that will be disposed when the plug-in closes

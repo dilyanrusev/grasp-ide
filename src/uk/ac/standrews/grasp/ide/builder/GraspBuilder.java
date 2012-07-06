@@ -70,6 +70,7 @@ public class GraspBuilder extends IncrementalProjectBuilder  {
 		
 		try {		
 			IArchitecture graph = compiler.compile(source, logger);
+			GraspPlugin.setFileArchitecture(file, graph);
 			
 			IErrorReport errorReport = compiler.getErrors();
 			
@@ -113,7 +114,7 @@ public class GraspBuilder extends IncrementalProjectBuilder  {
 	
 	private void createProblemMarker(IFile file, IError error) {
 		try {
-			IMarker marker = file.createMarker(GraspPlugin.ID_MARKER);
+			IMarker marker = file.createMarker(GraspPlugin.ID_PROBLEM_MARKER);
 			marker.setAttribute(IMarker.MESSAGE, error.getMessage());
 			marker.setAttribute(IMarker.SEVERITY, IMarker.SEVERITY_ERROR);
 			int lineNumber = error.getLine();
@@ -131,7 +132,7 @@ public class GraspBuilder extends IncrementalProjectBuilder  {
 	
 	private void deleteMarkers(IFile file) {
 		try {
-			file.deleteMarkers(GraspPlugin.ID_MARKER, false, IResource.DEPTH_ZERO);
+			file.deleteMarkers(GraspPlugin.ID_PROBLEM_MARKER, false, IResource.DEPTH_ZERO);
 		} catch (CoreException ce) {
 			Log.error(ce);
 		}

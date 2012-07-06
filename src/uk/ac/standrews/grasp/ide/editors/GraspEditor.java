@@ -32,7 +32,9 @@ import uk.ac.standrews.grasp.ide.Log;
  * @author Dilyan Rusev
  * @see GraspTextEditor
  */
-public class GraspEditor extends MultiPageEditorPart implements IResourceChangeListener{
+public class GraspEditor extends MultiPageEditorPart implements IResourceChangeListener {
+	/** Attribute of the grasp marker that contains the architecture */
+	public static final String ARCHITECTURE_ATTRIBUTE = "architecture";
 
 	/** The text editor used in page 0. */
 	private GraspTextEditor textEditor;

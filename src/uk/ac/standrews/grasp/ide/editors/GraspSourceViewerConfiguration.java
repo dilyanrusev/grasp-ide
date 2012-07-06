@@ -2,6 +2,9 @@ package uk.ac.standrews.grasp.ide.editors;
 
 import org.eclipse.jface.text.IDocument;
 import org.eclipse.jface.text.TextAttribute;
+import org.eclipse.jface.text.contentassist.ContentAssistant;
+import org.eclipse.jface.text.contentassist.IContentAssistProcessor;
+import org.eclipse.jface.text.contentassist.IContentAssistant;
 import org.eclipse.jface.text.presentation.IPresentationReconciler;
 import org.eclipse.jface.text.presentation.PresentationReconciler;
 import org.eclipse.jface.text.rules.DefaultDamagerRepairer;
@@ -48,6 +51,16 @@ class GraspSourceViewerConfiguration extends SourceViewerConfiguration {
 		}
 		
 		return reconciler;
+	}
+	
+	@Override
+	public IContentAssistant getContentAssistant(ISourceViewer sourceViewer) {
+		// Add support for code completion
+		ContentAssistant assistant = new ContentAssistant();
+		IContentAssistProcessor processor = new GraspCodeCompletionProcessor();
+		assistant.setContentAssistProcessor(processor, IDocument.DEFAULT_CONTENT_TYPE);
+		assistant.setInformationControlCreator(getInformationControlCreator(sourceViewer));
+		return assistant;
 	}
 	
 	private static class SingleTokenScanner extends RuleBasedScanner {

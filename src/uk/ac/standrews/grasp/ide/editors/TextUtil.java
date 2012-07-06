@@ -36,6 +36,13 @@ final class TextUtil {
 	public static final RGB RGB_STRING_LITERAL = new RGB(42, 0, 255);
 	public static final RGB RGB_DECLARATIVE_LITERAL = new RGB(63, 95, 191);
 	
+	private static final String ALPHA_CHAR = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ";
+	private static final String DECIMAL_DIGIT = "0123456789";
+	private static final String ALPHANUMERIC_CHAR = ALPHA_CHAR + DECIMAL_DIGIT;
+	private static final String IDENTIFIER_CHAR = ALPHANUMERIC_CHAR + "_";
+	
+	private static final IWhitespaceDetector WHITESPACE_DETECTOR = new WhitespaceDetector();
+	
 	private TextUtil() {		
 	}
 	
@@ -109,6 +116,14 @@ final class TextUtil {
 		}
 		
 		return rule;
+	}
+	
+	public static boolean isWhitespace(char c) {
+		return WHITESPACE_DETECTOR.isWhitespace(c);
+	}
+	
+	public static boolean isIdentifier(char c) {
+		return IDENTIFIER_CHAR.indexOf(c) != -1;
 	}
 	
 	/**
