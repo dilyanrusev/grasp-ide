@@ -10,11 +10,9 @@ import org.eclipse.jface.text.rules.IPredicateRule;
 import org.eclipse.jface.text.rules.IRule;
 import org.eclipse.jface.text.rules.IToken;
 import org.eclipse.jface.text.rules.IWhitespaceDetector;
-import org.eclipse.jface.text.rules.IWordDetector;
 import org.eclipse.jface.text.rules.MultiLineRule;
 import org.eclipse.jface.text.rules.SingleLineRule;
 import org.eclipse.jface.text.rules.WhitespaceRule;
-import org.eclipse.jface.text.rules.WordRule;
 import org.eclipse.swt.graphics.Color;
 import org.eclipse.swt.graphics.RGB;
 
@@ -100,23 +98,6 @@ final class TextUtil {
 	
 	public static IRule createKeywordsRule(IToken token) {
 		return new KeywordRule(token);
-//		WordRule rule = new WordRule(new IWordDetector() {			
-//			@Override
-//			public boolean isWordStart(char c) {
-//				return Character.isLetter(c);
-//			}
-//			
-//			@Override
-//			public boolean isWordPart(char c) {
-//				return Character.isLetter(c);
-//			}
-//		});
-//		
-//		for (String keyword: KEYWORDS) {
-//			rule.addWord(keyword, token);
-//		}
-//		
-//		return rule;
 	}
 	
 	public static boolean isWhitespace(char c) {

@@ -1,11 +1,8 @@
 package uk.ac.standrews.grasp.ide.editors;
 
 import java.util.ArrayList;
-import java.util.HashSet;
 import java.util.List;
-import java.util.Set;
 
-import org.eclipse.core.runtime.CoreException;
 import org.eclipse.jface.text.BadLocationException;
 import org.eclipse.jface.text.IDocument;
 import org.eclipse.jface.text.ITextViewer;
@@ -32,6 +29,7 @@ class GraspCodeCompletionProcessor implements IContentAssistProcessor {
 	public ICompletionProposal[] computeCompletionProposals(ITextViewer viewer,	int offset) {
 		IDocument doc = viewer.getDocument();
 		String wordSoFar = getWordSoFar(doc, offset);
+		int replaceLen = getReplaceLength(doc, offset);
 		List<ICompletionProposal> completions = new ArrayList<ICompletionProposal>();
 		for (String keyword: TextUtil.KEYWORDS) {
 			int lenDiff = keyword.length() - wordSoFar.length();
@@ -41,7 +39,7 @@ class GraspCodeCompletionProcessor implements IContentAssistProcessor {
 				completions.add(new CompletionProposal(
 						addition,    // string that is actually inserted
 						offset,      // position in document at which we insert new text
-						0,           // we don't replace text; we insert new text => length of replaced text is 0
+						replaceLen,  // replace whatever we had after the cursor position
 						lenDiff,     // the cursor position should advance after the completion
 						null,        // no image
 						keyword,     // what is actually displayed to the user
@@ -96,5 +94,19 @@ class GraspCodeCompletionProcessor implements IContentAssistProcessor {
 			Log.error(e);
 			return "";
 		}		
+	}
+	
+	private int getReplaceLength(IDocument doc, int position) {
+		int count = 0;
+		try {
+			char c = doc.getChar(position);
+			while (TextUtil.isIdentifier(c)) {
+				count++;
+				c = doc.getChar(position + count);
+			}
+		} catch (BadLocationException e) {
+			Log.error(e);
+		}
+		return count;
 	}
 }
