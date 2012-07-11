@@ -73,7 +73,7 @@ public class GraspBuilder extends IncrementalProjectBuilder  {
 			GraspPlugin.setFileArchitecture(file, graph);
 			
 			IErrorReport errorReport = compiler.getErrors();
-			
+			graph.getBodyByType(null);
 			for (IError error: errorReport.getErrors()) {
 				createProblemMarker(file, error);
 			}

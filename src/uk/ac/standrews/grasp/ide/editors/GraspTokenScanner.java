@@ -26,7 +26,7 @@ public class GraspTokenScanner extends RuleBasedScanner {
 		setRules(new IRule[] {
 				TextUtil.createKeywordsRule(keyword),
 				TextUtil.createWhitespaceRule(),
-				TextUtil.createSingleQuoteDeclarativeLiteralRule(stringLiteral),
+				TextUtil.createSingleQuoteStringLiteralRule(stringLiteral),
 				TextUtil.createDoubleQuoteStringLiteralRule(stringLiteral),
 				TextUtil.createSingleQuoteDeclarativeLiteralRule(declarativeLiteral),
 				TextUtil.createDoubleQuoteDeclarativeLiteralRule(declarativeLiteral),

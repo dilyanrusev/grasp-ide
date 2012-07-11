@@ -99,23 +99,24 @@ final class TextUtil {
 	}
 	
 	public static IRule createKeywordsRule(IToken token) {
-		WordRule rule = new WordRule(new IWordDetector() {			
-			@Override
-			public boolean isWordStart(char c) {
-				return Character.isLetter(c);
-			}
-			
-			@Override
-			public boolean isWordPart(char c) {
-				return Character.isLetter(c);
-			}
-		});
-		
-		for (String keyword: KEYWORDS) {
-			rule.addWord(keyword, token);
-		}
-		
-		return rule;
+		return new KeywordRule(token);
+//		WordRule rule = new WordRule(new IWordDetector() {			
+//			@Override
+//			public boolean isWordStart(char c) {
+//				return Character.isLetter(c);
+//			}
+//			
+//			@Override
+//			public boolean isWordPart(char c) {
+//				return Character.isLetter(c);
+//			}
+//		});
+//		
+//		for (String keyword: KEYWORDS) {
+//			rule.addWord(keyword, token);
+//		}
+//		
+//		return rule;
 	}
 	
 	public static boolean isWhitespace(char c) {
