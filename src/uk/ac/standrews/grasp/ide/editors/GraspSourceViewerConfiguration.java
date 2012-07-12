@@ -63,6 +63,8 @@ class GraspSourceViewerConfiguration extends SourceViewerConfiguration {
 		return assistant;
 	}
 	
+	
+	
 	private static class SingleTokenScanner extends RuleBasedScanner {
 		public SingleTokenScanner(Color foregroundColour) {
 			TextAttribute attrib = new TextAttribute(foregroundColour);

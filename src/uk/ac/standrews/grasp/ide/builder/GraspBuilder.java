@@ -4,6 +4,9 @@ import grasp.lang.Compiler;
 import grasp.lang.IArchitecture;
 import grasp.lang.ICompiler;
 
+import java.io.IOException;
+import java.io.InputStreamReader;
+import java.io.LineNumberReader;
 import java.util.Map;
 
 import org.eclipse.core.resources.IFile;
@@ -73,7 +76,6 @@ public class GraspBuilder extends IncrementalProjectBuilder  {
 			GraspPlugin.setFileArchitecture(file, graph);
 			
 			IErrorReport errorReport = compiler.getErrors();
-			graph.getBodyByType(null);
 			for (IError error: errorReport.getErrors()) {
 				createProblemMarker(file, error);
 			}
@@ -122,17 +124,49 @@ public class GraspBuilder extends IncrementalProjectBuilder  {
 				lineNumber = 1;
 			}
 			marker.setAttribute(IMarker.LINE_NUMBER, lineNumber);
-			// TODO: Set both IMarker.CHAR_START and IMarker.CHAR_END
-			//marker.setAttribute(IMarker.CHAR_START, error.getColumn());
+			
+			int linePos = getLinePositionInFile(file, lineNumber);
+			if (linePos != -1) {								
+				marker.setAttribute(IMarker.CHAR_START, linePos + error.getColumn());
+				marker.setAttribute(IMarker.CHAR_END, linePos + error.getColumnEnd());	
+				marker.setAttribute(IMarker.LOCATION, String.format("line %d [%d:%d]", lineNumber, error.getColumn(), error.getColumnEnd()));
+			}
 			
 		} catch (CoreException e) {
 			Log.error(e);
 		}
 	}
 	
+	private static int getLinePositionInFile(IFile file, int line) {
+		LineNumberReader reader = null;
+		try {
+			reader = new LineNumberReader(new InputStreamReader(file.getContents()));
+		} catch (CoreException e) {
+			Log.error(e);
+			return -1;
+		}
+		reader.setLineNumber(1);
+		try {
+			int counter = 0;
+			while (reader.read() != -1 && reader.getLineNumber() != line) {
+				counter++;
+			}
+			return counter;
+		} catch (IOException e) {
+			Log.error(e);
+			return -1;
+		} finally {
+			try {
+				reader.close();
+			} catch (IOException e) {
+				Log.error(e);
+			}
+		}
+	}	
+	
 	private void deleteMarkers(IFile file) {
 		try {
-			file.deleteMarkers(GraspPlugin.ID_PROBLEM_MARKER, false, IResource.DEPTH_ZERO);
+			file.deleteMarkers(GraspPlugin.ID_PROBLEM_MARKER, false, IResource.DEPTH_INFINITE);
 		} catch (CoreException ce) {
 			Log.error(ce);
 		}
