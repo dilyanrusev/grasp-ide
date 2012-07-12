@@ -1,5 +1,9 @@
 package uk.ac.standrews.grasp.ide.editors.completion;
 
+import grasp.lang.IArchitecture;
+import grasp.lang.ISyntaxTree;
+
+import org.eclipse.core.resources.IFile;
 import org.eclipse.jface.text.IDocument;
 
 /**
@@ -12,8 +16,9 @@ public interface ICodeCompletionContext {
 	 * Reset the context with a new document and position
 	 * @param doc Document to compute the new values for
 	 * @param offset Position (offset) in the document
+	 * @param file File that contains the document
 	 */
-	void computeFor(IDocument doc, int offset);
+	void computeFor(IFile file, IDocument doc, int offset);
 	/**
 	 * Get the document that contains the text to be evaluated
 	 * @return the document
@@ -39,4 +44,16 @@ public interface ICodeCompletionContext {
 	 * @return Word at the cursor
 	 */
 	String getWordAtCursor();
+	
+	/**
+	 * Returns the AST for the document, if it was compiled successfully, or null if it wasn't compiled or there were compilation errors
+	 * @return AST for the document. May be <code>null</code>
+	 */
+	IArchitecture getAst();
+	
+	/**
+	 * 
+	 * @return
+	 */
+	ISyntaxTree getSyntaxTree();
 }

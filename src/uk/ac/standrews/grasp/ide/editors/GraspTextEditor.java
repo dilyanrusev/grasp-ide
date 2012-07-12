@@ -6,7 +6,10 @@ package uk.ac.standrews.grasp.ide.editors;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.jface.text.IDocument;
 import org.eclipse.jface.text.IDocumentPartitioner;
+import org.eclipse.jface.text.source.ISourceViewer;
+import org.eclipse.jface.text.source.IVerticalRuler;
 import org.eclipse.jface.text.source.IVerticalRulerColumn;
+import org.eclipse.swt.widgets.Composite;
 import org.eclipse.ui.IEditorInput;
 import org.eclipse.ui.IEditorSite;
 import org.eclipse.ui.PartInitException;
@@ -40,6 +43,13 @@ public class GraspTextEditor extends TextEditor {
 	@Override
 	protected boolean isLineNumberRulerVisible() {
 		return true;
+	}
+	
+	@Override
+	protected ISourceViewer createSourceViewer(Composite parent,
+			IVerticalRuler ruler, int styles) {
+		ISourceViewer impl = super.createSourceViewer(parent, ruler, styles);
+		return new GraspSourceViewer(this, impl);
 	}
 	
 	private static class GraspDocumentProvider extends FileDocumentProvider {

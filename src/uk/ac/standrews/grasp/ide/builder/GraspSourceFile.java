@@ -18,7 +18,7 @@ import shared.io.ISource;
  * @see org.eclipse.core.resources.IFile
  * @see shared.io.ISource
  */
-class GraspSourceFile implements ISource {
+public class GraspSourceFile implements ISource {
 	private IFile adapted;
 	
 	/**
