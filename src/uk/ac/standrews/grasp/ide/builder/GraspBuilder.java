@@ -127,8 +127,8 @@ public class GraspBuilder extends IncrementalProjectBuilder  {
 			
 			int linePos = getLinePositionInFile(file, lineNumber);
 			if (linePos != -1) {								
-				marker.setAttribute(IMarker.CHAR_START, linePos + error.getColumn());
-				marker.setAttribute(IMarker.CHAR_END, linePos + error.getColumnEnd());	
+				marker.setAttribute(IMarker.CHAR_START, linePos + error.getColumn() + 1);
+				marker.setAttribute(IMarker.CHAR_END, linePos + error.getColumnEnd() + 1);	
 				marker.setAttribute(IMarker.LOCATION, String.format("line %d [%d:%d]", lineNumber, error.getColumn(), error.getColumnEnd()));
 			}
 			
@@ -141,23 +141,23 @@ public class GraspBuilder extends IncrementalProjectBuilder  {
 		LineNumberReader reader = null;
 		try {
 			reader = new LineNumberReader(new InputStreamReader(file.getContents()));
-		} catch (CoreException e) {
-			Log.error(e);
-			return -1;
-		}
-		reader.setLineNumber(1);
-		try {
+			reader.setLineNumber(1);
 			int counter = 0;
 			while (reader.read() != -1 && reader.getLineNumber() != line) {
 				counter++;
 			}
 			return counter;
+		} catch (CoreException e) {
+			Log.error(e);
+			return -1;
 		} catch (IOException e) {
 			Log.error(e);
 			return -1;
 		} finally {
 			try {
-				reader.close();
+				if (reader != null) {
+					reader.close();
+				}
 			} catch (IOException e) {
 				Log.error(e);
 			}
