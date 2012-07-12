@@ -18,7 +18,7 @@ import org.eclipse.swt.graphics.RGB;
 
 import uk.ac.standrews.grasp.ide.GraspPlugin;
 
-final class TextUtil {
+public final class TextUtil {
 	/** Lists all keywords in Grasp */
 	public static final Set<String> KEYWORDS = 
 			Collections.unmodifiableSet(new HashSet<String>(Arrays.asList(new String[] {
@@ -26,7 +26,7 @@ final class TextUtil {
 			"rationale", "reason", "template", "system", "layer", "over",
 			"component", "connector", "provides", "requires", "check",
 			"link", "extends", "because", "supports", "inhibits", "to", 
-			"true", "false"
+			"true", "false", "subsetof", "accepts"
 	})));
 	public static final RGB RGB_KEYWORD = new RGB(127, 0, 85);
 	public static final RGB RGB_INLINE_COMMENT = new RGB(63, 127, 95);

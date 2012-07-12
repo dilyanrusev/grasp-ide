@@ -14,6 +14,10 @@ import org.eclipse.jface.text.rules.Token;
 class KeywordRule implements IRule {
 	private IToken token;
 	
+	/**
+	 * Create a rule that will return the passed token when a keyword is detected
+	 * @param token Token to return when a keyword is detected
+	 */
 	public KeywordRule(IToken token) {
 		Assert.isNotNull(token);
 		this.token = token;

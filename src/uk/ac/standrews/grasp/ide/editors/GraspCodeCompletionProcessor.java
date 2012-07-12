@@ -1,9 +1,9 @@
 package uk.ac.standrews.grasp.ide.editors;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
 
-import org.eclipse.jface.text.BadLocationException;
 import org.eclipse.jface.text.IDocument;
 import org.eclipse.jface.text.ITextViewer;
 import org.eclipse.jface.text.contentassist.CompletionProposal;
@@ -12,7 +12,10 @@ import org.eclipse.jface.text.contentassist.IContentAssistProcessor;
 import org.eclipse.jface.text.contentassist.IContextInformation;
 import org.eclipse.jface.text.contentassist.IContextInformationValidator;
 
-import uk.ac.standrews.grasp.ide.Log;
+import uk.ac.standrews.grasp.ide.editors.completion.Context;
+import uk.ac.standrews.grasp.ide.editors.completion.ICodeCompletionContext;
+import uk.ac.standrews.grasp.ide.editors.completion.ICodeCompletionProcessor;
+import uk.ac.standrews.grasp.ide.editors.completion.KeywordCodeCompletion;
 
 /**
  * Code completion for Grasp
@@ -21,31 +24,27 @@ import uk.ac.standrews.grasp.ide.Log;
  */
 class GraspCodeCompletionProcessor implements IContentAssistProcessor {
 	private static final IContextInformation[] EMPTY_CONTEXT_LIST = { };
-	//private static final ICompletionProposal[] EMPTY_COMPLETION_LIST = { };
 	private static final char[] PROPOSAL_ACTIVATION_CHARS = {};
 	private static final char[] INFORMATION_ACTIVATION_CHARS = {};
+	private ICodeCompletionContext context = new Context();
+	private ICodeCompletionProcessor[] rules;
+	
+	public GraspCodeCompletionProcessor() {
+		this.rules = new ICodeCompletionProcessor[] {
+				new KeywordCodeCompletion()
+		};
+	}
 
 	@Override
 	public ICompletionProposal[] computeCompletionProposals(ITextViewer viewer,	int offset) {
 		IDocument doc = viewer.getDocument();
-		String wordSoFar = getWordSoFar(doc, offset);
-		int replaceLen = getReplaceLength(doc, offset);
-		List<ICompletionProposal> completions = new ArrayList<ICompletionProposal>();
-		for (String keyword: TextUtil.KEYWORDS) {
-			int lenDiff = keyword.length() - wordSoFar.length();
-			if (lenDiff > 0 && keyword.startsWith(wordSoFar)) {
-				String addition = keyword.substring(wordSoFar.length());
-				
-				completions.add(new CompletionProposal(
-						addition,    // string that is actually inserted
-						offset,      // position in document at which we insert new text
-						replaceLen,  // replace whatever we had after the cursor position
-						lenDiff,     // the cursor position should advance after the completion
-						null,        // no image
-						keyword,     // what is actually displayed to the user
-						null,        // no context
-						null         // no additional propositions
-						));
+		context.computeFor(doc, offset);
+		Collection<ICompletionProposal> completions = ICodeCompletionProcessor.NO_PROPOSALS;
+		for (ICodeCompletionProcessor rule: rules) {
+			Collection<ICompletionProposal> props = rule.evaluateContext(context);
+			if (props.size() > 0) {
+				completions = props;
+				break;
 			}
 		}
 		
@@ -75,38 +74,5 @@ class GraspCodeCompletionProcessor implements IContentAssistProcessor {
 	@Override
 	public IContextInformationValidator getContextInformationValidator() {
 		return null;
-	}
-	
-	private String getWordSoFar(IDocument doc, int position) {		
-		try {
-			// crawl back until whitespace
-			StringBuilder sb = new StringBuilder();
-			for (int i = position - 1; i >= 0; i--) {
-				char c = doc.getChar(i);
-				if (TextUtil.isIdentifier(c)) {
-					sb.insert(0, c);
-				} else {
-					break; // <<-- break on whitespace
-				}
-			}
-			return sb.toString();
-		} catch (BadLocationException e) {
-			Log.error(e);
-			return "";
-		}		
-	}
-	
-	private int getReplaceLength(IDocument doc, int position) {
-		int count = 0;
-		try {
-			char c = doc.getChar(position);
-			while (TextUtil.isIdentifier(c)) {
-				count++;
-				c = doc.getChar(position + count);
-			}
-		} catch (BadLocationException e) {
-			Log.error(e);
-		}
-		return count;
 	}
 }
