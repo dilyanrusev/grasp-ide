@@ -4,10 +4,21 @@ import grasp.lang.Compiler;
 import grasp.lang.IArchitecture;
 import grasp.lang.ICompiler;
 
+import java.io.BufferedWriter;
+import java.io.ByteArrayInputStream;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.io.FileWriter;
 import java.io.IOException;
+import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.LineNumberReader;
+import java.io.StringWriter;
 import java.util.Map;
+
+import javax.xml.parsers.ParserConfigurationException;
+import javax.xml.transform.TransformerException;
 
 import org.eclipse.core.resources.IFile;
 import org.eclipse.core.resources.IMarker;
@@ -16,6 +27,7 @@ import org.eclipse.core.resources.IResource;
 import org.eclipse.core.resources.IResourceDelta;
 import org.eclipse.core.resources.IResourceDeltaVisitor;
 import org.eclipse.core.resources.IResourceVisitor;
+import org.eclipse.core.resources.IWorkspace;
 import org.eclipse.core.resources.IncrementalProjectBuilder;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IProgressMonitor;
@@ -26,6 +38,8 @@ import shared.error.IErrorReport;
 import shared.io.ISource;
 import shared.logging.ILogger;
 import shared.logging.ILogger.Level;
+import shared.xml.DomXmlWriter;
+import shared.xml.IXmlWriter;
 import uk.ac.standrews.grasp.ide.GraspPlugin;
 import uk.ac.standrews.grasp.ide.Log;
 
@@ -60,19 +74,20 @@ public class GraspBuilder extends IncrementalProjectBuilder  {
 		if (resource instanceof IFile && resource.getName().endsWith(".grasp")) {
 			IFile file = (IFile) resource;
 			deleteMarkers(file);
-			// TODO: hard-coded task number
 			buildIndividualFile(file, SubMonitor.convert(monitor), buildXml);
 		}
 	}
 	
 	private void buildIndividualFile(IFile file, SubMonitor progress, boolean buildXml) {	
-		// TODO: use progress monitor
+		progress.setWorkRemaining(3);
+		progress.setTaskName("Compiling " + file);
 		ISource source = new GraspSourceFile(file);
 		ILogger logger = new GraspCompilationLogger().initialize(file.getName(), Level.ERROR, false);
 		ICompiler compiler = new Compiler();
 		
 		try {		
 			IArchitecture graph = compiler.compile(source, logger);
+			progress.worked(1);
 			GraspPlugin.setFileArchitecture(file, graph);
 			
 			IErrorReport errorReport = compiler.getErrors();
@@ -81,7 +96,39 @@ public class GraspBuilder extends IncrementalProjectBuilder  {
 			}
 			
 			if (!errorReport.isAny() && graph != null && buildXml) {
-				// TODO: Build XML
+				progress.setTaskName("Building xml for " + file);
+				IProject project = file.getProject();
+				if (project == null) {
+					Log.error("Cannot find project of " + file, null);
+					return;
+				}
+				IFile xmlFile = project.getFile(file.getProjectRelativePath().addFileExtension("xml"));
+				try {	
+					StringWriter stringWriter = new StringWriter();
+					BufferedWriter output = new BufferedWriter(stringWriter);
+					IXmlWriter xml = new DomXmlWriter();
+					graph.toXml(xml);
+					xml.serialize(output);
+					output.close();
+					String txt = stringWriter.toString();	
+					if (!xmlFile.exists()) {
+						xmlFile.create(new ByteArrayInputStream(txt.getBytes("utf-8")), true, progress.newChild(1));
+					}
+					else {
+						xmlFile.setContents(new ByteArrayInputStream(txt.getBytes("utf-8")), true, true, progress.newChild(1));
+					}
+					xmlFile.setDerived(true, progress.newChild(1));
+				} catch (CoreException e) {
+					Log.error(e);
+				} catch (FileNotFoundException e) {
+					Log.error(e);
+				} catch (IOException e) {
+					Log.error(e);
+				} catch (ParserConfigurationException e) {
+					Log.error(e);
+				} catch (TransformerException e) {
+					Log.error(e);
+				} 				
 			}
 		} finally {
 			logger.shutdown();
@@ -107,7 +154,7 @@ public class GraspBuilder extends IncrementalProjectBuilder  {
 				int kind = delta.getKind();
 				if (kind == IResourceDelta.CHANGED || kind == IResourceDelta.ADDED) {
 					// syntax checking only
-					performBuild(delta.getResource(), monitor, false);
+					performBuild(delta.getResource(), monitor, true);
 				}
 				return true;
 			}
