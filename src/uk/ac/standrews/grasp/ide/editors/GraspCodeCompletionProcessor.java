@@ -1,14 +1,11 @@
 package uk.ac.standrews.grasp.ide.editors;
 
-import java.util.ArrayList;
 import java.util.Collection;
-import java.util.List;
 
 import org.eclipse.core.resources.IFile;
 import org.eclipse.core.runtime.Assert;
 import org.eclipse.jface.text.IDocument;
 import org.eclipse.jface.text.ITextViewer;
-import org.eclipse.jface.text.contentassist.CompletionProposal;
 import org.eclipse.jface.text.contentassist.ICompletionProposal;
 import org.eclipse.jface.text.contentassist.IContentAssistProcessor;
 import org.eclipse.jface.text.contentassist.IContextInformation;
@@ -20,6 +17,7 @@ import uk.ac.standrews.grasp.ide.editors.completion.Context;
 import uk.ac.standrews.grasp.ide.editors.completion.ICodeCompletionContext;
 import uk.ac.standrews.grasp.ide.editors.completion.ICodeCompletionProcessor;
 import uk.ac.standrews.grasp.ide.editors.completion.KeywordCodeCompletion;
+import uk.ac.standrews.grasp.ide.editors.completion.LinkStatementCodeCompletion;
 
 /**
  * Code completion for Grasp
@@ -35,13 +33,15 @@ class GraspCodeCompletionProcessor implements IContentAssistProcessor {
 	
 	public GraspCodeCompletionProcessor() {
 		this.rules = new ICodeCompletionProcessor[] {
+				new LinkStatementCodeCompletion(),
 				new KeywordCodeCompletion()
 		};
 	}
 
 	@Override
 	public ICompletionProposal[] computeCompletionProposals(ITextViewer viewer,	int offset) {
-		Assert.isTrue(viewer instanceof GraspSourceViewer);
+		Assert.isTrue(viewer instanceof GraspSourceViewer, "TextViewer is not GraspSourceViewer");
+		
 		IDocument doc = viewer.getDocument();
 		IEditorInput input = ((GraspSourceViewer)viewer).getEditor().getEditorInput();
 		IFile file = ((IFileEditorInput)input).getFile();

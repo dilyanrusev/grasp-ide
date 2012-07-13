@@ -8,7 +8,6 @@ import org.eclipse.jface.text.IDocument;
 import org.eclipse.jface.text.IDocumentPartitioner;
 import org.eclipse.jface.text.source.ISourceViewer;
 import org.eclipse.jface.text.source.IVerticalRuler;
-import org.eclipse.jface.text.source.IVerticalRulerColumn;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.ui.IEditorInput;
 import org.eclipse.ui.IEditorSite;
@@ -48,8 +47,14 @@ public class GraspTextEditor extends TextEditor {
 	@Override
 	protected ISourceViewer createSourceViewer(Composite parent,
 			IVerticalRuler ruler, int styles) {
-		ISourceViewer impl = super.createSourceViewer(parent, ruler, styles);
-		return new GraspSourceViewer(this, impl);
+		fAnnotationAccess= getAnnotationAccess();
+		fOverviewRuler= createOverviewRuler(getSharedColors());
+
+		ISourceViewer viewer= new GraspSourceViewer(this, parent, ruler, getOverviewRuler(), isOverviewRulerVisible(), styles);
+		// ensure decoration support has been created and configured.
+		getSourceViewerDecorationSupport(viewer);
+
+		return viewer;
 	}
 	
 	private static class GraspDocumentProvider extends FileDocumentProvider {

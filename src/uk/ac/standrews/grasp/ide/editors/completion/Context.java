@@ -1,23 +1,18 @@
 package uk.ac.standrews.grasp.ide.editors.completion;
 
-import java.io.IOException;
-import java.io.Reader;
+import java.io.StringReader;
 
 import grasp.lang.IArchitecture;
-import grasp.lang.ISyntaxTree;
-import grasp.lang.Parser;
 
 import org.eclipse.core.resources.IFile;
 import org.eclipse.core.runtime.Assert;
 import org.eclipse.jface.text.BadLocationException;
 import org.eclipse.jface.text.IDocument;
 
-import shared.io.ISource;
-import shared.logging.ILogger;
 import uk.ac.standrews.grasp.ide.GraspPlugin;
 import uk.ac.standrews.grasp.ide.Log;
-import uk.ac.standrews.grasp.ide.builder.GraspSourceFile;
 import uk.ac.standrews.grasp.ide.editors.TextUtil;
+import uk.ac.standrews.grasp.ide.model.GraspModel;
 
 /**
  * Default implementation of  <code>ICodeCompletionContext</code>
@@ -31,7 +26,9 @@ public class Context implements ICodeCompletionContext {
 	private String wordBeforeCursor;
 	private String wordAfterCursor;
 	private String wordAtCursor;
-	private ISyntaxTree syntaxTree;
+	private GraspScanner scanner;
+	private int line;
+	private int column;
 	
 	@Override
 	public void computeFor(IFile file, IDocument doc, int position) {
@@ -41,7 +38,9 @@ public class Context implements ICodeCompletionContext {
 		this.wordAfterCursor = null;
 		this.wordBeforeCursor = null;
 		this.wordAtCursor = null;
-		this.syntaxTree = null;
+		this.scanner = null;
+		this.line = -1;
+		this.column = -1;
 	}
 
 	@Override
@@ -108,84 +107,48 @@ public class Context implements ICodeCompletionContext {
 	}		
 	
 	@Override
-	public IArchitecture getAst() {
+	public IArchitecture getModel() {
 		Assert.isNotNull(file);
 		return GraspPlugin.getFileArchitecture(file);
 	}
 
 	@Override
-	public ISyntaxTree getSyntaxTree() {
-		if (syntaxTree == null) {
-			Assert.isNotNull(file);
-			Parser graspParser = new Parser();
-			syntaxTree = graspParser.parse(new GraspSourceFile(file), NullLogger.INSTANCE);
-		} 
-		return syntaxTree;
-	}
-}
-
-/**
- * Logger that ignores all logging requests
- * @author Dilyan Rusev
- *
- */
-class NullLogger implements ILogger {
-	/** Convenience instance of the null logger */
-	public static final ILogger INSTANCE = new NullLogger();
-
-	@Override
-	public void compiler_error(String s, Object... aobj) {
-		// ignore
+	public GraspScanner getCodeScanner() {
+		if (scanner == null) {
+			scanner = GraspModel.INSTANCE.getScannerForFile(file);
+			if (scanner == null) {
+				scanner = new GraspScanner();
+				scanner.parse(new StringReader(document.get()));
+				GraspModel.INSTANCE.setScannerForFile(file, scanner);
+			}
+		}
+		return scanner;
 	}
 
 	@Override
-	public void compiler_warn(String s, Object... aobj) {
-		// ignore
+	public int getLine() {
+		if (line == -1) {
+			try {
+				line = document.getLineOfOffset(position) + 1; // lines start counting at 1
+			} catch (BadLocationException e) {
+				Log.error(e);
+				line = -1;
+			}
+		}
+		return line;		
 	}
 
 	@Override
-	public void error(String s, Object... aobj) {
-		// ignore
+	public int getColumn() {
+		if (column == -1) {
+			try {
+				int zeroLine = document.getLineOfOffset(position);
+				column = position - document.getLineOffset(zeroLine);
+			} catch (BadLocationException e) {
+				Log.error(e);
+				column = -1;
+			}
+		}
+		return column;
 	}
-
-	@Override
-	public void error(String s, Exception exception) {
-		// ignore
-	}
-
-	@Override
-	public void info(String s, Object... aobj) {
-		// ignore
-	}
-
-	@Override
-	public ILogger initialize(String s, Level level, boolean flag) {
-		// ignore
-		return this;
-	}
-
-	@Override
-	public void print() {
-		// ignore
-	}
-
-	@Override
-	public void print(String s, Object... aobj) {
-		// ignore
-	}
-
-	@Override
-	public void shutdown() {
-		// nothing to do
-	}
-
-	@Override
-	public void trace(String s, Object... aobj) {
-		// ignore
-	}
-
-	@Override
-	public void warn(String s, Object... aobj) {
-		// ignore
-	}	
 }

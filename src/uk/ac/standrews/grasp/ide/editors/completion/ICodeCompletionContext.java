@@ -1,8 +1,6 @@
 package uk.ac.standrews.grasp.ide.editors.completion;
 
 import grasp.lang.IArchitecture;
-import grasp.lang.ISyntaxTree;
-
 import org.eclipse.core.resources.IFile;
 import org.eclipse.jface.text.IDocument;
 
@@ -29,6 +27,19 @@ public interface ICodeCompletionContext {
 	 * @return Position in the document
 	 */
 	int getOffset();
+	
+	/**
+	 * Get line in the document relative to the cursor position
+	 * @return Line in the document
+	 */
+	int getLine();
+	
+	/**
+	 * Get column relative to the line in which the cursor is
+	 * @return Column relative to cursor position's line
+	 */
+	int getColumn();
+	
 	/**
 	 * Get the word (anything up until invalid identifier character is seen) before the cursor position
 	 * @return Word before cursor position
@@ -49,11 +60,11 @@ public interface ICodeCompletionContext {
 	 * Returns the AST for the document, if it was compiled successfully, or null if it wasn't compiled or there were compilation errors
 	 * @return AST for the document. May be <code>null</code>
 	 */
-	IArchitecture getAst();
+	IArchitecture getModel();
 	
 	/**
-	 * 
-	 * @return
+	 * Returns a grasp source code scanner
+	 * @return Lets the user parse the code chunk by chunk
 	 */
-	ISyntaxTree getSyntaxTree();
+	GraspScanner getCodeScanner();
 }

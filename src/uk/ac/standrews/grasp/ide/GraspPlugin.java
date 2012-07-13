@@ -19,6 +19,8 @@ import org.eclipse.ui.console.MessageConsole;
 import org.eclipse.ui.plugin.AbstractUIPlugin;
 import org.osgi.framework.BundleContext;
 
+import uk.ac.standrews.grasp.ide.model.GraspModel;
+
 /**
  * The activator class controls the plug-in life cycle
  * 
@@ -62,6 +64,7 @@ public class GraspPlugin extends AbstractUIPlugin {
 		plugin = this;		
 		colours = new HashMap<RGB, Color>();
 		architectures.clear();
+		GraspModel.INSTANCE.init();
 	}
 
 	/*
@@ -69,6 +72,7 @@ public class GraspPlugin extends AbstractUIPlugin {
 	 * @see org.eclipse.ui.plugin.AbstractUIPlugin#stop(org.osgi.framework.BundleContext)
 	 */
 	public void stop(BundleContext context) throws Exception {	
+		GraspModel.INSTANCE.dispose();
 		disposeOfColours();
 		plugin = null;
 		super.stop(context);

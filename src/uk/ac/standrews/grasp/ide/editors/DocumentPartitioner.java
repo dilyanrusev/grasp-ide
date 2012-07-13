@@ -13,6 +13,11 @@ import org.eclipse.jface.text.rules.IPartitionTokenScanner;
  */
 class DocumentPartitioner extends FastPartitioner {
 
+	/**
+	 * Creates a a new document partitioner
+	 * @param scanner the scanner this partitioner is supposed to use
+	 * @param legalContentTypes the legal content types of this partitioner
+	 */
 	public DocumentPartitioner(IPartitionTokenScanner scanner, String[] legalContentTypes) {
 		super(scanner, legalContentTypes);
 	}
@@ -52,5 +57,4 @@ class DocumentPartitioner extends FastPartitioner {
 		    System.out.print(buffer);
 		}
 	}
-
 }
