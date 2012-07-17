@@ -1,12 +1,22 @@
 package uk.ac.standrews.grasp.ide.editors;
 
 
+import java.util.ArrayList;
+import java.util.List;
+
+import org.eclipse.core.resources.IFile;
 import org.eclipse.core.resources.IMarker;
+import org.eclipse.core.resources.IResource;
 import org.eclipse.core.resources.IResourceChangeEvent;
 import org.eclipse.core.resources.IResourceChangeListener;
+import org.eclipse.core.resources.IResourceDelta;
+import org.eclipse.core.resources.IResourceDeltaVisitor;
 import org.eclipse.core.resources.ResourcesPlugin;
 import org.eclipse.core.runtime.CoreException;
+import org.eclipse.core.runtime.IPath;
 import org.eclipse.core.runtime.IProgressMonitor;
+import org.eclipse.core.runtime.NullProgressMonitor;
+import org.eclipse.core.runtime.Path;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.widgets.Composite;
@@ -14,11 +24,13 @@ import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.Label;
 import org.eclipse.ui.IEditorInput;
 import org.eclipse.ui.IEditorPart;
+import org.eclipse.ui.IEditorReference;
 import org.eclipse.ui.IEditorSite;
 import org.eclipse.ui.IFileEditorInput;
 import org.eclipse.ui.IWorkbenchPage;
 import org.eclipse.ui.PartInitException;
 import org.eclipse.ui.ide.IDE;
+import org.eclipse.ui.part.EditorPart;
 import org.eclipse.ui.part.FileEditorInput;
 import org.eclipse.ui.part.MultiPageEditorPart;
 
@@ -53,7 +65,7 @@ public class GraspEditor extends MultiPageEditorPart implements IResourceChangeL
 	 */
 	@Override
 	public void init(IEditorSite site, IEditorInput editorInput) throws PartInitException {
-		assertInputIsGraspContent(editorInput);
+		assertInputIsGraspContent(this, editorInput);
 		super.init(site, editorInput);
 		setPartName(((IFileEditorInput)editorInput).getFile().getName());
 	}
@@ -64,13 +76,14 @@ public class GraspEditor extends MultiPageEditorPart implements IResourceChangeL
 	 * @throws PartInitException When the content type of <code>input</code> is not Grasp
 	 * @see {@link org.eclipse.ui.part.MultiPageEditorPart#init(IEditorSite, IEditorInput)}
 	 */
-	static void assertInputIsGraspContent(IEditorInput input) throws PartInitException {
+	static void assertInputIsGraspContent(EditorPart editor, IEditorInput input) throws PartInitException {
 		if (!(input instanceof IFileEditorInput))
 			throw new PartInitException("Input is not a file");
 		IFileEditorInput fileInput = (IFileEditorInput)input;
 		String contentID;
 		try {
-			contentID = fileInput.getFile().getContentDescription().getContentType().getId();
+			IFile file = fileInput.getFile();
+			contentID = file.getContentDescription().getContentType().getId();
 		} catch (CoreException e) {
 			throw new PartInitException("Cannot determine content type for " + input, e);
 		}
@@ -176,7 +189,7 @@ public class GraspEditor extends MultiPageEditorPart implements IResourceChangeL
 	 * Closes all project files on project close.
 	 */
 	@Override
-	public void resourceChanged(final IResourceChangeEvent event){
+	public void resourceChanged(final IResourceChangeEvent event){		
 		if(event.getType() == IResourceChangeEvent.PRE_CLOSE){
 			Display.getDefault().asyncExec(new Runnable(){
 				public void run(){
@@ -189,6 +202,34 @@ public class GraspEditor extends MultiPageEditorPart implements IResourceChangeL
 					}
 				}            
 			});
+		} else if (event.getType() == IResourceChangeEvent.POST_CHANGE) {
+			
+			try {
+				event.getDelta().accept(new IResourceDeltaVisitor() {				
+					@Override
+					public boolean visit(IResourceDelta delta) throws CoreException {
+						if (delta.getKind() == IResourceDelta.REMOVED) {
+							IResource deleted = delta.getResource();
+							for (IWorkbenchPage page: getSite().getWorkbenchWindow().getPages()) {
+								for (IEditorReference editor: page.getEditorReferences()) {
+									if (editor.getId().equals(GraspPlugin.ID_GRASP_EDITOR)
+											&& ((IFileEditorInput)editor.getEditorInput()).getFile().equals(deleted)) {
+										IEditorPart part = editor.getEditor(true);
+										if (part != null) {
+											page.closeEditor(part, false);
+										}
+									}
+								}
+							}
+							return false;
+						} else {
+							return true;
+						}
+					}
+				});
+			} catch (CoreException e) {
+				Log.error(e);
+			}
 		}
 	}	
 }

@@ -1,18 +1,22 @@
 package uk.ac.standrews.grasp.ide.editors.completion;
 
-import java.io.StringReader;
-
 import grasp.lang.IArchitecture;
+import grasp.lang.ISyntaxTree;
+import grasp.lang.Parser;
+
+import java.io.StringReader;
 
 import org.eclipse.core.resources.IFile;
 import org.eclipse.core.runtime.Assert;
 import org.eclipse.jface.text.BadLocationException;
 import org.eclipse.jface.text.IDocument;
 
+import shared.io.ISource;
 import uk.ac.standrews.grasp.ide.GraspPlugin;
 import uk.ac.standrews.grasp.ide.Log;
+import uk.ac.standrews.grasp.ide.builder.GraspStringSource;
+import uk.ac.standrews.grasp.ide.builder.NullLogger;
 import uk.ac.standrews.grasp.ide.editors.TextUtil;
-import uk.ac.standrews.grasp.ide.model.GraspModel;
 
 /**
  * Default implementation of  <code>ICodeCompletionContext</code>
@@ -29,6 +33,7 @@ public class Context implements ICodeCompletionContext {
 	private GraspScanner scanner;
 	private int line;
 	private int column;
+	private ISyntaxTree syntaxTree;
 	
 	@Override
 	public void computeFor(IFile file, IDocument doc, int position) {
@@ -41,6 +46,7 @@ public class Context implements ICodeCompletionContext {
 		this.scanner = null;
 		this.line = -1;
 		this.column = -1;
+		this.syntaxTree = null;
 	}
 
 	@Override
@@ -114,15 +120,21 @@ public class Context implements ICodeCompletionContext {
 
 	@Override
 	public GraspScanner getCodeScanner() {
-		if (scanner == null) {
-			scanner = GraspModel.INSTANCE.getScannerForFile(file);
-			if (scanner == null) {
-				scanner = new GraspScanner();
-				scanner.parse(new StringReader(document.get()));
-				GraspModel.INSTANCE.setScannerForFile(file, scanner);
-			}
+		if (scanner == null) {			
+			scanner = new GraspScanner();
+			scanner.parse(new StringReader(document.get()));			
 		}
 		return scanner;
+	}
+	
+	@Override
+	public ISyntaxTree getSyntaxTree() {
+		if (syntaxTree == null) {			
+			Parser p = new Parser();
+			ISource source = new GraspStringSource("", "", document.get());
+			syntaxTree = p.parse(source, NullLogger.INSTANCE);					
+		}
+		return syntaxTree;
 	}
 
 	@Override

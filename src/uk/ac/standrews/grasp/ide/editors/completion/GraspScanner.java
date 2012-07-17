@@ -35,15 +35,57 @@ public class GraspScanner {
 		}
 	}
 	
+	public IChunk getCurrentChunk() {
+		if (currentChunkIndex >= 0 && currentChunkIndex < chunks.size()) {
+			return chunks.get(currentChunkIndex);
+		} else {
+			return null;
+		}
+	}
+	
 	public IChunk getChunkAtPosition(int line, int column) {
-		for (IChunk chunk: chunks) {
+		return findChunkAtPosition(line, column).getChunk();
+	}
+	
+	private ChunkAtPosition findChunkAtPosition(int line, int column) {
+		for (int i = 0, len = chunks.size(); i < len; i++) {
+			IChunk chunk = chunks.get(i);
 			if (chunk.getLine() == line
 					&& column >= chunk.getColumn() 
 					&& column < chunk.getColumnEnd()) {
-				return chunk;
+				return new ChunkAtPosition(i, chunk);
 			}
 		}
-		return null;
+		return ChunkAtPosition.NOT_FOUND;
+	}
+	
+	public IChunk getChunkBeforePosition(int line, int column) {
+		return findChunkBeforePosition(line, column).getChunk();
+	}
+	
+	private ChunkAtPosition findChunkBeforePosition(int line, int column) {	
+		ChunkAtPosition next = findChunkAfterPosition(line, column);
+		if (next.getIndex() >= 1) {
+			int idx = next.getIndex() - 1;
+			IChunk chunk = chunks.get(idx);
+			return new ChunkAtPosition(idx, chunk);
+		}		
+		return ChunkAtPosition.NOT_FOUND;
+	}
+	
+	public IChunk getChunkAfterPosition(int line, int column) {
+		return findChunkAfterPosition(line, column).getChunk();
+	}
+	
+	private ChunkAtPosition findChunkAfterPosition(int line, int column) {
+		for (int i = 0, len = chunks.size(); i < len; i++) {
+			IChunk chunk = chunks.get(i);
+			if ((chunk.getLine() == line && chunk.getColumn() > column)
+					|| chunk.getLine() > line) {
+				return new ChunkAtPosition(i, chunk);
+			}
+		}
+		return ChunkAtPosition.NOT_FOUND;
 	}
 	
 	public void setCurrentChunk(IChunk chunk) {
@@ -85,5 +127,31 @@ public class GraspScanner {
 	@Override
 	public String toString() {
 		return chunks != null ? chunks.toString() : "<empty GraspScanner>";
+	}
+	
+	
+}
+
+final class ChunkAtPosition {
+	public static final ChunkAtPosition NOT_FOUND = new ChunkAtPosition(-1, null);
+	
+	private final int index;
+	private final IChunk chunk;
+	
+	public ChunkAtPosition(int index, IChunk chunk) {
+		this.index = index;
+		this.chunk = chunk;
+	}		
+	
+	public IChunk getChunk() {
+		return chunk;
+	}
+	
+	public int getIndex() {
+		return index;
+	}
+	
+	public boolean isFound() {
+		return index != -1;
 	}
 }

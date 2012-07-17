@@ -1,6 +1,9 @@
 package uk.ac.standrews.grasp.ide.editors.completion;
 
 import java.io.IOException;
+import java.util.Arrays;
+import java.util.HashSet;
+import java.util.Set;
 
 import org.eclipse.core.runtime.Assert;
 
@@ -20,6 +23,14 @@ class ChunkReader {
 	private int startOffset;
 	private int startColumn;
 	private int line;
+	private static final Set<Character> ONE_SYMBOL_CHUNKS;
+	
+	static {
+		Character[] syms = new Character[] {
+				'(', ')', '@', ';', 
+		};
+		ONE_SYMBOL_CHUNKS = new HashSet<Character>(Arrays.asList(syms));
+	}
 	
 	/**
 	 * Creates a new chunk reader
@@ -53,7 +64,7 @@ class ChunkReader {
 			startOffset = reader.getOffset() - 1;
 			startColumn = reader.getColumn() - 1;
 			// append first non-whitespace character
-			builder.append(ch);
+			builder.append(ch);		
 			
 			// handle declarations
 			if (ch == '#') {
@@ -64,6 +75,11 @@ class ChunkReader {
 			if (ch == '\'' || ch == '"'){
 				return handleString(ch);				
 			}			
+			
+			// hande one-symbol statements
+			if (ONE_SYMBOL_CHUNKS.contains(ch)) {
+				return buildChunkFromBuffer();
+			}
 			
 			return handleCommonCase();
 		} catch (IOException e) {

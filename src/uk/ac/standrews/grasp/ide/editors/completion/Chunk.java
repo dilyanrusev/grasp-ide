@@ -6,6 +6,9 @@ package uk.ac.standrews.grasp.ide.editors.completion;
  *
  */
 class Chunk implements IChunk {
+	public static final IChunk NULL = new Chunk(0, 1, 0, 0, "");
+	
+	
 	// can cache hash code because Chunk is immutable
 	private volatile int hashCode;
 	private final int offset;

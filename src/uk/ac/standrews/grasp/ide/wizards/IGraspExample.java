@@ -11,9 +11,10 @@ package uk.ac.standrews.grasp.ide.wizards;
 public interface IGraspExample {
 	/**
 	 * Retrieve the source code for this example
+	 * @param architectureName Name of the architecture
 	 * @return Example source code
 	 */
-	String getText();
+	String getText(String architectureName);
 	
 	/**
 	 * Retrieve the example name

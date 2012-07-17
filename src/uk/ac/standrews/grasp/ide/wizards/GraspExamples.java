@@ -12,9 +12,12 @@ public enum GraspExamples implements IGraspExample {
 	/**
 	 * WSN Simulator example
 	 */
-	WSN_SIMULATOR("WSN Simulator", "Default Grasp template", WsnSimulatorExample.SOURCE_CODE)
+	EMPTY_FILE("Empty", "Create an empty architecture", SourceCode.EMPTY_ARCHITECTURE)
+	, WSN_SIMULATOR("WSN Simulator", "Introductory example. Demonstrates layers and templates", SourceCode.WSN_SIMULATOR)
 	,;
 
+	static final String ARCH_NAME_PLACEHOLDER = "%ARCH_NAME%";
+	
 	private final String text;
 	private final String description;
 	private final String name;
@@ -32,8 +35,8 @@ public enum GraspExamples implements IGraspExample {
 	}
 	
 	@Override
-	public String getText() {
-		return this.text;
+	public String getText(String architectureName) {
+		return this.text.replace(ARCH_NAME_PLACEHOLDER, architectureName);
 	}
 
 	@Override
@@ -48,12 +51,22 @@ public enum GraspExamples implements IGraspExample {
 }
 
 // Do not pollute the enum definition with the actual source code
-class WsnSimulatorExample {
-	public static final String SOURCE_CODE =
+class SourceCode {
+	public static final String EMPTY_ARCHITECTURE =
+			"architecture "+ GraspExamples.ARCH_NAME_PLACEHOLDER + "\n" +
+			"{\n" +
+			"	system " + GraspExamples.ARCH_NAME_PLACEHOLDER + "System\n" +
+			"	{\n" +
+			"	}\n" +
+			"\n" +
+			"}\n";
+	
+	
+	public static final String WSN_SIMULATOR =
 			"//\n" +
 			"// A simple Grasp architecture specification of a WSN simulator\n" +
 			"//\n" + 
-			"architecture WsnSimulator\n" +
+			"architecture "+ GraspExamples.ARCH_NAME_PLACEHOLDER + "\n" +
 			"{\n" +
 			"	// Rationale descriptors\n" +
 			"	rationale R1() {\n" +

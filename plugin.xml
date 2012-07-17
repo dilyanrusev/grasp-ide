@@ -111,6 +111,15 @@
             name="Grasp Project"
             project="true">
       </wizard>
+      <wizard
+            canFinishEarly="false"
+            category="uk.ac.standrews.grasp.ide.newWizardCategory"
+            class="uk.ac.standrews.grasp.ide.wizards.NewArchitectureWizard"
+            hasPages="true"
+            id="uk.ac.standrews.grasp.ide.wizards.newArchitecture"
+            name="Architecture"
+            project="false">
+      </wizard>
    </extension>
 
 </plugin>

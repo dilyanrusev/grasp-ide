@@ -30,7 +30,7 @@ public class GraspTextEditor extends TextEditor {
 	
 	@Override
 	public void init(IEditorSite site, IEditorInput input) throws PartInitException {		
-		GraspEditor.assertInputIsGraspContent(input);
+		GraspEditor.assertInputIsGraspContent(this, input);
 		super.init(site, input);
 	}
 	

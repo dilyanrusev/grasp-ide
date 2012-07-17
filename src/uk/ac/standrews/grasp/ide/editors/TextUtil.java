@@ -4,6 +4,7 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashSet;
 import java.util.Set;
+import java.util.regex.Pattern;
 
 import org.eclipse.jface.text.rules.EndOfLineRule;
 import org.eclipse.jface.text.rules.IPredicateRule;
@@ -38,6 +39,8 @@ public final class TextUtil {
 	private static final String DECIMAL_DIGIT = "0123456789";
 	private static final String ALPHANUMERIC_CHAR = ALPHA_CHAR + DECIMAL_DIGIT;
 	private static final String IDENTIFIER_CHAR = ALPHANUMERIC_CHAR + "_";
+	private static final Pattern IDENTIFIER_PATTERN = 
+			Pattern.compile("[_a-zA-Z]\\w*");
 	
 	private static final IWhitespaceDetector WHITESPACE_DETECTOR = new WhitespaceDetector();
 	
@@ -106,6 +109,10 @@ public final class TextUtil {
 	
 	public static boolean isIdentifier(char c) {
 		return IDENTIFIER_CHAR.indexOf(c) != -1;
+	}
+	
+	public static boolean isIdentifier(String expression) {
+		return IDENTIFIER_PATTERN.matcher(expression).matches();
 	}
 	
 	/**

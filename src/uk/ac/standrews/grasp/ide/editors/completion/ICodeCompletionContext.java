@@ -1,6 +1,8 @@
 package uk.ac.standrews.grasp.ide.editors.completion;
 
 import grasp.lang.IArchitecture;
+import grasp.lang.ISyntaxTree;
+
 import org.eclipse.core.resources.IFile;
 import org.eclipse.jface.text.IDocument;
 
@@ -67,4 +69,6 @@ public interface ICodeCompletionContext {
 	 * @return Lets the user parse the code chunk by chunk
 	 */
 	GraspScanner getCodeScanner();
+	
+	ISyntaxTree getSyntaxTree();
 }

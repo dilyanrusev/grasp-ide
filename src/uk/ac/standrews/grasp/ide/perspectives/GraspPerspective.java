@@ -7,6 +7,7 @@ import org.eclipse.ui.IPerspectiveFactory;
 import org.eclipse.ui.console.IConsoleConstants;
 
 import uk.ac.standrews.grasp.ide.views.GefView;
+import uk.ac.standrews.grasp.ide.wizards.NewArchitectureWizard;
 import uk.ac.standrews.grasp.ide.wizards.NewProjectWizard;
 
 
@@ -58,8 +59,7 @@ public class GraspPerspective implements IPerspectiveFactory {
 				0.15f,
 				factory.getEditorArea());
 		
-		// TODO: Use Common Navigator Framework
-		topLeft.addView(IPageLayout.ID_RES_NAV);
+		topLeft.addView(IPageLayout.ID_PROJECT_EXPLORER);
 		
 		IFolderLayout topRight = factory.createFolder(
 				"topRight", IPageLayout.RIGHT, 0.85f, factory.getEditorArea());
@@ -83,7 +83,7 @@ public class GraspPerspective implements IPerspectiveFactory {
 
 	private void addNewWizardShortcuts() {		
 		factory.addNewWizardShortcut(NewProjectWizard.ID);
-		// TODO: Add shortcut for new file when it is implemented
+		factory.addNewWizardShortcut(NewArchitectureWizard.ID);
 		
 		factory.addNewWizardShortcut("org.eclipse.ui.wizards.new.folder");//NON-NLS-1
 		factory.addNewWizardShortcut("org.eclipse.ui.wizards.new.file");//NON-NLS-1
@@ -97,8 +97,7 @@ public class GraspPerspective implements IPerspectiveFactory {
 		factory.addShowViewShortcut(IConsoleConstants.ID_CONSOLE_VIEW);
 		factory.addShowViewShortcut(IPageLayout.ID_PROBLEM_VIEW);
 		factory.addFastView(ID_ERROR_LOG_VIEW); 
-		// TODO: Use Common Navigator Framework
-		factory.addShowViewShortcut(IPageLayout.ID_RES_NAV);
+		factory.addShowViewShortcut(IPageLayout.ID_PROJECT_EXPLORER);
 	}
 
 }
