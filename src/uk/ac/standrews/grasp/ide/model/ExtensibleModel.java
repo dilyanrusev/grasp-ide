@@ -12,7 +12,9 @@ public abstract class ExtensibleModel extends BecauseModel implements
 	
 	public ExtensibleModel(IExtensible other, IFirstClass parent) {
 		super((IBecause) other, parent);
-		extendee = (IFirstClass) GraspModel.makeObservable(other.getExtendee(), this);
+		if (other.getExtendee() != null) {
+			extendee = (IFirstClass) GraspModel.INSTANCE.makeObservable(other.getExtendee(), this);
+		}
 	}
 	
 	public ExtensibleModel(ElementType type, IFirstClass parent) {

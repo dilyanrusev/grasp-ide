@@ -13,11 +13,11 @@ import org.eclipse.jface.text.BadLocationException;
 import org.eclipse.jface.text.IDocument;
 
 import shared.io.ISource;
-import uk.ac.standrews.grasp.ide.GraspPlugin;
 import uk.ac.standrews.grasp.ide.Log;
 import uk.ac.standrews.grasp.ide.builder.GraspStringSource;
 import uk.ac.standrews.grasp.ide.builder.NullLogger;
 import uk.ac.standrews.grasp.ide.editors.TextUtil;
+import uk.ac.standrews.grasp.ide.model.GraspModel;
 
 /**
  * Default implementation of  <code>ICodeCompletionContext</code>
@@ -135,7 +135,7 @@ public class Context implements ICodeCompletionContext {
 	@Override
 	public IArchitecture getModel() {
 		Assert.isNotNull(file);
-		return GraspPlugin.getFileArchitecture(file);
+		return GraspModel.INSTANCE.ensureFileStats(file).getLastArchitectureThatCompiled();
 	}
 
 	@Override

@@ -11,9 +11,12 @@ import org.eclipse.jface.text.source.IVerticalRuler;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.ui.IEditorInput;
 import org.eclipse.ui.IEditorSite;
+import org.eclipse.ui.IFileEditorInput;
 import org.eclipse.ui.PartInitException;
 import org.eclipse.ui.editors.text.FileDocumentProvider;
 import org.eclipse.ui.editors.text.TextEditor;
+
+import uk.ac.standrews.grasp.ide.model.GraspModel;
 
 /**
  * Text editor for Grasp code
@@ -30,7 +33,7 @@ public class GraspTextEditor extends TextEditor {
 	
 	@Override
 	public void init(IEditorSite site, IEditorInput input) throws PartInitException {		
-		GraspEditor.assertInputIsGraspContent(this, input);
+		GraspEditor.assertInputIsGraspContent(this, input);		
 		super.init(site, input);
 	}
 	
@@ -53,6 +56,10 @@ public class GraspTextEditor extends TextEditor {
 		ISourceViewer viewer= new GraspSourceViewer(this, parent, ruler, getOverviewRuler(), isOverviewRulerVisible(), styles);
 		// ensure decoration support has been created and configured.
 		getSourceViewerDecorationSupport(viewer);
+		
+		GraspModel.INSTANCE
+			.ensureFileStats(((IFileEditorInput) getEditorInput()).getFile())
+			.setSourceViewer(viewer);
 
 		return viewer;
 	}

@@ -169,7 +169,7 @@ public class NewArchitectureWizardPage extends WizardPage {
 			public void selectionChanged(SelectionChangedEvent event) {
 				IStructuredSelection selection = (IStructuredSelection)event.getSelection();
 				selectedExample = (IGraspExample)selection.getFirstElement();
-				if (labelDescription != null) {
+				if (labelDescription != null && selectedExample != null) {
 					labelDescription.setText(selectedExample.getDescription());
 				}
 			}

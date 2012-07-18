@@ -18,12 +18,14 @@ import grasp.lang.IRationale;
 import grasp.lang.IReason;
 import grasp.lang.IRequirement;
 import grasp.lang.IRequires;
-import grasp.lang.ISyntaxTree;
 import grasp.lang.ISystem;
 import grasp.lang.ITemplate;
 import grasp.lang.Parser;
 
-import java.io.InputStreamReader;
+import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.IOException;
+import java.io.PrintWriter;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -38,24 +40,19 @@ import org.eclipse.core.runtime.Assert;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.content.IContentDescription;
 
-import shared.io.ISource;
 import uk.ac.standrews.grasp.ide.GraspPlugin;
 import uk.ac.standrews.grasp.ide.Log;
-import uk.ac.standrews.grasp.ide.builder.GraspSourceFile;
-import uk.ac.standrews.grasp.ide.builder.NullLogger;
 import uk.ac.standrews.grasp.ide.editors.completion.GraspScanner;
 
 public final class GraspModel {
 	public static final GraspModel INSTANCE = new GraspModel();
 	
 	private IResourceChangeListener resourceChangeListener;
-	private Map<IFile, GraspScanner> scannedFiles;
-	private Map<IFile, ISyntaxTree> parsedFiles;
+	private Map<IFile, GraspFile> fileStats;
 	private IResourceDeltaVisitor visitor;
 	
 	private GraspModel() { 
-		scannedFiles = new HashMap<IFile, GraspScanner>();
-		parsedFiles = new HashMap<IFile, ISyntaxTree>();
+		fileStats = new HashMap<IFile, GraspFile>();
 		resourceChangeListener = new IResourceChangeListener() {			
 			@Override
 			public void resourceChanged(IResourceChangeEvent event) {
@@ -83,17 +80,10 @@ public final class GraspModel {
 						return true;
 					}
 					
-					GraspScanner scanner = new GraspScanner();
-					scanner.parse(new InputStreamReader(file.getContents()));
-					GraspModel.INSTANCE.scannedFiles.put(file, scanner);
-					Parser parser = new Parser();
-					ISource source = new GraspSourceFile(file);
-					ISyntaxTree tree = parser.parse(source, NullLogger.INSTANCE);
-					GraspModel.INSTANCE.parsedFiles.put(file, tree);
+					GraspModel.INSTANCE.ensureFileStats(file).reparse();
 					break;
 				case IResourceDelta.REMOVED:
-					GraspModel.INSTANCE.scannedFiles.remove(file);	
-					GraspModel.INSTANCE.parsedFiles.remove(file);
+					GraspModel.INSTANCE.removeFileStats(file);
 					break;
 				}
 				return true;
@@ -101,21 +91,18 @@ public final class GraspModel {
 		};
 	}
 	
-	public GraspScanner getScannerForFile(IFile file) {
-		return scannedFiles.get(file);
+	public GraspFile ensureFileStats(IFile file) {
+		GraspFile stats = fileStats.get(file);
+		if (stats == null) {
+			stats = new GraspFile(file);
+			fileStats.put(file, stats);
+		}
+		return stats;
 	}
 	
-	public void setScannerForFile(IFile file, GraspScanner scanner) {
-		scannedFiles.put(file, scanner);		
-	}
-	
-	public ISyntaxTree getSyntaxTreeForFile(IFile file) {
-		return parsedFiles.get(file);
-	}
-	
-	public void setFileSyntaxTree(IFile file, ISyntaxTree tree) {
-		parsedFiles.put(file, tree);
-	}
+	private void removeFileStats(IFile file) {
+		fileStats.remove(file);
+	}	
 	
 	public void init() {
 		ResourcesPlugin.getWorkspace().addResourceChangeListener(resourceChangeListener, IResourceChangeEvent.POST_CHANGE);
@@ -123,10 +110,9 @@ public final class GraspModel {
 	
 	public void dispose() {
 		ResourcesPlugin.getWorkspace().removeResourceChangeListener(resourceChangeListener);
-	}
+	}	
 	
-	
-	public static IElement makeObservable(IElement element, IElement parent) {
+	public IElement makeObservable(IElement element, IElement parent) {
 		Assert.isNotNull(element, "element cannot be null");
 		if (ElementModel.class.isInstance(element)) {
 			if (element.getParent() != null && !element.getParent().equals(parent)) {
@@ -147,8 +133,8 @@ public final class GraspModel {
 		if (IRequirement.class.isInstance(element)) 
 			return new RequirementModel((IRequirement) element, (IFirstClass) parent);
 		
-		if (IArchitecture.class.isInstance(element)) 
-			return new ArchitectureModel((IArchitecture) element);
+//		if (IArchitecture.class.isInstance(element)) 
+//			return new ArchitectureModel((IArchitecture) element);
 		
 		if (IQualityAttribute.class.isInstance(element)) 
 			return new QualityAttributeModel((IQualityAttribute) element, (IFirstClass) parent);
@@ -191,8 +177,79 @@ public final class GraspModel {
 		
 		throw new AssertionError("Unrecognized type: " + element.getClass());
 	}
+	
+	private StringBuilder buildDumpIdent(int depth) {
+		StringBuilder indent = new StringBuilder(depth);
+		int num = depth * 3;
+		for (int i = 0; i < num; i++) 
+			indent.append(' ');		
+		return indent;
+	}
 
-	static String graspTokenIdToString(int id) {
+	public String dumpArchitecture(IArchitecture arch) {
+		StringBuilder sb = new StringBuilder();
+		dumpFirstClass(sb, arch, 0);
+		return sb.toString();
+	}
+	
+	public void dumpArchitectureToFile(IArchitecture arch, String filename) {
+		File f = new File(filename);
+		System.out.println(f.getAbsolutePath());
+		if (!f.exists()) {
+			try {
+				f.createNewFile();
+			} catch (IOException e) {
+				// dumping - ignore
+			}
+		}		
+		try {
+			PrintWriter pw = new PrintWriter(f);
+			pw.append(dumpArchitecture(arch));
+			pw.close();
+		} catch (FileNotFoundException e) {
+			// dumping - ignore
+		}		
+	}
+	
+	private void dumpFirstClass(StringBuilder sb, IFirstClass fc, int depth) {
+		StringBuilder indent = buildDumpIdent(depth);
+		
+		for (IAnnotation annotation: fc.getAnnotations()) {			
+			dumpAnnotation(sb, annotation, depth);
+			sb.append(System.getProperty("line.separator"));
+		}
+		
+		sb.append(indent).append(fc.getType().toString());
+		sb.append(' ').append(fc.getReferencingName());
+		
+		for (IFirstClass child: fc.getBody()) {
+			sb.append(System.getProperty("line.separator"));
+			dumpFirstClass(sb, child, depth + 1);
+		}
+	}
+
+	private void dumpAnnotation(StringBuilder sb, IAnnotation anot, int depth) {
+		StringBuilder indent = buildDumpIdent(depth);
+		sb.append(indent);
+		sb.append('@');
+		if (anot.getHandler() != null)
+			sb.append(anot.getHandler());
+		sb.append('(');
+		for (int i = 0; i < anot.getNamedValues().size(); i++) {
+			if (i != 0) {
+				sb.append(", ");
+			}
+			INamedValue nv = anot.getNamedValues().get(i);
+			if (nv.getName() != null) {
+				sb.append(nv.getName());
+				sb.append(" = ");
+			}
+			sb.append(nv.getValue());
+		}
+		sb.append(')');
+	}	
+	
+	public String graspTokenIdToString(int id) {
 		switch (id) {
 		   case Parser.TOKEN_ARCHITECTURE: return "TOKEN_ARCHITECTURE";
 		   case Parser.TOKEN_REQUIREMENT: return "TOKEN_REQUIREMENT";

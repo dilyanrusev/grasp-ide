@@ -1,79 +1,92 @@
 package uk.ac.standrews.grasp.ide.model;
 
-import grasp.lang.Compiler;
 import grasp.lang.IArchitecture;
+import grasp.lang.ISyntaxTree;
+import grasp.lang.Parser;
+
+import java.io.InputStreamReader;
 
 import org.eclipse.core.resources.IFile;
-import org.eclipse.core.runtime.Assert;
+import org.eclipse.core.runtime.CoreException;
+import org.eclipse.jface.text.IDocument;
+import org.eclipse.jface.text.source.ISourceViewer;
 
 import shared.error.IErrorReport;
-import uk.ac.standrews.grasp.ide.builder.NullLogger;
+import shared.io.ISource;
 import uk.ac.standrews.grasp.ide.builder.GraspSourceFile;
-
+import uk.ac.standrews.grasp.ide.builder.NullLogger;
+import uk.ac.standrews.grasp.ide.editors.completion.GraspScanner;
 
 public class GraspFile {
+	private IErrorReport errorReport;
+	private ArchitectureModel architecture;
+	private ArchitectureModel lastArchitectureThatCompiled;
+	private ISourceViewer sourceViewer;
+	private ISyntaxTree syntaxTree;
+	private GraspScanner scanner;
 	private IFile file;
-	private IErrorReport errors;
-	private GraspArchitecture architecture;
 	
 	public GraspFile(IFile file) {
-		Assert.isNotNull(file);
 		this.file = file;
-		this.errors = null;
-		this.architecture = null;
 	}
 	
-	public boolean compile() {
-		Compiler compiler = new Compiler();
-		IArchitecture originalArch = compiler.compile(new GraspSourceFile(file), NullLogger.INSTANCE);
-		if (originalArch != null) {
-			architecture = new GraspArchitecture(originalArch);
+	public void compiled(IArchitecture graph, IErrorReport errorReport) {
+		if (graph != null && !errorReport.isAny()) {
+			architecture = new ArchitectureModel(graph, file);
+			lastArchitectureThatCompiled = architecture;
+		} else {
+			architecture = null;
 		}
-		errors = compiler.getErrors();
-		return originalArch != null && !errors.isAny();
+	}
+	
+	public void reparse() throws CoreException {
+		if (scanner == null) {
+			scanner = new GraspScanner();
+		}
+		scanner.parse(new InputStreamReader(file.getContents()));
+		
+		Parser parser = new Parser();
+		ISource source = new GraspSourceFile(file);
+		syntaxTree = parser.parse(source, NullLogger.INSTANCE);
 	}
 	
 	public IFile getFile() {
 		return file;
 	}
 	
-	public IErrorReport getErrors() {
-		return errors;
+	public IErrorReport getErrorReport() {
+		return errorReport;
 	}
 	
-	public boolean compiledSuccesfully() {
-		return errors != null && !errors.isAny() && architecture != null;
+	public ArchitectureModel getLastArchitectureThatCompiled() {
+		return lastArchitectureThatCompiled;
 	}
 	
-	public GraspArchitecture getArchitecture() {
+	public ArchitectureModel getArchitecture() {
 		return architecture;
 	}
 	
-	@Override
-	public String toString() {
-		return file.toString();
+	public void setSourceViewer(ISourceViewer sourceViewer) {
+		this.sourceViewer = sourceViewer;
 	}
 	
-	@Override
-	public int hashCode() {
-		return file.hashCode();
+	public IDocument getDocument() {
+		return sourceViewer != null ? sourceViewer.getDocument() : null;
 	}
-	
-	@Override
-	public boolean equals(Object obj) {
-		if (obj == this) return true;
-		if (!(obj instanceof GraspFile)) return false;
-		GraspFile other = (GraspFile)obj;
-		return file.equals(other.file);
-	}
-}
 
-class GraspArchitecture {
-	public GraspArchitecture() {
-		
+	public ISyntaxTree getSyntaxTree() {
+		return syntaxTree;
 	}
-	
-	public GraspArchitecture(IArchitecture other) {
-		
+
+	public void setSyntaxTree(ISyntaxTree syntaxTree) {
+		this.syntaxTree = syntaxTree;
+	}
+
+	public GraspScanner getScanner() {
+		return scanner;
+	}
+
+	public void setScanner(GraspScanner scanner) {
+		this.scanner = scanner;
 	}
 }

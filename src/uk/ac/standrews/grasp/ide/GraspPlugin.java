@@ -1,12 +1,8 @@
 package uk.ac.standrews.grasp.ide;
 
-import grasp.lang.IArchitecture;
-
-import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 
-import org.eclipse.core.resources.IFile;
 import org.eclipse.core.runtime.Assert;
 import org.eclipse.jface.resource.ImageDescriptor;
 import org.eclipse.swt.graphics.Color;
@@ -43,11 +39,8 @@ public class GraspPlugin extends AbstractUIPlugin {
 	
 	// The shared instance
 	private static GraspPlugin plugin;
-	private static Map<IFile, IArchitecture> architectures = 
-			Collections.synchronizedMap(new HashMap<IFile, IArchitecture>());
 	
-	private Map<RGB, Color> colours;
-	
+	private Map<RGB, Color> colours;	
 	
 	/**
 	 * The constructor
@@ -63,7 +56,6 @@ public class GraspPlugin extends AbstractUIPlugin {
 		super.start(context);
 		plugin = this;		
 		colours = new HashMap<RGB, Color>();
-		architectures.clear();
 		GraspModel.INSTANCE.init();
 	}
 
@@ -98,24 +90,6 @@ public class GraspPlugin extends AbstractUIPlugin {
 	public static ImageDescriptor getImageDescriptor(String path) {
 		return imageDescriptorFromPlugin(PLUGIN_ID, path);
 	}	
-	
-	/**
-	 * Retrieve the compiled architecture for a file
-	 * @param file File whose architecture is requested
-	 * @return Compiled architecture for the file or null
-	 */
-	public static IArchitecture getFileArchitecture(IFile file) {
-		return file != null ? architectures.get(file) : null;
-	}
-	
-	/**
-	 * Associate an architecture with a file
-	 * @param file File that was compiled
-	 * @param architecture AST of the file
-	 */
-	public static void setFileArchitecture(IFile file, IArchitecture architecture) {
-		architectures.put(file, architecture);
-	}
 	
 	/**
 	 * Get or create a console by name

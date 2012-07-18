@@ -13,7 +13,7 @@ public class QualityAttributeModel extends FirstClassModel implements
 	public QualityAttributeModel(IQualityAttribute other, IFirstClass parent) {
 		super(other, parent);
 		for (IFirstClass child: other.getSupports()) {
-			IFirstClass observable = (IFirstClass) GraspModel.makeObservable(child, this);
+			IFirstClass observable = (IFirstClass) GraspModel.INSTANCE.makeObservable(child, this);
 			supports.add(observable);
 		}
 	}

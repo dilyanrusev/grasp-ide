@@ -21,11 +21,11 @@ public abstract class FirstClassModel extends ElementModel implements IFirstClas
 	public FirstClassModel(IFirstClass other, IFirstClass parent) {
 		super(other, parent);
 		for (IAnnotation annotation: other.getAnnotations()) {
-			IAnnotation observable = new AnnotationModel(annotation);
+			IAnnotation observable = new AnnotationModel(annotation, this);
 			annotations.add(observable);
 		}
 		for (IFirstClass child: other.getBody()) {
-			IFirstClass observable = (IFirstClass)GraspModel.makeObservable(child, this);
+			IFirstClass observable = (IFirstClass)GraspModel.INSTANCE.makeObservable(child, this);
 			addChild(observable, false);
 		}
 	}
@@ -74,5 +74,4 @@ public abstract class FirstClassModel extends ElementModel implements IFirstClas
 			child.validate(ctx);
 		}
 	}
-
 }

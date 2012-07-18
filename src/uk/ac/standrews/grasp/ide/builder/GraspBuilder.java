@@ -37,6 +37,8 @@ import shared.xml.DomXmlWriter;
 import shared.xml.IXmlWriter;
 import uk.ac.standrews.grasp.ide.GraspPlugin;
 import uk.ac.standrews.grasp.ide.Log;
+import uk.ac.standrews.grasp.ide.model.ArchitectureModel;
+import uk.ac.standrews.grasp.ide.model.GraspModel;
 
 /**
  * Incremental build for Grasp
@@ -83,14 +85,15 @@ public class GraspBuilder extends IncrementalProjectBuilder  {
 		try {		
 			IArchitecture graph = compiler.compile(source, logger);
 			progress.worked(1);
-			GraspPlugin.setFileArchitecture(file, graph);
+			
+			GraspModel.INSTANCE.ensureFileStats(file).compiled(graph, compiler.getErrors());
 			
 			IErrorReport errorReport = compiler.getErrors();
 			for (IError error: errorReport.getErrors()) {
 				createProblemMarker(file, error);
 			}
 			
-			if (!errorReport.isAny() && graph != null && buildXml) {
+			if (!errorReport.isAny() && graph != null && buildXml) {				
 				progress.setTaskName("Building xml for " + file);
 				IProject project = file.getProject();
 				if (project == null) {

@@ -48,5 +48,4 @@ public class AnnotationModel extends ElementModel implements IAnnotation {
 			child.validate(ctx);
 		}
 	}
-
 }

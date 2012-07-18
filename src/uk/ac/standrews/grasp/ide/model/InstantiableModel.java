@@ -20,7 +20,7 @@ public abstract class InstantiableModel extends BecauseModel implements
 			this.base = new TemplateModel(other.getBase(), (IFirstClass) other.getBase().getParent());
 		}
 		for (IFirstClass argument: other.getArguments()) {
-			IFirstClass observable = (IFirstClass) GraspModel.makeObservable(argument, this);
+			IFirstClass observable = (IFirstClass) GraspModel.INSTANCE.makeObservable(argument, this);
 			arguments.add(observable);
 		}
 	}

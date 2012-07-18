@@ -19,11 +19,11 @@ public class ReasonModel extends FirstClassModel implements IReason {
 	public ReasonModel(IReason other, IFirstClass parent) {
 		super(other, parent);
 		for (IFirstClass rule: other.getInhibits()) {
-			IFirstClass observable = (IFirstClass) GraspModel.makeObservable(rule, this);
+			IFirstClass observable = (IFirstClass) GraspModel.INSTANCE.makeObservable(rule, this);
 			inhibits.add(observable);
 		}
 		for (IFirstClass rule: other.getSupports()) {
-			IFirstClass observable = (IFirstClass) GraspModel.makeObservable(rule, this);
+			IFirstClass observable = (IFirstClass) GraspModel.INSTANCE.makeObservable(rule, this);
 			supports.add(observable);
 		}
 		if (other.getExpression() != null) {

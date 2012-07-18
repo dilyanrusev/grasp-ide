@@ -28,6 +28,7 @@ public abstract class ElementModel implements IElement, IObservable {
 	private String alias;
 	private String referencingName;
 	private String qualifiedName;
+	private ArchitectureModel architecture;
 	
 	public ElementModel(ElementType type, IElement parent) {
 		this.type = type;
@@ -175,6 +176,25 @@ public abstract class ElementModel implements IElement, IObservable {
 	@Override
 	public void serialize(IXmlWriter ixmlwriter, Node node) {
 		// no serialisation
+	}
+	
+	public ArchitectureModel getArchitecture() {
+		if (type == ElementType.ARCHITECTURE) {
+			return (ArchitectureModel) this;
+		}
+		if (architecture == null) {
+			IElement arch = parent;
+			while (arch.getType() != ElementType.ARCHITECTURE) {
+				arch = arch.getParent();
+			}
+			architecture = (ArchitectureModel) arch;
+		}
+		return architecture;
+	}
+	
+	@Override
+	public String toString() {
+		return new StringBuilder().append('[').append(type).append("] ").append(qualifiedName).toString();
 	}
 
 }
