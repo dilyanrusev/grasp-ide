@@ -22,7 +22,7 @@ public interface IObservable {
 	
 	/**
 	 * Notify all registered listeners that this object has been modified
-	 * @param propertyName Optional name of the property that change the object's state
+	 * @param propertyNames Optional list of the properties that changed the object's state
 	 */
-	void fireElementChanged(String propertyName);
+	void fireElementChanged(String... propertyNames);
 }

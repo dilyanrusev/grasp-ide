@@ -1,7 +1,22 @@
 package uk.ac.standrews.grasp.ide.model;
 
+import grasp.lang.IAnnotation;
+import grasp.lang.IArchitecture;
+import grasp.lang.ICheck;
 import grasp.lang.IElement;
+import grasp.lang.IExpression;
+import grasp.lang.IFirstClass;
+import grasp.lang.ILayer;
+import grasp.lang.ILink;
+import grasp.lang.INamedValue;
+import grasp.lang.IProperty;
+import grasp.lang.IQualityAttribute;
+import grasp.lang.IRationale;
+import grasp.lang.IReason;
+import grasp.lang.IRequirement;
 import grasp.lang.ISyntaxTree;
+import grasp.lang.ISystem;
+import grasp.lang.ITemplate;
 import grasp.lang.Parser;
 
 import java.io.InputStreamReader;
@@ -90,11 +105,6 @@ public final class GraspModel {
 		scannedFiles.put(file, scanner);		
 	}
 	
-	public static IElement getObservableFor(IElement graspElement) {
-		// TODO: implement		
-		return graspElement;
-	}
-	
 	public ISyntaxTree getSyntaxTreeForFile(IFile file) {
 		return parsedFiles.get(file);
 	}
@@ -109,6 +119,61 @@ public final class GraspModel {
 	
 	public void dispose() {
 		ResourcesPlugin.getWorkspace().removeResourceChangeListener(resourceChangeListener);
+	}
+	
+	
+	public static IElement makeObservable(IElement element, IElement parent) {
+		Assert.isNotNull(element, "element cannot be null");
+		if (ElementModel.class.isInstance(element)) {
+			if (element.getParent() != null && !element.getParent().equals(parent)) {
+				element.setParent(parent);
+			}
+			return element;
+		}
+		
+		if (INamedValue.class.isInstance(element)) 
+			return new NamedValueModel((INamedValue) element, parent);
+		
+		if (IAnnotation.class.isInstance(element)) 
+			return new AnnotationModel((IAnnotation) element, parent);
+		
+		if (IExpression.class.isInstance(element)) 
+			return new ExpressionModel((IExpression) element, parent);
+		
+		if (IRequirement.class.isInstance(element)) 
+			return new RequirementModel((IRequirement) element, (IFirstClass) parent);
+		
+		if (IArchitecture.class.isInstance(element)) 
+			return new ArchitectureModel((IArchitecture) element);
+		
+		if (IQualityAttribute.class.isInstance(element)) 
+			return new QualityAttributeModel((IQualityAttribute) element, (IFirstClass) parent);
+		
+		if (IReason.class.isInstance(element)) 
+			return new ReasonModel((IReason) element, (IFirstClass) parent);
+		
+		if (ILayer.class.isInstance(element))
+			return new LayerModel((ILayer) element, (IFirstClass) parent);
+		
+		if (ILink.class.isInstance(element))
+			return new LinkModel((ILink) element, (IFirstClass) parent);
+		
+		if (ISystem.class.isInstance(element))
+			return new SystemModel((ISystem) element, (IFirstClass) parent);
+		
+		if (ICheck.class.isInstance(element)) 
+			return new CheckModel((ICheck) element, (IFirstClass) parent);
+		
+		if (IProperty.class.isInstance(element))
+			return new PropertyModel((IProperty) element, (IFirstClass) parent);
+		
+		if (IRationale.class.isInstance(element)) 
+			return new RationaleModel((IRationale) element, (IFirstClass) parent);
+		
+		if (ITemplate.class.isInstance(element))
+			return new TemplateModel((ITemplate) element, (IFirstClass) parent);
+		
+		throw new AssertionError("Unrecognized type: " + element.getClass());
 	}
 
 	

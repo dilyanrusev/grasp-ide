@@ -10,17 +10,17 @@ import org.eclipse.core.runtime.Assert;
  */
 public class ElementChangedEvent {
 	private final IObservable source;
-	private final String propertyName;
+	private final String[] propertyNames;
 	
 	/**
 	 * Constructs a new state change event data
 	 * @param source Object that changed state. May not be <code>null</code>
-	 * @param propertyName Optional name of the property that provoked the change
+	 * @param propertyNames Optional list of the property names that provoked the change
 	 */
-	public ElementChangedEvent(IObservable source, String propertyName) {
+	public ElementChangedEvent(IObservable source, String... propertyNames) {
 		Assert.isNotNull(source);
 		this.source = source;
-		this.propertyName = propertyName;
+		this.propertyNames = propertyNames;
 	}
 	
 	/**
@@ -32,10 +32,10 @@ public class ElementChangedEvent {
 	}
 	
 	/**
-	 * Retrieve the name of the property that changed the state of the object
-	 * @return Name of a property
+	 * Retrieve the list of properties that changed the state
+	 * @return List of properties that change this object's state
 	 */
-	public final String getPropertyName() {
-		return propertyName;
+	public final String[] getPropertyName() {
+		return propertyNames.clone();
 	}
 }
