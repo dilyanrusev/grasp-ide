@@ -1,6 +1,7 @@
 package uk.ac.standrews.grasp.ide.editors.completion;
 
 import grasp.lang.IArchitecture;
+import grasp.lang.ISyntaxNode;
 import grasp.lang.ISyntaxTree;
 import grasp.lang.Parser;
 
@@ -111,6 +112,25 @@ public class Context implements ICodeCompletionContext {
 		}
 		return wordAtCursor;
 	}		
+	
+	@Override
+	public ISyntaxNode getNodeAtCursorPosition() {
+		return getNodeAtPosition(this.getSyntaxTree().getRoot(), line, column);
+	}
+	
+	private ISyntaxNode getNodeAtPosition(ISyntaxNode start, int line, int column) {
+		if (start == null) return null;
+		if (start.getLine() == line
+				&& column >= start.getStartPosition() 
+				&& column < start.getEndPosition()) {
+			return start;
+		}
+		for (ISyntaxNode child: start.getChildren()) {
+			ISyntaxNode found = getNodeAtPosition(child, line, column);
+			if (found != null) return found;
+		}
+		return null;
+	}	
 	
 	@Override
 	public IArchitecture getModel() {

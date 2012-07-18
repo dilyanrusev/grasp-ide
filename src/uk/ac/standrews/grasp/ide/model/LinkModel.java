@@ -14,7 +14,12 @@ public class LinkModel extends BecauseModel implements ILink {
 
     public LinkModel(ILink other, IFirstClass parent) {
     	super(other, parent);
-    	// TODO: copy consumer and provider
+    	if (other.getConsumer() != null) {
+    		this.consumer = new RequiresModel(other.getConsumer(), this);
+    	}
+    	if (other.getProvider() != null) {
+    		this.provider = new ProvidesModel(other.getProvider(), this);
+    	}
     }
     
     public LinkModel(IFirstClass parent) {

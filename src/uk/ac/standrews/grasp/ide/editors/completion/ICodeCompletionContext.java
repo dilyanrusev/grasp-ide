@@ -1,6 +1,7 @@
 package uk.ac.standrews.grasp.ide.editors.completion;
 
 import grasp.lang.IArchitecture;
+import grasp.lang.ISyntaxNode;
 import grasp.lang.ISyntaxTree;
 
 import org.eclipse.core.resources.IFile;
@@ -71,4 +72,5 @@ public interface ICodeCompletionContext {
 	GraspScanner getCodeScanner();
 	
 	ISyntaxTree getSyntaxTree();
+	ISyntaxNode getNodeAtCursorPosition();
 }
