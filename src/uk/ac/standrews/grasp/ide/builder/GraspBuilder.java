@@ -37,7 +37,6 @@ import shared.xml.DomXmlWriter;
 import shared.xml.IXmlWriter;
 import uk.ac.standrews.grasp.ide.GraspPlugin;
 import uk.ac.standrews.grasp.ide.Log;
-import uk.ac.standrews.grasp.ide.model.ArchitectureModel;
 import uk.ac.standrews.grasp.ide.model.GraspModel;
 
 /**
@@ -87,6 +86,7 @@ public class GraspBuilder extends IncrementalProjectBuilder  {
 			progress.worked(1);
 			
 			GraspModel.INSTANCE.ensureFileStats(file).compiled(graph, compiler.getErrors());
+			System.out.println(GraspModel.INSTANCE.dumpArchitecture(graph));
 			
 			IErrorReport errorReport = compiler.getErrors();
 			for (IError error: errorReport.getErrors()) {
@@ -172,9 +172,11 @@ public class GraspBuilder extends IncrementalProjectBuilder  {
 			
 			int linePos = getLinePositionInFile(file, lineNumber);
 			if (linePos != -1) {								
-				marker.setAttribute(IMarker.CHAR_START, linePos + error.getColumn() + 1);
-				marker.setAttribute(IMarker.CHAR_END, linePos + error.getColumnEnd() + 1);	
-				marker.setAttribute(IMarker.LOCATION, String.format("line %d [%d:%d]", lineNumber, error.getColumn(), error.getColumnEnd()));
+				int errorColumn = error.getColumn() + 1;
+				int errorColumnEnd = error.getColumnEnd() + 2;
+				marker.setAttribute(IMarker.CHAR_START, linePos + errorColumn);
+				marker.setAttribute(IMarker.CHAR_END, linePos + errorColumnEnd);	
+				marker.setAttribute(IMarker.LOCATION, String.format("line %d [%d:%d]", lineNumber, errorColumn, errorColumnEnd));
 			}
 			
 		} catch (CoreException e) {

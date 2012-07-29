@@ -6,6 +6,7 @@ import grasp.lang.ICheck;
 import grasp.lang.IComponent;
 import grasp.lang.IConnector;
 import grasp.lang.IElement;
+import grasp.lang.IElement.ElementType;
 import grasp.lang.IExpression;
 import grasp.lang.IFirstClass;
 import grasp.lang.ILayer;
@@ -18,8 +19,10 @@ import grasp.lang.IRationale;
 import grasp.lang.IReason;
 import grasp.lang.IRequirement;
 import grasp.lang.IRequires;
+import grasp.lang.ISyntaxNode;
 import grasp.lang.ISystem;
 import grasp.lang.ITemplate;
+import grasp.lang.IValidationContext;
 import grasp.lang.Parser;
 
 import java.io.File;
@@ -42,7 +45,6 @@ import org.eclipse.core.runtime.content.IContentDescription;
 
 import uk.ac.standrews.grasp.ide.GraspPlugin;
 import uk.ac.standrews.grasp.ide.Log;
-import uk.ac.standrews.grasp.ide.editors.completion.GraspScanner;
 
 public final class GraspModel {
 	public static final GraspModel INSTANCE = new GraspModel();
@@ -178,6 +180,51 @@ public final class GraspModel {
 		throw new AssertionError("Unrecognized type: " + element.getClass());
 	}
 	
+	public ElementModel createElementByType(ElementType type, FirstClassModel parent) {
+		switch (type) {
+		case ANNOTATION:
+			return new AnnotationModel(parent);
+		case ARCHITECTURE:
+			Log.info("GraspModel.createElementByType: cannot create architecture");
+			return null;
+		case CHECK:
+			return new CheckModel(parent);
+		case COMPONENT:
+			return new ComponentModel(parent);
+		case CONNECTOR:
+			return new ConnectorModel(parent);
+		case EXPRESSION:
+			return new ExpressionModel(parent);
+		case LAYER:
+			return new LayerModel(parent);
+		case LINK:
+			return new LinkModel(parent);
+		case NAMEDVALUE:
+			return new NamedValueModel(parent);
+		case PROPERTY:
+			return new PropertyModel(parent);
+		case PROVIDES:
+			return new ProvidesModel(parent);
+		case QUALITY_ATTRIBUTE:
+			return new QualityAttributeModel(parent);
+		case RATIONALE:
+			return new RationaleModel(parent);
+		case REASON:
+			return new ReasonModel(parent);
+		case REQUIREMENT:
+			return new RequirementModel(parent);
+		case REQUIRES:
+			return new RequiresModel(parent);
+		case SYSTEM:
+			return new SystemModel(parent);
+		case TEMPLATE:
+			return new TemplateModel(parent);
+		default:
+			Assert.isTrue(false, "Unknown ElmentType: " + type);
+			return null;
+		}
+	}
+	
 	private StringBuilder buildDumpIdent(int depth) {
 		StringBuilder indent = new StringBuilder(depth);
 		int num = depth * 3;
@@ -188,7 +235,11 @@ public final class GraspModel {
 
 	public String dumpArchitecture(IArchitecture arch) {
 		StringBuilder sb = new StringBuilder();
-		dumpFirstClass(sb, arch, 0);
+		if (arch != null) {
+			dumpFirstClass(sb, arch, 0);
+		} else {
+			sb.append("<null>");
+		}
 		return sb.toString();
 	}
 	
@@ -211,6 +262,66 @@ public final class GraspModel {
 		}		
 	}
 	
+	private void dumpElement(StringBuilder sb, IElement element, StringBuilder indent, int depth) {
+		switch (element.getType()) {
+		case REASON:
+			IReason r = (IReason) element;
+			sb.append(indent).append(element.getType().toString());
+			sb.append(' ').append("supports: ").append(r.getSupports()).append("; inhibits: ").append(r.getInhibits());
+			if (r.getExpression() != null) {
+				sb.append("; expression: ");
+				sb.append(r.getExpression().evaluate(new IValidationContext() {}));
+			}
+			break;
+		case TEMPLATE:
+			ITemplate t = (ITemplate) element;
+			sb.append(indent).append(element.getType().toString());
+			sb.append(' ').append(element.getReferencingName());
+			sb.append("; parameters=").append(t.getParameters());
+			sb.append("; payload={");
+			dumpSyntaxNode(sb, t.getPayload(), depth + 1);
+			sb.append(System.getProperty("line.separator")).append(indent).append('}');
+			break;
+		case LINK:
+			ILink l = (ILink) element;
+			sb.append(indent).append(element.getType().toString());
+			if (l.getName() != null && l.getName().length() > 0) {
+				sb.append(' ').append(l.getName());
+			}
+			sb.append(" provider=").append(l.getProvider().getQualifiedName());
+			sb.append("; consumer=").append(l.getConsumer().getQualifiedName());
+			break;
+		case REQUIREMENT:
+			IRequirement req = (IRequirement) element;
+			sb.append(indent).append(element.getType().toString());
+			sb.append(' ').append(element.getReferencingName());
+			sb.append(' ').append(req.getValue());
+			break;
+		case QUALITY_ATTRIBUTE:
+			IQualityAttribute qa = (IQualityAttribute) element;
+			sb.append(indent).append(element.getType().toString());
+			sb.append(' ').append(element.getReferencingName());
+			for (IFirstClass child: qa.getSupports()) {
+				dumpElement(sb, child, indent, depth);
+				sb.append(' ');
+			}
+			break;
+		default:
+			sb.append(indent).append(element.getType().toString());
+			sb.append(' ').append(element.getReferencingName());
+		}
+	}
+	
+	private void dumpSyntaxNode(StringBuilder sb, ISyntaxNode current, int depth) {
+		sb.append(System.getProperty("line.separator"));
+		sb.append(buildDumpIdent(depth));
+		//sb.append(graspTokenIdToString(current.getTokenId()));
+		sb.append(' ').append(current.getTokenText());
+		for (ISyntaxNode child: current.getChildren()) {			
+			dumpSyntaxNode(sb, child, depth + 1);
+		}
+	}
+	
 	private void dumpFirstClass(StringBuilder sb, IFirstClass fc, int depth) {
 		StringBuilder indent = buildDumpIdent(depth);
 		
@@ -219,8 +330,7 @@ public final class GraspModel {
 			sb.append(System.getProperty("line.separator"));
 		}
 		
-		sb.append(indent).append(fc.getType().toString());
-		sb.append(' ').append(fc.getReferencingName());
+		dumpElement(sb, fc, indent, depth);
 		
 		for (IFirstClass child: fc.getBody()) {
 			sb.append(System.getProperty("line.separator"));
@@ -320,6 +430,8 @@ public final class GraspModel {
 		   case Parser.TOKEN_BOOLEAN : return "TOKEN_BOOLEAN";
 		   case Parser.TOKEN_STRING : return "TOKEN_STRING";
 		   case Parser.TOKEN_DECL : return "TOKEN_DECL";
+		   // deduced through debugging
+		   case 42: return "TOKEN_IDENTIFIER";
 		   default:
 			   return "unknown token id ("+id+")";
 		}

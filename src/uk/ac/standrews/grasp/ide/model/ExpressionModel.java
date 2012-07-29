@@ -11,6 +11,12 @@ public class ExpressionModel extends ElementModel implements IExpression {
 		super(ElementType.EXPRESSION, parent);
 	}
 	
+	public static ExpressionModel createLiteral(IElement parent, Object value) {
+		ExpressionModel literal = new ExpressionModel(parent);
+		literal.value = value;
+		return literal;
+	}
+	
 	public ExpressionModel(IExpression other, IElement parent) {
 		super(other, parent);
 		this.value = other.getValue();

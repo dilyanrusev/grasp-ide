@@ -4,9 +4,10 @@ import grasp.lang.IAnnotation;
 import grasp.lang.IElement;
 import grasp.lang.IFirstClass;
 import grasp.lang.IValidationContext;
-import grasp.util.misc.IMultiMap;
 
+import java.util.ArrayList;
 import java.util.Collection;
+import java.util.List;
 
 import org.eclipse.core.runtime.Assert;
 
@@ -15,8 +16,8 @@ public abstract class FirstClassModel extends ElementModel implements IFirstClas
 	
 	private final Collection<IAnnotation> annotations = 
 			new ObservableList<IAnnotation>();
-	private final IMultiMap<ElementType, IFirstClass> body = 
-			new ObservableMultiHaspMap<IElement.ElementType, IFirstClass>();
+	private final List<IFirstClass> body = 
+			new ObservableList<IFirstClass>();
 	
 	public FirstClassModel(IFirstClass other, IFirstClass parent) {
 		super(other, parent);
@@ -44,7 +45,7 @@ public abstract class FirstClassModel extends ElementModel implements IFirstClas
 				&& child.getParent() == this
 				&& child.getReferencingName() != null);
 		symPut(child.getReferencingName(), child);
-		body.put(child.getType(), child);
+		body.add(child);
 		if (fireEvent) {
 			fireElementChanged(PROPERTY_CHILD);
 		}
@@ -57,12 +58,19 @@ public abstract class FirstClassModel extends ElementModel implements IFirstClas
 
 	@Override
 	public Collection<IFirstClass> getBody() {
-		return body.values();
+		return body;
 	}
 
 	@Override
 	public Collection<IFirstClass> getBodyByType(ElementType elementtype) {
-		return body.getAll(elementtype);
+		// do not need to observe
+		Collection<IFirstClass> ofType = new ArrayList<IFirstClass>();
+		for (IFirstClass child: body) {
+			if (child.getType() == elementtype) {
+				ofType.add(child);
+			}
+		}
+		return ofType;
 	}
 	
 	@Override
@@ -70,7 +78,7 @@ public abstract class FirstClassModel extends ElementModel implements IFirstClas
 		for (IAnnotation annotation: annotations) {
 			annotation.validate(ctx);
 		}
-		for (IFirstClass child: body.values()) {
+		for (IFirstClass child: body) {
 			child.validate(ctx);
 		}
 	}

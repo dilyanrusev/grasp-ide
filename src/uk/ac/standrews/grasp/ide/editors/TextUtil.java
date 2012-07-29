@@ -112,7 +112,7 @@ public final class TextUtil {
 	}
 	
 	public static boolean isIdentifier(String expression) {
-		return IDENTIFIER_PATTERN.matcher(expression).matches();
+		return expression != null && IDENTIFIER_PATTERN.matcher(expression).matches();
 	}
 	
 	/**

@@ -53,7 +53,7 @@ public abstract class ElementModel implements IElement, IObservable {
 	private static String buildName(ElementModel model) {
 		StringBuilder sb = new StringBuilder();
 		sb.append(model.type.name());
-		sb.append('_');
+		sb.append('@');
 		sb.append(model.getInstanceId());
 		return sb.toString();
 	}
@@ -140,6 +140,12 @@ public abstract class ElementModel implements IElement, IObservable {
 		this.name = name;
 		rebuildNames();
 		fireElementChanged(PROPERTY_NAME, PROPERTY_REFERENCING_NAME);
+	}
+	
+	void setReferencingName(String name) {
+		this.referencingName = name;
+		rebuildNames();
+		fireElementChanged(PROPERTY_REFERENCING_NAME);
 	}
 
 	@Override
