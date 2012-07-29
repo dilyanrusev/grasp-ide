@@ -5,6 +5,7 @@ import grasp.lang.IElement.ElementType;
 import grasp.lang.IElement.XmlSchema;
 import grasp.lang.IFirstClass;
 import grasp.lang.ILayer;
+import grasp.lang.ILink;
 import grasp.lang.IProvides;
 import grasp.lang.IRationale;
 import grasp.lang.IRequires;
@@ -162,9 +163,15 @@ public class XmlModelReader {
 		case NAMEDVALUE:
 			return null; // handled by annotations
 		case PROPERTY:
-			break;
+		{
+			PropertyModel prop = new PropertyModel(parent);
+			return readEvaluable(node, parent, prop) ? prop : null;
+		}
 		case PROVIDES:
-			break;
+		{
+			ProvidesModel provides = new ProvidesModel(parent);
+			return readInterface(node, parent, provides) ? provides : null;
+		}
 		case QUALITY_ATTRIBUTE:
 			break;
 		case RATIONALE:
@@ -174,7 +181,10 @@ public class XmlModelReader {
 		case REQUIREMENT:
 			break;
 		case REQUIRES:
-			break;
+		{
+			RequiresModel requires = new RequiresModel(parent);
+			return readInterface(node, parent, requires) ? requires : null;
+		}
 		case SYSTEM:
 			break;
 		case TEMPLATE:
@@ -183,6 +193,37 @@ public class XmlModelReader {
 			Assert.isTrue(false, "Unknown ElmentType: " + type);
 			return null;
 		}
+	}
+	
+	private boolean readInterface(Element node, FirstClassModel parent, InterfaceModel model) {
+		if (!readBecause(node, parent, model)) {
+			return false;
+		}
+		Integer maxDeg = parseIntAttribute(node, XmlSchema.AT_MAXDEG.tag());
+		if (maxDeg == null) {
+			return false;
+		}
+		model.setMaxdeg(maxDeg);
+		Element connectionsTag = findChildByName(node, XmlSchema.CONNECTIONS.tag());
+		if (connectionsTag == null) {
+			return false;
+		}
+		NodeList linkRefTags = connectionsTag.getChildNodes();
+		List<String> linkQualifiedNames = new ArrayList<String>();
+		for (int i = 0, len = linkRefTags.getLength(); i < len; i++) {
+			Node current = linkRefTags.item(i);
+			if (current.getNodeType() == Node.ELEMENT_NODE 
+					&& current.getNodeName().equalsIgnoreCase(XmlSchema.LINK_REF.tag())) {
+				Element linkRef = (Element) current;
+				String linkQualifiedName = linkRef.getAttribute(XmlSchema.AT_REFERENCE.tag());
+				linkQualifiedNames.add(linkQualifiedName);
+			}
+		}
+		if (linkQualifiedNames.size() > 0) {
+			documentLoadedTasks.add(new AddInterfaceConnectionsTask(model, linkQualifiedNames));
+		}
+		
+		return true;
 	}
 	
 	private LinkModel readLink(Element node, FirstClassModel parent) {
@@ -261,18 +302,15 @@ public class XmlModelReader {
 				continue;
 			}
 			Element argumentElem = (Element) argumentTag;
-			String ordinalTxt = argumentElem.getAttribute(XmlSchema.AT_ORDINAL.tag());
 			String argumentQualifiedName = argumentElem.getAttribute(XmlSchema.AT_REFERENCE.tag());
-			if (ordinalTxt == null || argumentQualifiedName == null) {
+			if (argumentQualifiedName == null) {
 				continue;
 			}
-			int ordinal;
-			try {
-				ordinal = Integer.parseInt(ordinalTxt, 10);
-			} catch (NumberFormatException e) {
-				Log.error("XmlModelReader.readInstantiable - cannot convert parameter ordinal", e);
+			Integer ordinalTest = parseIntAttribute(argumentElem, XmlSchema.AT_ORDINAL.tag());
+			if (ordinalTest == null) {
 				continue;
 			}
+			int ordinal = ordinalTest;
 			ordinal--; // saved ordinals start from 1
 			if (ordinal >= 0) {
 				parameters.add(new ParameterReferenceInfo(ordinal, argumentQualifiedName));
@@ -344,6 +382,7 @@ public class XmlModelReader {
 		}
 		AnnotationModel annotation = new AnnotationModel(parent);
 		String handler = annotationElem.getAttribute(IElement.XmlSchema.AT_HANDLER.tag());
+		annotation.setHandler(handler);
 		NodeList namedValueNodes = annotationElem.getChildNodes();
 		for (int i = 0, len = namedValueNodes.getLength(); i < len; i++) {
 			Node child = namedValueNodes.item(i);
@@ -394,6 +433,24 @@ public class XmlModelReader {
 			if (current.getNodeType() == Node.ELEMENT_NODE 
 					&& current.getNodeName().equalsIgnoreCase(name)) {
 				return (Element) current;
+			}
+		}
+		return null;
+	}
+	
+	private Integer parseIntAttribute(Element node, String name) {
+		String txt = node.getAttribute(name);
+		if (txt != null) {
+			txt = txt.trim();
+			try {
+				if (txt.startsWith("0x") && txt.length() > 2) {
+					String hex = txt.substring(2);
+					return Integer.parseInt(hex, 16);
+				} else {
+					return Integer.parseInt(txt);
+				}
+			} catch (NumberFormatException e) {
+				Log.error(e);
 			}
 		}
 		return null;
@@ -503,52 +560,56 @@ public class XmlModelReader {
 		}		
 	}
 	
-	private static class AddLayerOverReferencesTask implements Runnable {
+	private static class AddLayerOverReferencesTask extends DocumentLoadedTask<LayerModel> {
 		private List<String> layerQualifiedNames;
-		private LayerModel parent;
 		
 		public AddLayerOverReferencesTask(LayerModel parent, List<String> layerQualifiedNames) {
-			this.parent = parent;
+			super(parent);
 			this.layerQualifiedNames = layerQualifiedNames;
 		}
 		
 		@Override
-		public void run() {
-			ArchitectureModel arch = parent.getArchitecture();
-			if (arch != null) {
-				for (String qualifiedName: layerQualifiedNames) {
-					IElement found = arch.findByQualifiedName(qualifiedName);
-					if (found != null && found.getType() == ElementType.LAYER) {
-						parent.getOver().add((ILayer) found);
-					}
-				}
+		public void run() {			
+			for (String qualifiedName: layerQualifiedNames) {
+				ILayer overRef = getElementByQualifiedName(ILayer.class, qualifiedName);
+				parent.getOver().add(overRef);
 			}
 		}
 	}
 	
-	private static class SetLinkProviderAndConsumerReferencesTask implements Runnable {
-		private LinkModel parent;
+	private static class SetLinkProviderAndConsumerReferencesTask extends DocumentLoadedTask<LinkModel> {
 		private String providerQualifiedName;
 		private String consumerQualifiedName;
 		
 		public SetLinkProviderAndConsumerReferencesTask(LinkModel parent,
 				String providerQualifiedName, String consumerQualifiedName) {
-			this.parent = parent;
+			super(parent);
 			this.providerQualifiedName = providerQualifiedName;
 			this.consumerQualifiedName = consumerQualifiedName;
-		}
-		
+		}		
 		
 		@Override
 		public void run() {
-			ArchitectureModel arch = parent.getArchitecture();
-			if (arch != null) {
-				IElement providerRef = arch.findByQualifiedName(providerQualifiedName);
-				IElement consumerRef = arch.findByQualifiedName(consumerQualifiedName);
-				if (providerRef instanceof IProvides && consumerRef instanceof IRequires) {
-					parent.setProvider((IProvides) providerRef);
-					parent.setConsumer((IRequires) consumerRef);
-				}
+			IProvides providerRef = getElementByQualifiedName(IProvides.class, providerQualifiedName);
+			IRequires consumerRef = getElementByQualifiedName(IRequires.class, consumerQualifiedName);
+			parent.setProvider(providerRef);
+			parent.setConsumer(consumerRef);			
+		}
+	}
+	
+	private static class AddInterfaceConnectionsTask extends DocumentLoadedTask<InterfaceModel> {
+		private List<String> linkQualifiedNames;
+		
+		public AddInterfaceConnectionsTask(InterfaceModel parent, List<String> linkQualifiedNames) {
+			super(parent);
+			this.linkQualifiedNames = linkQualifiedNames;
+		}
+		
+		@Override
+		public void run() {
+			for (String qualifiedName: linkQualifiedNames) {
+				ILink link = getElementByQualifiedName(ILink.class, qualifiedName);
+				parent.getConnections().add(link);
 			}
 		}
 	}
