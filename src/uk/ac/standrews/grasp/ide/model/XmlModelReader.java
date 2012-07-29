@@ -8,11 +8,11 @@ import grasp.lang.ILayer;
 import grasp.lang.ILink;
 import grasp.lang.IProvides;
 import grasp.lang.IRationale;
+import grasp.lang.IReason;
 import grasp.lang.IRequires;
 import grasp.lang.ITemplate;
 
 import java.io.IOException;
-import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
@@ -29,7 +29,6 @@ import org.eclipse.core.runtime.Assert;
 import org.eclipse.core.runtime.CoreException;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
-import org.w3c.dom.NamedNodeMap;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 import org.xml.sax.SAXException;
@@ -173,28 +172,259 @@ public class XmlModelReader {
 			return readInterface(node, parent, provides) ? provides : null;
 		}
 		case QUALITY_ATTRIBUTE:
-			break;
+			return readQualityAttribute(node, parent);
 		case RATIONALE:
-			break;
+			return readRationale(node, parent);
 		case REASON:
-			break;
+			return readReason(node, parent);
 		case REQUIREMENT:
-			break;
+			return readRequirement(node, parent);
 		case REQUIRES:
 		{
 			RequiresModel requires = new RequiresModel(parent);
 			return readInterface(node, parent, requires) ? requires : null;
 		}
 		case SYSTEM:
-			break;
+		{
+			SystemModel model = new SystemModel(parent);
+			return readBecause(node, parent, model) ? model : null;
+		}
 		case TEMPLATE:
-			break;
+			return readTemplate(node, parent);
 		default:
 			Assert.isTrue(false, "Unknown ElmentType: " + type);
 			return null;
 		}
 	}
 	
+	private SyntaxNodeModel readSyntaxNode(Element node, SyntaxNodeModel parent) {
+		Integer tokenId = parseIntAttribute(node, XmlSchema2.AT_TOKEN_ID.tag());
+		String tokenText = node.getAttribute(XmlSchema2.AT_TOKEN_TEXT.tag());
+		Integer startPosition = parseIntAttribute(node, XmlSchema2.AT_START_POSITION.tag());
+		Integer line = parseIntAttribute(node, XmlSchema2.AT_LINE.tag());
+		Integer column = parseIntAttribute(node, XmlSchema2.AT_COLUMN.tag());
+		
+		if (tokenId == null || tokenText == null || tokenText.length() == 0
+				|| line == null || startPosition == null || column == null) {
+			return null;
+		}
+		
+		SyntaxNodeModel model = new SyntaxNodeModel(tokenId, parent, tokenText, line, column, startPosition);
+		
+		Element childrenTag = findChildByName(node, XmlSchema2.CHILD_NODES.tag());
+		if (childrenTag != null) {
+			NodeList childrenOfChildrenTag = childrenTag.getChildNodes();
+			for (int i = 0, len = childrenOfChildrenTag.getLength(); i < len; i++) {
+				Node current = childrenOfChildrenTag.item(i);
+				if (current.getNodeType() == Node.ELEMENT_NODE 
+						&& current.getNodeName().equalsIgnoreCase(XmlSchema2.SYNTAX_NODE.tag())) {
+					Element childTag = (Element) current;
+					SyntaxNodeModel child = readSyntaxNode(childTag, model);
+					if (child != null) {
+						model.getChildren().add(child);
+					}
+				}
+			}
+		}
+		
+		return model;
+	}
+	
+	private TemplateModel readTemplate(Element node, FirstClassModel parent) {
+		TemplateModel model = new TemplateModel(parent);
+		if (!readParameterised(node, parent, model)) {
+			return null;
+		}
+		
+		Element payloadNode = findChildByName(node, XmlSchema.PAYLOAD.tag());
+		if (payloadNode == null) {
+			return null;
+		}
+		
+		SyntaxNodeModel payload = readSyntaxNode(payloadNode, null);
+		if (payload == null) {
+			return null;
+		}
+		model.setPayload(payload);		
+		
+		return model;
+	}
+	
+	private RequirementModel readRequirement(Element node, FirstClassModel parent) {
+		RequirementModel model = new RequirementModel(parent);
+		if (!readFirstClass(node, model, parent)) {
+			return null;
+		}
+		
+		Element expressionTag = findChildByName(node, ElementType.EXPRESSION.name());
+		if (expressionTag != null) {
+			ExpressionModel expression = readExpression(expressionTag, model);
+			if (expression != null) {
+				model.setExpression(expression);
+			}
+		}
+		
+		return model;
+	}
+	
+	private ReasonModel readReason(Element node, FirstClassModel parent) {
+		ReasonModel model = new ReasonModel(parent);
+		if (!readFirstClass(node, model, parent)) {
+			return null;
+		}
+		Element expressionTag = findChildByName(node, ElementType.EXPRESSION.name());
+		if (expressionTag != null) {
+			ExpressionModel expression = readExpression(expressionTag, model);
+			if (expression != null) {
+				model.setExpression(expression);
+			}
+		}
+		List<String> supportsQualifiedNames = new ArrayList<String>();
+		List<String> inhibitsQualifiedNames = new ArrayList<String>();
+		
+		Element supportsTag = findChildByName(node, XmlSchema2.SUPPORTS.tag());
+		if (supportsTag != null) {
+			NodeList supportsChildren = supportsTag.getChildNodes();
+			for (int i = 0, len = supportsChildren.getLength(); i < len; i++) {
+				Node current = supportsChildren.item(i);
+				if (current.getNodeType() == Node.ELEMENT_NODE &&
+						current.getNodeName().equalsIgnoreCase(XmlSchema2.ELEMENT.tag())) {
+					Element elemTag = (Element) current;
+					String ref = elemTag.getAttribute(XmlSchema.AT_REFERENCE.tag());
+					if (ref != null) {
+						supportsQualifiedNames.add(ref);
+					}
+				}
+			}
+		}
+		Element inhibitsTag = findChildByName(node, XmlSchema2.INHIBITS.tag());
+		if (inhibitsTag != null) {
+			NodeList inhibitsChildren = inhibitsTag.getChildNodes();
+			for (int i = 0, len = inhibitsChildren.getLength(); i < len; i++) {
+				Node current = inhibitsChildren.item(i);
+				if (current.getNodeType() == Node.ELEMENT_NODE &&
+						current.getNodeName().equalsIgnoreCase(XmlSchema2.ELEMENT.tag())) {
+					Element elemTag = (Element) current;
+					String ref = elemTag.getAttribute(XmlSchema.AT_REFERENCE.tag());
+					if (ref != null) {
+						inhibitsQualifiedNames.add(ref);
+					}
+				}
+			}
+		}
+		
+		if (inhibitsQualifiedNames.size() > 0 || supportsQualifiedNames.size() > 0) {
+			documentLoadedTasks.add(
+					new AddReasonSupportsInhibitsReferencesTask(model,
+							supportsQualifiedNames, inhibitsQualifiedNames));
+		}
+		
+		return model;
+	}
+	
+	private RationaleModel readRationale(Element node, FirstClassModel parent) {
+		RationaleModel model = new RationaleModel(parent);
+		if (!readParameterised(node, parent, model)) {
+			return null;
+		}
+		
+		Element reasonsTag = findChildByName(node, XmlSchema2.REASONS.tag());
+		if (reasonsTag != null) {
+			NodeList reasonsTagChildren = reasonsTag.getChildNodes();
+			List<String> reasonQualifiedNames = new ArrayList<String>();
+			for (int i = 0, len = reasonsTagChildren.getLength(); i < len; i++) {
+				Node current = reasonsTagChildren.item(i);
+				if (current.getNodeType() == Node.ELEMENT_NODE &&
+						current.getNodeName().equalsIgnoreCase(XmlSchema2.REASON.tag())) {
+					Element reasonTag = (Element) current;
+					String reasonQualifiedName = reasonTag.getAttribute(XmlSchema.AT_REFERENCE.tag());
+					if (reasonQualifiedName != null) {
+						reasonQualifiedNames.add(reasonQualifiedName);
+					}
+				}
+			}
+			documentLoadedTasks.add(new AddRationaleReasonReferencesTask(model, reasonQualifiedNames));
+		}
+		
+		return model;
+	}
+	
+	private boolean readParameterised(Element node, FirstClassModel parent, ParameterizedModel model) {
+		if (!readExtensible(node, parent, model)) {
+			return false;
+		}
+		Element parametersTag = findChildByName(node, XmlSchema.PARAMETERS.tag());
+		List<ParameterReferenceInfo> parameters = new ArrayList<XmlModelReader.ParameterReferenceInfo>();
+		if (parametersTag != null) {
+			NodeList paramTags = parametersTag.getChildNodes();
+			for (int i = 0, len = paramTags.getLength(); i < len; i++) {
+				Node current = paramTags.item(i);
+				if (current.getNodeType() == Node.ELEMENT_NODE
+						&& current.getNodeName().equalsIgnoreCase(XmlSchema.PARAM.tag())) {
+					Element paramTag = (Element) current;
+					Integer ordinal = parseIntAttribute(paramTag, XmlSchema.AT_ORDINAL.tag());
+					String paramName = paramTag.getAttribute(XmlSchema.AT_NAME.tag());
+					if (ordinal != null && paramName != null) {
+						parameters.add(new ParameterReferenceInfo(ordinal, paramName));
+					}
+				}
+			}
+		}
+		if (parameters.size() > 0) {
+			Collections.sort(parameters, ParameterReferenceInfo.ORDINAL_COMPARATOR);
+			for (ParameterReferenceInfo paramInfo: parameters) {
+				model.getParameters().add(paramInfo.getQualifiedName());
+			}
+		}
+		return true;
+	}
+	
+	private boolean readExtensible(Element node, FirstClassModel parent, ExtensibleModel model) {
+		if (!readBecause(node, parent, model)) {
+			return false;
+		}
+		
+		Element extendsTag = findChildByName(node, XmlSchema.EXTENDS.tag());
+		if (extendsTag != null) {
+			String extendeeQualifiedName = extendsTag.getAttribute(XmlSchema.AT_REFERENCE.tag());
+			if (extendeeQualifiedName != null) {
+				documentLoadedTasks.add(new SetExtendeeReferenceTask(model, extendeeQualifiedName));
+			}
+		}
+		
+		return true;
+	}
+	
+	private QualityAttributeModel readQualityAttribute(Element node,
+			FirstClassModel parent) {
+		QualityAttributeModel qualityAttribute = new QualityAttributeModel(parent);
+		if (!readFirstClass(node, qualityAttribute, parent)) {
+			return null;
+		}
+		
+		Element supportsTag = findChildByName(node, XmlSchema2.SUPPORTS.tag());
+		List<String> supporteeQualifiedNames = new ArrayList<String>();
+		if (supportsTag != null) {
+			NodeList supporteeNodes = supportsTag.getChildNodes();
+			for (int i = 0, len = supporteeNodes.getLength(); i < len; i++) {
+				Node current = supporteeNodes.item(i);
+				if (current.getNodeType() == Node.ELEMENT_NODE 
+						&& current.getNodeName().equalsIgnoreCase(XmlSchema2.ELEMENT.tag())) {
+					Element supporteeTag = (Element) current;
+					String elemRef = supporteeTag.getAttribute(XmlSchema.AT_REFERENCE.tag());
+					if (elemRef != null) {
+						supporteeQualifiedNames.add(elemRef);
+					}
+				}
+			}
+		}
+		if (supporteeQualifiedNames.size() > 0) {
+			documentLoadedTasks.add(new AddQualityAttributeSupportsReferencesTask(qualityAttribute, supporteeQualifiedNames));
+		}
+		
+		return qualityAttribute;
+	}
+
 	private boolean readInterface(Element node, FirstClassModel parent, InterfaceModel model) {
 		if (!readBecause(node, parent, model)) {
 			return false;
@@ -612,5 +842,103 @@ public class XmlModelReader {
 				parent.getConnections().add(link);
 			}
 		}
+	}
+	
+	private static class AddQualityAttributeSupportsReferencesTask extends DocumentLoadedTask<QualityAttributeModel> {
+		private List<String> supporteeQualifiedNames;
+		
+		public AddQualityAttributeSupportsReferencesTask(QualityAttributeModel parent, List<String> linkQualifiedNames) {
+			super(parent);
+			this.supporteeQualifiedNames = linkQualifiedNames;
+		}
+		
+		@Override
+		public void run() {
+			for (String qualifiedName: supporteeQualifiedNames) {
+				IFirstClass supportee = getElementByQualifiedName(IFirstClass.class, qualifiedName);
+				parent.getSupports().add(supportee);
+			}
+		}
+	}
+	
+	private static class SetExtendeeReferenceTask extends DocumentLoadedTask<ExtensibleModel> {
+		private String extendeeQualifiedName;
+		
+		public SetExtendeeReferenceTask(ExtensibleModel parent, String extendeeeQualifiedName) {
+			super(parent);
+			this.extendeeQualifiedName = extendeeeQualifiedName;
+		}
+		
+		@Override
+		public void run() {
+			IFirstClass extendee = getElementByQualifiedName(IFirstClass.class, extendeeQualifiedName);
+			parent.setExtendee(extendee);
+		}
+	}
+	
+	private static class AddRationaleReasonReferencesTask extends DocumentLoadedTask<RationaleModel> {
+		private List<String> reasonQualifiedNames;
+		
+		public AddRationaleReasonReferencesTask(RationaleModel parent, List<String> reasonQualifiedNames) {
+			super(parent);
+			this.reasonQualifiedNames = reasonQualifiedNames;
+		}
+		
+		@Override
+		public void run() {
+			for (String qualifiedName: reasonQualifiedNames) {
+				IReason reason = getElementByQualifiedName(IReason.class, qualifiedName);
+				parent.getReasons().add(reason);
+			}
+		}
+	}
+	
+	private static class AddReasonSupportsInhibitsReferencesTask extends DocumentLoadedTask<ReasonModel> {
+		List<String> supportsQualifiedNames;
+		List<String> inhibitsQualifiedNames;
+		
+		public AddReasonSupportsInhibitsReferencesTask(ReasonModel parent, 
+				List<String> supportsQualifiedNames, List<String> inhibitsQualifiedNames) {
+			super(parent);
+			this.supportsQualifiedNames = supportsQualifiedNames;
+			this.inhibitsQualifiedNames = inhibitsQualifiedNames;
+		}
+		
+		@Override
+		public void run() {
+			for (String qualifiedName: supportsQualifiedNames) {
+				IFirstClass supportee = getElementByQualifiedName(IFirstClass.class, qualifiedName);
+				parent.getSupports().add(supportee);
+			}
+			for (String qualifiedName: inhibitsQualifiedNames) {
+				IFirstClass inhibitee = getElementByQualifiedName(IFirstClass.class, qualifiedName);
+				parent.getInhibits().add(inhibitee);
+			}
+		}
+	}
+}
+
+enum XmlSchema2  {
+	SUPPORTS("SUPPORTS"),
+	ELEMENT("ELEMENT"), 
+	REASONS("REASONS"), 
+	REASON("REASON"), 
+	INHIBITS("INHIBITS"),
+	AT_COLUMN("col"),
+	AT_LINE("line"),
+	AT_START_POSITION("start"),
+	AT_TOKEN_ID("id"),
+	AT_TOKEN_TEXT("text"),
+	CHILD_NODES("CHILDREN"), SYNTAX_NODE("NODE"),
+	;
+	
+	private final String tagName;
+	
+	XmlSchema2(String tagName) {
+		this.tagName = tagName;
+	}
+	
+	public String tag() {
+		return tagName;
 	}
 }
