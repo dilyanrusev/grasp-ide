@@ -60,6 +60,10 @@ public abstract class FirstClassModel extends ElementModel implements IFirstClas
 	public Collection<IFirstClass> getBody() {
 		return body;
 	}
+	
+	public List<IFirstClass> getChildElements() {
+		return body;
+	}
 
 	@Override
 	public Collection<IFirstClass> getBodyByType(ElementType elementtype) {
