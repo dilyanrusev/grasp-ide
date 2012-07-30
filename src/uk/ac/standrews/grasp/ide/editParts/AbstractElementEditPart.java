@@ -5,7 +5,6 @@ import grasp.lang.IFirstClass;
 
 import java.util.List;
 
-import org.eclipse.draw2d.IFigure;
 import org.eclipse.gef.editparts.AbstractGraphicalEditPart;
 
 import uk.ac.standrews.grasp.ide.model.CollectionChangedEvent;
@@ -19,81 +18,58 @@ public abstract class AbstractElementEditPart<TModel extends FirstClassModel>
 		extends AbstractGraphicalEditPart
 		implements IElementChangedListener {
 	
-	
-
-	private TModel model;
 	private ICollectionChangedListener<IAnnotation> annotationChangedListener;
 	private ICollectionChangedListener<IFirstClass> childElementsChangedListener;
+	
+	public AbstractElementEditPart(TModel model) {
+		setModel(model);
+		annotationChangedListener = new AnnotationsChangedListener();
+		childElementsChangedListener = new ChildElementsChangedListener();
+	}
 	
 	@Override
 	public void activate() {
 		super.activate();
-		model.addElementChangedListener(this);
-		if (annotationChangedListener == null) {
-			annotationChangedListener = new AnnotationsChangedListener();
-		}
-		getObservableAnnotations().addCollectionChangeListener(annotationChangedListener);
-		if (childElementsChangedListener == null) {
-			childElementsChangedListener = new ChildElementsChangedListener();
-		}
+		getElement().addElementChangedListener(this);	
+		getObservableAnnotations().addCollectionChangeListener(annotationChangedListener);		
 		getObservableModelChildren().addCollectionChangeListener(childElementsChangedListener);
 	}
 	
 	@Override
 	public void deactivate() {
 		super.deactivate();
-		model.removeElementChangedListener(this);
+		getElement().removeElementChangedListener(this);
 		getObservableAnnotations().removeCollectionChangeListener(annotationChangedListener);
 		getObservableModelChildren().removeCollectionChangeListener(childElementsChangedListener);
 	}
 	
 	@Override
-	public void elementChanged(ElementChangedEvent event) {
-		// TODO Auto-generated method stub
-		
+	public void elementChanged(ElementChangedEvent event) {		
 	}
 	
-	protected void annotationsChanged(CollectionChangedEvent<IAnnotation> event) {
-		
+	protected void annotationsChanged(CollectionChangedEvent<IAnnotation> event) {		
 	}
 	
-	protected void childElementsChanged(CollectionChangedEvent<IFirstClass> event) {
-		
-	}
-
-	@Override
-	protected IFigure createFigure() {
-		// TODO Auto-generated method stub
-		return null;
-	}
-
-	@Override
-	protected void createEditPolicies() {
-		// TODO Auto-generated method stub
-
+	protected void childElementsChanged(CollectionChangedEvent<IFirstClass> event) {		
 	}
 	
-	@Override
-	public Object getModel() {
-		return model;
-	}
-	
-	public TModel getGraspModel() {
-		return model;
+	@SuppressWarnings("unchecked")
+	public TModel getElement() {
+		return (TModel) getModel();
 	}
 	
 	@Override
 	protected List<? extends IFirstClass> getModelChildren() {
-		return model.getChildElements();
+		return getElement().getChildElements();
 	}
 
 	private IObservableCollection<IAnnotation> getObservableAnnotations() {
-		return (IObservableCollection<IAnnotation>) model.getAnnotations();
+		return (IObservableCollection<IAnnotation>) getElement().getAnnotations();
 	}
 	
 	@SuppressWarnings("unchecked")
 	private IObservableCollection<IFirstClass> getObservableModelChildren() {
-		return (IObservableCollection<IFirstClass>) model.getChildElements();
+		return (IObservableCollection<IFirstClass>) getElement().getChildElements();
 	}
 	
 	private final class AnnotationsChangedListener implements ICollectionChangedListener<IAnnotation> {

@@ -2,7 +2,17 @@ package uk.ac.standrews.grasp.ide.editParts;
 
 import uk.ac.standrews.grasp.ide.model.InstantiableModel;
 
-public class AbstractInstantiableEditPart<TModel extends InstantiableModel> extends
+public abstract class AbstractInstantiableEditPart<TModel extends InstantiableModel> extends
 		AbstractElementEditPart<TModel> {
+
+	public AbstractInstantiableEditPart(TModel model) {
+		super(model);		
+	}
+
+	@Override
+	protected void createEditPolicies() {
+		// TODO Auto-generated method stub
+		
+	}
 
 }

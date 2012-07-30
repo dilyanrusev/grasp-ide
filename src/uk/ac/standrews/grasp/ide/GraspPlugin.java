@@ -15,6 +15,7 @@ import org.eclipse.ui.console.MessageConsole;
 import org.eclipse.ui.plugin.AbstractUIPlugin;
 import org.osgi.framework.BundleContext;
 
+import uk.ac.standrews.grasp.ide.editParts.IconsCache;
 import uk.ac.standrews.grasp.ide.model.GraspModel;
 
 /**
@@ -64,6 +65,7 @@ public class GraspPlugin extends AbstractUIPlugin {
 	 * @see org.eclipse.ui.plugin.AbstractUIPlugin#stop(org.osgi.framework.BundleContext)
 	 */
 	public void stop(BundleContext context) throws Exception {	
+		IconsCache.getDefault().dispose();
 		GraspModel.INSTANCE.dispose();
 		disposeOfColours();
 		plugin = null;
