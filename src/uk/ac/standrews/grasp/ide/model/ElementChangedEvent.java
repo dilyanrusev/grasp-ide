@@ -35,7 +35,7 @@ public class ElementChangedEvent {
 	 * Retrieve the list of properties that changed the state
 	 * @return List of properties that change this object's state
 	 */
-	public final String[] getPropertyName() {
+	public final String[] getPropertyNames() {
 		return propertyNames.clone();
 	}
 }

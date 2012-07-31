@@ -5,7 +5,12 @@ import grasp.lang.IFirstClass;
 
 import java.util.List;
 
+import org.eclipse.draw2d.FlowLayout;
+import org.eclipse.draw2d.IFigure;
+import org.eclipse.draw2d.Label;
+import org.eclipse.draw2d.RoundedRectangle;
 import org.eclipse.gef.editparts.AbstractGraphicalEditPart;
+import org.eclipse.swt.graphics.Image;
 
 import uk.ac.standrews.grasp.ide.model.CollectionChangedEvent;
 import uk.ac.standrews.grasp.ide.model.ElementChangedEvent;
@@ -20,6 +25,7 @@ public abstract class AbstractElementEditPart<TModel extends FirstClassModel>
 	
 	private ICollectionChangedListener<IAnnotation> annotationChangedListener;
 	private ICollectionChangedListener<IFirstClass> childElementsChangedListener;
+	private Label headerLabel;
 	
 	public AbstractElementEditPart(TModel model) {
 		setModel(model);
@@ -45,6 +51,11 @@ public abstract class AbstractElementEditPart<TModel extends FirstClassModel>
 	
 	@Override
 	public void elementChanged(ElementChangedEvent event) {		
+		for (String propName: event.getPropertyNames()) {
+			if (FirstClassModel.PROPERTY_REFERENCING_NAME.equals(propName)) {
+				getHeaderLabel().setText(getElement().getReferencingName());
+			}
+		}
 	}
 	
 	protected void annotationsChanged(CollectionChangedEvent<IAnnotation> event) {		
@@ -71,6 +82,34 @@ public abstract class AbstractElementEditPart<TModel extends FirstClassModel>
 	private IObservableCollection<IFirstClass> getObservableModelChildren() {
 		return (IObservableCollection<IFirstClass>) getElement().getChildElements();
 	}
+	
+	protected Label getHeaderLabel() {
+		if (headerLabel == null) {
+			headerLabel = createLabelHeader();
+		}
+		return headerLabel;
+	}
+	
+	protected Label createLabelHeader() {
+		Label result = new Label();
+		result.setText(getElement().getReferencingName());
+		result.setIcon(getIcon());
+		return result;
+	}
+	
+	@Override
+	protected IFigure createFigure() {
+		IFigure outline = createOutlineFigure();
+		outline.setLayoutManager(new FlowLayout());
+		outline.add(getHeaderLabel());
+		return outline;
+	}
+	
+	protected IFigure createOutlineFigure() {
+		return new RoundedRectangle();
+	}
+	
+	protected abstract Image getIcon();
 	
 	private final class AnnotationsChangedListener implements ICollectionChangedListener<IAnnotation> {
 		@Override

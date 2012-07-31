@@ -6,19 +6,14 @@ import grasp.lang.IFirstClass;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.eclipse.draw2d.FlowLayout;
-import org.eclipse.draw2d.IFigure;
-import org.eclipse.draw2d.Label;
-import org.eclipse.draw2d.RoundedRectangle;
+import org.eclipse.swt.graphics.Image;
 
-import uk.ac.standrews.grasp.ide.model.ElementChangedEvent;
 import uk.ac.standrews.grasp.ide.model.TemplateModel;
 
 public class TemplateEditPart extends AbstractElementEditPart<TemplateModel> {
 	
 	private List<TemplateInheritanceConnection> sourceInheritanceConnections;
-	private List<TemplateInheritanceConnection> targetInheirtanceConnections; 
-	private Label labelHeader;
+	private List<TemplateInheritanceConnection> targetInheirtanceConnections;
 
 	public TemplateEditPart(TemplateModel model) {
 		super(model);
@@ -52,20 +47,8 @@ public class TemplateEditPart extends AbstractElementEditPart<TemplateModel> {
 	}
 	
 	@Override
-	public void elementChanged(ElementChangedEvent event) {
-		super.elementChanged(event);
-		labelHeader.setText(getElement().getReferencingName());
-	}
-	
-	@Override
-	protected IFigure createFigure() {
-		RoundedRectangle outline = new RoundedRectangle();
-		outline.setLayoutManager(new FlowLayout());
-		labelHeader = new Label();
-		labelHeader.setText(getElement().getReferencingName());
-		labelHeader.setIcon(IconsCache.getDefault().getTemplateIcon());
-		outline.add(labelHeader);
-		return outline;
+	protected Image getIcon() {
+		return IconsCache.getDefault().getTemplateIcon();
 	}
 
 	@Override

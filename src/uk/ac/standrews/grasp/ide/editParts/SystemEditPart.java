@@ -1,25 +1,23 @@
 package uk.ac.standrews.grasp.ide.editParts;
 
-import org.eclipse.draw2d.IFigure;
+import org.eclipse.swt.graphics.Image;
 
 import uk.ac.standrews.grasp.ide.model.SystemModel;
 
 public class SystemEditPart extends AbstractElementEditPart<SystemModel> {
-
+		
 	public SystemEditPart(SystemModel model) {
 		super(model);		
 	}
-
+	
 	@Override
-	protected IFigure createFigure() {
-		// TODO Auto-generated method stub
-		return null;
+	protected Image getIcon() {
+		return IconsCache.getDefault().getSystemIcon();
 	}
 
 	@Override
 	protected void createEditPolicies() {
-		// TODO Auto-generated method stub
-		
+				
 	}
 
 }

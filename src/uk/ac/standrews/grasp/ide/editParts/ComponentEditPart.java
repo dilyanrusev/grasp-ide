@@ -1,6 +1,6 @@
 package uk.ac.standrews.grasp.ide.editParts;
 
-import org.eclipse.draw2d.IFigure;
+import org.eclipse.swt.graphics.Image;
 
 import uk.ac.standrews.grasp.ide.model.ComponentModel;
 
@@ -9,11 +9,10 @@ public class ComponentEditPart extends AbstractInstantiableEditPart<ComponentMod
 	public ComponentEditPart(ComponentModel model) {
 		super(model);		
 	}
-
+	
 	@Override
-	protected IFigure createFigure() {
-		// TODO Auto-generated method stub
-		return null;
+	protected Image getIcon() {
+		return IconsCache.getDefault().getComponentIcon();
 	}
 
 }

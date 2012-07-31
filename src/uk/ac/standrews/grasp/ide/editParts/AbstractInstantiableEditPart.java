@@ -11,7 +11,6 @@ public abstract class AbstractInstantiableEditPart<TModel extends InstantiableMo
 
 	@Override
 	protected void createEditPolicies() {
-		// TODO Auto-generated method stub
 		
 	}
 

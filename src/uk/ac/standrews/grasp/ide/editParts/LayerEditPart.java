@@ -8,7 +8,7 @@ import grasp.lang.ISystem;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.eclipse.draw2d.IFigure;
+import org.eclipse.swt.graphics.Image;
 
 import uk.ac.standrews.grasp.ide.model.LayerModel;
 
@@ -51,11 +51,10 @@ public class LayerEditPart extends AbstractElementEditPart<LayerModel> {
 		super.activate();
 		
 	}
-
+	
 	@Override
-	protected IFigure createFigure() {
-		// TODO Auto-generated method stub
-		return null;
+	protected Image getIcon() {
+		return IconsCache.getDefault().getLayerIcon();
 	}
 
 	@Override
