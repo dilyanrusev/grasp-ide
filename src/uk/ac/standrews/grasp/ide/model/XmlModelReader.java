@@ -78,8 +78,7 @@ public class XmlModelReader {
 		
 		documentLoadedTasks.clear();
 		ArchitectureModel arch = readArchitecture(doc, input);
-		if (arch != null) {			
-			System.out.println(GraspModel.INSTANCE.dumpArchitecture(arch));
+		if (arch != null) {
 			try {
 				for (Runnable task: documentLoadedTasks) {
 					task.run();
@@ -614,12 +613,18 @@ public class XmlModelReader {
 		String name = elem.getAttribute(IElement.XmlSchema.AT_NAME.tag());
 		String refName = elem.getAttribute(IElement.XmlSchema.AT_RNAME.tag());
 		
-		if (!TextUtil.isIdentifier(name) || !TextUtil.isIdentifier(refName)) {
+		if ((name != null && !TextUtil.isIdentifier(name)) || refName == null || !TextUtil.isIdentifier(refName)) {
 			return false;
 		}
 		
-		model.setReferencingName(refName);
-		model.setName(name);
+		if (name == null) {
+			model.setName(refName);
+		} else {
+			model.setName(name);
+			if (!refName.equals(name)) {
+				model.setAlias(refName);
+			}
+		}	
 		
 		return true;
 	}

@@ -1,6 +1,8 @@
 package uk.ac.standrews.grasp.ide.editParts;
 
+import org.eclipse.draw2d.FlowLayout;
 import org.eclipse.draw2d.IFigure;
+import org.eclipse.draw2d.Panel;
 
 import uk.ac.standrews.grasp.ide.model.ArchitectureModel;
 
@@ -11,13 +13,14 @@ public class ArchitectureEditPart extends AbstractElementEditPart<ArchitectureMo
 
 	@Override
 	protected IFigure createFigure() {
-		// TODO Auto-generated method stub
-		return null;
+		IFigure figure = new Panel();
+		figure.setLayoutManager(new FlowLayout());
+		return figure;
 	}
 
 	@Override
 	protected void createEditPolicies() {
-		// TODO Auto-generated method stub
+		
 		
 	}
 }

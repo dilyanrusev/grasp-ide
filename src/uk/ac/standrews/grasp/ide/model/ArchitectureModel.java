@@ -35,7 +35,25 @@ public class ArchitectureModel extends FirstClassModel implements IArchitecture 
 	}
 	
 	public IElement findByQualifiedName(String qualifiedName) {
-		return findByQualifiedName(this, qualifiedName);
+		IElement found = findByQualifiedName(this, qualifiedName);
+		// could be an alias
+		if (found == null) {
+			int idx = qualifiedName.lastIndexOf('.');
+			if (idx != -1 && qualifiedName.length() > idx + 1) {
+				String name = qualifiedName.substring(idx + 1);
+				String parentQualifiedName = qualifiedName.substring(0, idx);
+				IElement parent = findByQualifiedName(parentQualifiedName);
+				if (parent instanceof IFirstClass) {
+					for (IFirstClass child: ((IFirstClass) parent).getBody()) {
+						// Fully qualified names prefer alias over name
+						if (name.equals(child.getName())) {
+							return child;
+						}
+					}
+				}
+			}			
+		}
+		return found;
 	}
 	
 	private IElement findByQualifiedName(IElement current, String qualifiedName) {

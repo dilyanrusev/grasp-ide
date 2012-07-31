@@ -23,7 +23,7 @@ public class LayerEditPart extends AbstractElementNodeEditPart<LayerModel> {
 			sourceOverConnections.add(new LayerOverLayerConnection(model, (LayerModel) layer));
 		}
 		targetOverConnections = new ArrayList<LayerOverLayerConnection>();
-		ISystem system = (ISystem) model.getArchitecture().getBodyByType(ElementType.SYSTEM);
+		ISystem system = (ISystem) model.getArchitecture().getBodyByType(ElementType.SYSTEM).iterator().next();
 		for (IFirstClass fc: system.getBodyByType(ElementType.LAYER)) {
 			ILayer layer = (ILayer) fc;
 			if (!layer.getQualifiedName().equalsIgnoreCase(model.getQualifiedName())) {

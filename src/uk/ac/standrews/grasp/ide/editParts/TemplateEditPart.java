@@ -25,6 +25,7 @@ public class TemplateEditPart extends AbstractElementNodeEditPart<TemplateModel>
 		for (IFirstClass fc: model.getArchitecture().getBodyByType(ElementType.TEMPLATE)) {
 			TemplateModel other = (TemplateModel) fc;
 			if (!other.getQualifiedName().equalsIgnoreCase(model.getQualifiedName())
+					&& other.getExtendee() != null
 					&& other.getExtendee().getQualifiedName().equalsIgnoreCase(model.getQualifiedName())) {
 				targetInheirtanceConnections.add(new TemplateInheritanceConnection(other, model));
 			}
