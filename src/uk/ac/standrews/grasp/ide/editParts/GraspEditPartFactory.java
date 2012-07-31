@@ -3,6 +3,7 @@ package uk.ac.standrews.grasp.ide.editParts;
 import org.eclipse.gef.EditPart;
 import org.eclipse.gef.EditPartFactory;
 
+import uk.ac.standrews.grasp.ide.model.ArchitectureModel;
 import uk.ac.standrews.grasp.ide.model.ComponentModel;
 import uk.ac.standrews.grasp.ide.model.ConnectorModel;
 import uk.ac.standrews.grasp.ide.model.LayerModel;
@@ -13,6 +14,11 @@ public class GraspEditPartFactory implements EditPartFactory {
 
 	@Override
 	public EditPart createEditPart(EditPart context, Object model) {
+		if (model == null) 
+			return null;
+		
+		if (model instanceof ArchitectureModel) 
+			return new ArchitectureEditPart((ArchitectureModel) model);
 		if (model instanceof ComponentModel)
 			return new ComponentEditPart((ComponentModel) model);
 		if (model instanceof ConnectorModel)

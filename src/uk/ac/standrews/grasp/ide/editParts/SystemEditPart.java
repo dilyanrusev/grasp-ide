@@ -4,7 +4,7 @@ import org.eclipse.swt.graphics.Image;
 
 import uk.ac.standrews.grasp.ide.model.SystemModel;
 
-public class SystemEditPart extends AbstractElementEditPart<SystemModel> {
+public class SystemEditPart extends AbstractElementNodeEditPart<SystemModel> {
 		
 	public SystemEditPart(SystemModel model) {
 		super(model);		

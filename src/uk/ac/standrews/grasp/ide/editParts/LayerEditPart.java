@@ -12,7 +12,7 @@ import org.eclipse.swt.graphics.Image;
 
 import uk.ac.standrews.grasp.ide.model.LayerModel;
 
-public class LayerEditPart extends AbstractElementEditPart<LayerModel> {
+public class LayerEditPart extends AbstractElementNodeEditPart<LayerModel> {
 	private final List<LayerOverLayerConnection> sourceOverConnections;
 	private final List<LayerOverLayerConnection> targetOverConnections;
 

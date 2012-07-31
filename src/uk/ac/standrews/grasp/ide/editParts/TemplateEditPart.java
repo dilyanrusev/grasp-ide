@@ -10,7 +10,7 @@ import org.eclipse.swt.graphics.Image;
 
 import uk.ac.standrews.grasp.ide.model.TemplateModel;
 
-public class TemplateEditPart extends AbstractElementEditPart<TemplateModel> {
+public class TemplateEditPart extends AbstractElementNodeEditPart<TemplateModel> {
 	
 	private List<TemplateInheritanceConnection> sourceInheritanceConnections;
 	private List<TemplateInheritanceConnection> targetInheirtanceConnections;
