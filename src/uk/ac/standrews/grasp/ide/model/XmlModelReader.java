@@ -211,56 +211,11 @@ public class XmlModelReader {
 		}
 	}
 	
-	private SyntaxNodeModel readSyntaxNode(Element node, SyntaxNodeModel parent) {
-		Integer tokenId = parseIntAttribute(node, XmlSchema2.AT_TOKEN_ID.tag());
-		String tokenText = node.getAttribute(XmlSchema2.AT_TOKEN_TEXT.tag());
-		Integer startPosition = parseIntAttribute(node, XmlSchema2.AT_START_POSITION.tag());
-		Integer line = parseIntAttribute(node, XmlSchema2.AT_LINE.tag());
-		Integer column = parseIntAttribute(node, XmlSchema2.AT_COLUMN.tag());
-		
-		if (tokenId == null || tokenText == null || tokenText.length() == 0
-				|| line == null || startPosition == null || column == null) {
-			return null;
-		}
-		
-		SyntaxNodeModel model = new SyntaxNodeModel(tokenId, parent, tokenText, line, column, startPosition);
-		
-		Element childrenTag = findChildByName(node, XmlSchema2.CHILD_NODES.tag());
-		if (childrenTag != null) {
-			NodeList childrenOfChildrenTag = childrenTag.getChildNodes();
-			for (int i = 0, len = childrenOfChildrenTag.getLength(); i < len; i++) {
-				Node current = childrenOfChildrenTag.item(i);
-				if (current.getNodeType() == Node.ELEMENT_NODE 
-						&& current.getNodeName().equalsIgnoreCase(XmlSchema2.SYNTAX_NODE.tag())) {
-					Element childTag = (Element) current;
-					SyntaxNodeModel child = readSyntaxNode(childTag, model);
-					if (child != null) {
-						model.getChildren().add(child);
-					}
-				}
-			}
-		}
-		
-		return model;
-	}
-	
 	private TemplateModel readTemplate(Element node, FirstClassModel parent) {
 		TemplateModel model = new TemplateModel(parent);
 		if (!readParameterised(node, parent, model)) {
 			return null;
 		}
-		
-		Element payloadNode = findChildByName(node, XmlSchema.PAYLOAD.tag());
-		if (payloadNode == null) {
-			return null;
-		}
-		
-		SyntaxNodeModel payload = readSyntaxNode(payloadNode, null);
-		if (payload == null) {
-			return null;
-		}
-		model.setPayload(payload);		
-		
 		return model;
 	}
 	

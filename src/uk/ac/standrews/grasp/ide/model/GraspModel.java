@@ -279,7 +279,9 @@ public final class GraspModel {
 			sb.append(' ').append(element.getReferencingName());
 			sb.append("; parameters=").append(t.getParameters());
 			sb.append("; payload={");
-			dumpSyntaxNode(sb, t.getPayload(), depth + 1);
+			if (t.getPayload() != null) {
+				dumpSyntaxNode(sb, t.getPayload(), depth + 1);
+			} 
 			sb.append(System.getProperty("line.separator")).append(indent).append('}');
 			break;
 		case LINK:
