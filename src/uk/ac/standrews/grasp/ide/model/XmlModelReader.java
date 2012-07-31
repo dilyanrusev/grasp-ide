@@ -78,12 +78,13 @@ public class XmlModelReader {
 		
 		documentLoadedTasks.clear();
 		ArchitectureModel arch = readArchitecture(doc, input);
-		if (arch != null) {
+		if (arch != null) {			
 			System.out.println(GraspModel.INSTANCE.dumpArchitecture(arch));
 			try {
 				for (Runnable task: documentLoadedTasks) {
 					task.run();
 				}
+				
 			} catch (AssertionFailedException e) {
 				Log.error(e);
 				return null;
@@ -532,34 +533,33 @@ public class XmlModelReader {
 		} else {
 			return false;
 		}
-		Element argumentsTag = findChildByName(elem, XmlSchema.ARGUMENTS.tag());
-		if (argumentsTag == null) {
-			return false;
-		}
-		NodeList argumentTags = argumentsTag.getChildNodes();
-		List<ParameterReferenceInfo> parameters = new ArrayList<XmlModelReader.ParameterReferenceInfo>();
-		for (int i = 0, argumentTagsLen = argumentTags.getLength(); i < argumentTagsLen; i++) {
-			Node argumentTag = argumentTags.item(i);
-			if (argumentTag.getNodeType() != Node.ELEMENT_NODE 
-					|| !argumentTag.getNodeName().equalsIgnoreCase(XmlSchema.ARUGMENT.tag())) {
-				continue;
+		Element argumentsTag = findChildByName(baseTag, XmlSchema.ARGUMENTS.tag());
+		if (argumentsTag != null) {
+			NodeList argumentTags = argumentsTag.getChildNodes();
+			List<ParameterReferenceInfo> parameters = new ArrayList<XmlModelReader.ParameterReferenceInfo>();
+			for (int i = 0, argumentTagsLen = argumentTags.getLength(); i < argumentTagsLen; i++) {
+				Node argumentTag = argumentTags.item(i);
+				if (argumentTag.getNodeType() != Node.ELEMENT_NODE 
+						|| !argumentTag.getNodeName().equalsIgnoreCase(XmlSchema.ARUGMENT.tag())) {
+					continue;
+				}
+				Element argumentElem = (Element) argumentTag;
+				String argumentQualifiedName = argumentElem.getAttribute(XmlSchema.AT_REFERENCE.tag());
+				if (argumentQualifiedName == null) {
+					continue;
+				}
+				Integer ordinalTest = parseIntAttribute(argumentElem, XmlSchema.AT_ORDINAL.tag());
+				if (ordinalTest == null) {
+					continue;
+				}
+				int ordinal = ordinalTest;
+				ordinal--; // saved ordinals start from 1
+				if (ordinal >= 0) {
+					parameters.add(new ParameterReferenceInfo(ordinal, argumentQualifiedName));
+				}
 			}
-			Element argumentElem = (Element) argumentTag;
-			String argumentQualifiedName = argumentElem.getAttribute(XmlSchema.AT_REFERENCE.tag());
-			if (argumentQualifiedName == null) {
-				continue;
-			}
-			Integer ordinalTest = parseIntAttribute(argumentElem, XmlSchema.AT_ORDINAL.tag());
-			if (ordinalTest == null) {
-				continue;
-			}
-			int ordinal = ordinalTest;
-			ordinal--; // saved ordinals start from 1
-			if (ordinal >= 0) {
-				parameters.add(new ParameterReferenceInfo(ordinal, argumentQualifiedName));
-			}
-		}
-		documentLoadedTasks.add(new SetInstantiableArgumentReferencesTask(model, parameters));
+			documentLoadedTasks.add(new SetInstantiableArgumentReferencesTask(model, parameters));
+		}	
 		
 		return true;
 	}
