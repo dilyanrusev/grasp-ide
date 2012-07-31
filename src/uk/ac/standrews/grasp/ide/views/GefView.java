@@ -4,7 +4,6 @@ package uk.ac.standrews.grasp.ide.views;
 import org.eclipse.gef.editparts.ScalableFreeformRootEditPart;
 import org.eclipse.gef.ui.parts.ScrollingGraphicalViewer;
 import org.eclipse.swt.widgets.Composite;
-import org.eclipse.ui.IEditorPart;
 import org.eclipse.ui.part.ViewPart;
 
 import uk.ac.standrews.grasp.ide.editParts.GraspEditPartFactory;
@@ -29,14 +28,10 @@ public class GefView extends ViewPart implements IActiveEditorChangedListener {
 		graphicalViewer.createControl(parent);
 		graphicalViewer.setRootEditPart(rootEditPart);
 		graphicalViewer.setEditPartFactory(new GraspEditPartFactory());
-		graphicalViewer.getControl().setVisible(false);
 		
-	
-		IEditorPart activeEditor = getSite().getWorkbenchWindow().getActivePage().getActiveEditor();
-		if (activeEditor != null) {
-			activeEditorChanged(new ActiveEditorChangedEvent(activeEditor));
-		}
-		activeEditorChangeWatcher = new ActiveEditorChangeWatcher(getSite().getWorkbenchWindow().getWorkbench());
+		activeEditorChangeWatcher = new ActiveEditorChangeWatcher();
+		activeEditorChangeWatcher.addEditorVisibilityListener(this);
+		activeEditorChangeWatcher.start(getSite().getWorkbenchWindow().getWorkbench());
 	}
 	
 	@Override
@@ -52,7 +47,7 @@ public class GefView extends ViewPart implements IActiveEditorChangedListener {
 
 	@Override
 	public void activeEditorChanged(ActiveEditorChangedEvent event) {		
-		graphicalViewer.getControl().setVisible(true);
+		System.out.println("Active architecture: " + event.getEditorArchitecture());
 		graphicalViewer.setContents(event.getEditorArchitecture());		
 	}
 }

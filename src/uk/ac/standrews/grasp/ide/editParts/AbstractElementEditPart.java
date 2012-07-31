@@ -52,7 +52,7 @@ public abstract class AbstractElementEditPart<TModel extends FirstClassModel>
 	}
 	
 	protected void elementPropertyChanged(String propertyName) {
-		
+		refresh();
 	}
 
 	protected void annotationsChanged(CollectionChangedEvent<IAnnotation> event) {		

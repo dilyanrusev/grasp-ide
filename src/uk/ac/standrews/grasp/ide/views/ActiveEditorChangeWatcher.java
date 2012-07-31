@@ -16,6 +16,8 @@ import uk.ac.standrews.grasp.ide.GraspPlugin;
 
 public class ActiveEditorChangeWatcher {
 	private IWorkbench workbench;
+	private IWorkbenchWindow initialActiveWindow;
+	private IWorkbenchPage initialPage;
 	private Set<IActiveEditorChangedListener> listeners = new HashSet<IActiveEditorChangedListener>();
 	
 	private IWindowListener windowListener = new WindowListenerStub() {
@@ -51,13 +53,37 @@ public class ActiveEditorChangeWatcher {
 	};
 	
 	
-	public ActiveEditorChangeWatcher(IWorkbench workbench) {
-		workbench.addWindowListener(windowListener);
+	public ActiveEditorChangeWatcher() {		
+		
+	}
+	
+	public void start(IWorkbench workbench) {
+		this.initialActiveWindow = workbench.getActiveWorkbenchWindow();
 		this.workbench = workbench;
+		this.workbench.addWindowListener(windowListener);
+		if (this.initialActiveWindow != null) {
+			this.initialPage = this.initialActiveWindow.getActivePage();
+			if (this.initialPage != null) {
+				IEditorPart activeEditor = this.initialPage.getActiveEditor();
+				if (activeEditor != null) {
+					fireEditorVisibilityChanged(activeEditor);
+				}
+				this.initialPage.addPartListener(this.partListener);
+			}
+			this.initialActiveWindow.addPageListener(this.pageListener);
+		}
 	}
 	
 	public void dispose() {
-		this.workbench.removeWindowListener(windowListener);
+		if (initialActiveWindow != null) {
+			initialActiveWindow.removePageListener(pageListener);
+		}
+		if (initialPage != null) {
+			initialPage.removePartListener(partListener);
+		}
+		if (workbench != null) {
+			workbench.removeWindowListener(windowListener);
+		}
 	}
 	
 	public void addEditorVisibilityListener(IActiveEditorChangedListener listener) {

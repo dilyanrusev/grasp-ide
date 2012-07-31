@@ -108,7 +108,7 @@ public class GraspEditor extends MultiPageEditorPart implements IResourceChangeL
 		textEditor = new GraspTextEditor();
 		int pageIndex = addPage(textEditor, getEditorInput());
 		setPageText(pageIndex, "Source");
-	}
+	}	
 	
 	/**
 	 * Creates graphical designer page
