@@ -86,8 +86,7 @@ public class GraspBuilder extends IncrementalProjectBuilder  {
 			progress.worked(1);
 			
 			GraspModel.INSTANCE.ensureFileStats(file).compiled(graph, compiler.getErrors());
-			System.out.println(GraspModel.INSTANCE.dumpArchitecture(graph));
-			
+	
 			IErrorReport errorReport = compiler.getErrors();
 			for (IError error: errorReport.getErrors()) {
 				createProblemMarker(file, error);
@@ -116,6 +115,7 @@ public class GraspBuilder extends IncrementalProjectBuilder  {
 						xmlFile.setContents(new ByteArrayInputStream(txt.getBytes("utf-8")), true, true, progress.newChild(1));
 					}
 					xmlFile.setDerived(true, progress.newChild(1));
+					GraspModel.INSTANCE.ensureFileStats(file).refreshFromXml(xmlFile);
 				} catch (CoreException e) {
 					Log.error(e);
 				} catch (FileNotFoundException e) {

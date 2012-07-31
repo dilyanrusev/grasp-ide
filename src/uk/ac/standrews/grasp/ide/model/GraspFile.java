@@ -8,6 +8,7 @@ import java.io.InputStreamReader;
 
 import org.eclipse.core.resources.IFile;
 import org.eclipse.core.runtime.CoreException;
+import org.eclipse.core.runtime.IPath;
 import org.eclipse.jface.text.IDocument;
 import org.eclipse.jface.text.source.ISourceViewer;
 
@@ -31,12 +32,34 @@ public class GraspFile {
 	}
 	
 	public void compiled(IArchitecture graph, IErrorReport errorReport) {
-		if (graph != null && !errorReport.isAny()) {
-			architecture = new ArchitectureModel(graph, file);
-			lastArchitectureThatCompiled = architecture;
-		} else {
-			architecture = null;
+//		if (graph != null && !errorReport.isAny()) {
+//			architecture = new ArchitectureModel(graph, file);
+//			lastArchitectureThatCompiled = architecture;
+//		} else {
+//			architecture = null;
+//		}
+		this.errorReport = errorReport;
+	}
+	
+	public boolean refreshFromXml(IFile xmlFile) {
+		architecture = XmlModelReader.getDefault().readFromFile(xmlFile);
+	    if (architecture != null) {
+		    lastArchitectureThatCompiled = architecture;
+		    return true;
+	    }		
+		return false;
+	}
+	
+	private boolean refreshFromXml() {
+		IPath graspPath = file.getProjectRelativePath();
+		IPath xmlPath = graspPath.addFileExtension("xml");
+		if (!xmlPath.equals(graspPath)) {
+			IFile xmlFile = file.getProject().getFile(xmlPath);
+			if (xmlFile.exists()) {
+				return refreshFromXml(xmlFile);
+			}
 		}
+		return false;
 	}
 	
 	public void reparse() throws CoreException {
@@ -59,10 +82,16 @@ public class GraspFile {
 	}
 	
 	public ArchitectureModel getLastArchitectureThatCompiled() {
+		if (lastArchitectureThatCompiled == null) {
+			refreshFromXml();
+		}
 		return lastArchitectureThatCompiled;
 	}
 	
 	public ArchitectureModel getArchitecture() {
+		if (architecture == null) {
+			refreshFromXml();
+		}
 		return architecture;
 	}
 	

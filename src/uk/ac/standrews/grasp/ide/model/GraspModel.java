@@ -288,8 +288,8 @@ public final class GraspModel {
 			if (l.getName() != null && l.getName().length() > 0) {
 				sb.append(' ').append(l.getName());
 			}
-			sb.append(" provider=").append(l.getProvider().getQualifiedName());
-			sb.append("; consumer=").append(l.getConsumer().getQualifiedName());
+			sb.append(" provider=").append(l.getProvider() != null ? l.getProvider().getQualifiedName() : null);
+			sb.append("; consumer=").append(l.getConsumer() != null ? l.getConsumer().getQualifiedName() : null);
 			break;
 		case REQUIREMENT:
 			IRequirement req = (IRequirement) element;

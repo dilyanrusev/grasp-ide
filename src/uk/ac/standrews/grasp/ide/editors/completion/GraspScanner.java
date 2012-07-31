@@ -26,8 +26,7 @@ public class GraspScanner {
 			IChunk current = null;
 			while ((current = reader.nextChunk()) != null) {
 				chunks.add(current);
-			}			
-			System.out.println(chunks);			
+			}						
 		} finally {
 			if (reader != null) {
 				reader.dispose();

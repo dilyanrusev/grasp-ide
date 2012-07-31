@@ -26,6 +26,7 @@ import javax.xml.parsers.ParserConfigurationException;
 
 import org.eclipse.core.resources.IFile;
 import org.eclipse.core.runtime.Assert;
+import org.eclipse.core.runtime.AssertionFailedException;
 import org.eclipse.core.runtime.CoreException;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
@@ -37,11 +38,17 @@ import uk.ac.standrews.grasp.ide.Log;
 import uk.ac.standrews.grasp.ide.editors.TextUtil;
 
 public class XmlModelReader {
+	private static final XmlModelReader INSTANCE = new XmlModelReader();
+	
 	private DocumentBuilderFactory documentFactory;
 	private Map<String, ElementType> elementNameToType;
 	private List<Runnable> documentLoadedTasks;
 	
-	public XmlModelReader() {
+	public static XmlModelReader getDefault() {
+		return INSTANCE;
+	}
+	
+	private XmlModelReader() {
 		documentFactory = DocumentBuilderFactory.newInstance();
 		elementNameToType = new HashMap<String, ElementType>(ElementType.values().length);
 		documentLoadedTasks = new ArrayList<Runnable>();
@@ -72,8 +79,14 @@ public class XmlModelReader {
 		documentLoadedTasks.clear();
 		ArchitectureModel arch = readArchitecture(doc, input);
 		if (arch != null) {
-			for (Runnable task: documentLoadedTasks) {
-				task.run();
+			System.out.println(GraspModel.INSTANCE.dumpArchitecture(arch));
+			try {
+				for (Runnable task: documentLoadedTasks) {
+					task.run();
+				}
+			} catch (AssertionFailedException e) {
+				Log.error(e);
+				return null;
 			}
 		}
 		
@@ -680,7 +693,7 @@ public class XmlModelReader {
 					return Integer.parseInt(txt);
 				}
 			} catch (NumberFormatException e) {
-				Log.error(e);
+				//Log.error(e);
 			}
 		}
 		return null;
