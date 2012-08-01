@@ -26,5 +26,26 @@ public class QualityAttributeModel extends FirstClassModel implements
 	public List<IFirstClass> getSupports() {
 		return supports;
 	}
+	
+	@Override
+	public boolean equals(Object obj) {
+		if (!super.equals(obj)) return false;
+		QualityAttributeModel other = (QualityAttributeModel) obj;
+		
+		if (!collectionsEqual(getSupports(), other.getSupports()));
+		
+		return true;
+	}
+	
+	@Override
+	public int hashCode() {
+		int result = super.hashCode();
+		
+		for (IFirstClass supported: getSupports()) {
+			result = 31 * result + supported.hashCode();
+		}
+		
+		return result;
+	}
 
 }

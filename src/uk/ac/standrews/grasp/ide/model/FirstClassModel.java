@@ -86,4 +86,29 @@ public abstract class FirstClassModel extends ElementModel implements IFirstClas
 			child.validate(ctx);
 		}
 	}
+	
+	@Override
+	public boolean equals(Object obj) {
+		if (!super.equals(obj)) return false;
+		FirstClassModel other = (FirstClassModel) obj;
+		
+		// omit body for speed
+		// annotations might contain important designer data
+		if (!collectionsEqual(getAnnotations(), other.getAnnotations()));
+		
+		return true;
+	}
+	
+	@Override
+	public int hashCode() {
+		int result = super.hashCode();
+		
+		// omit body for speed
+		// annotations might contain important designer data
+		for (IAnnotation annotation: getAnnotations()) {
+			result = 31 * result + annotation.hashCode();
+		}
+		
+		return result;
+	}
 }

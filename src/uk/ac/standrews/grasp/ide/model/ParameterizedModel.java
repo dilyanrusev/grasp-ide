@@ -30,5 +30,22 @@ public abstract class ParameterizedModel extends ExtensibleModel implements
 	public List<String> getParameters() {
 		return params;
 	}
+	
+	@Override
+	public boolean equals(Object obj) {
+		return super.equals(obj) && 
+				collectionsEqual(getParameters(), ((ParameterizedModel) obj).getParameters());
+	}
+	
+	@Override
+	public int hashCode() {
+		int result = super.hashCode();
+		
+		for (String param: getParameters()) {
+			result = 31 * result + param.hashCode();
+		}
+		
+		return result;
+	}
 
 }

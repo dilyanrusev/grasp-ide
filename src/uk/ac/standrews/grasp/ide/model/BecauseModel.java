@@ -26,5 +26,26 @@ public abstract class BecauseModel extends FirstClassModel implements IBecause {
 	public List<IRationale> getRationales() {
 		return rationales;
 	}
+	
+	@Override
+	public boolean equals(Object obj) {
+		if (!super.equals(obj)) return false;
+		BecauseModel other = (BecauseModel) obj;
+		
+		if (!collectionsEqual(getRationales(), other.getRationales()));
+		
+		return true;
+	}
+	
+	@Override
+	public int hashCode() {
+		int result = super.hashCode();
+		
+		for (IRationale rationale: getRationales()) {
+			result = 31 * result + rationale.hashCode();
+		}
+		
+		return result;
+	}
 
 }

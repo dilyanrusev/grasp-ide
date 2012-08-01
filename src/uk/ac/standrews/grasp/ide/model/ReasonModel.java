@@ -73,5 +73,34 @@ public class ReasonModel extends FirstClassModel implements IReason {
 			expression.validate(ctx);
 		}
 	}
+	
+	@Override
+	public boolean equals(Object obj) {
+		if (!super.equals(obj)) return false;
+		ReasonModel other = (ReasonModel) obj;
+		
+		if (isInitialized() != other.isInitialized()) return false;
+		if (!objectsEqual(getExpression(), other.getExpression())) return false;
+		if (!collectionsEqual(getInhibits(), other.getInhibits())) return false;
+		if (!collectionsEqual(getSupports(), other.getSupports())) return false;
+		
+		return true;
+	}
+	
+	@Override
+	public int hashCode() {
+		int result = super.hashCode();
+		
+		result = 31 * result + (isInitialized() ? 1 : 0);
+		result = 31 * result + (getExpression() != null ? getExpression().hashCode() : 0);
+		for (IFirstClass inhibited: getInhibits()) {
+			result = 31 * result + inhibited.hashCode();
+		}
+		for (IFirstClass supported: getSupports()) {
+			result = 31 * result + supported.hashCode();
+		}
+		
+		return result;
+	}
 
 }

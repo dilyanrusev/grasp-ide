@@ -1,9 +1,11 @@
 package uk.ac.standrews.grasp.ide.editParts;
 
+import org.eclipse.draw2d.ColorConstants;
 import org.eclipse.draw2d.FlowLayout;
 import org.eclipse.draw2d.IFigure;
 import org.eclipse.draw2d.Label;
 import org.eclipse.draw2d.RoundedRectangle;
+import org.eclipse.draw2d.geometry.Dimension;
 import org.eclipse.swt.graphics.Image;
 
 import uk.ac.standrews.grasp.ide.model.FirstClassModel;
@@ -20,9 +22,7 @@ public abstract class AbstractElementNodeEditPart<TModel extends FirstClassModel
 	@Override
 	protected void elementPropertyChanged(String propertyName) {
 		super.elementPropertyChanged(propertyName);
-		if (FirstClassModel.PROPERTY_REFERENCING_NAME.equals(propertyName)) {
-			getHeaderLabel().setText(getElement().getReferencingName());
-		}
+		refreshVisuals();
 	}
 	
 	protected Label getHeaderLabel() {
@@ -34,18 +34,25 @@ public abstract class AbstractElementNodeEditPart<TModel extends FirstClassModel
 	
 	protected Label createLabelHeader() {
 		Label result = new Label();
-		result.setText(getElement().getReferencingName());
 		result.setIcon(getIcon());
 		return result;
 	}
 	
 	@Override
+	protected void refreshVisuals() {
+		super.refreshVisuals();
+		headerLabel.setBackgroundColor(ColorConstants.red);
+		headerLabel.setText(getElement().getReferencingName());
+	}
+	
+	@Override
 	protected IFigure createFigure() {
 		IFigure outline = createOutlineFigure();
-		outline.setSize(200, 100);
-		outline.setLayoutManager(new FlowLayout());
+		FlowLayout layout = new FlowLayout(false);		
+		outline.setLayoutManager(layout);
 		outline.add(getHeaderLabel());
 		outline.setToolTip(createTooltip());
+		outline.setPreferredSize(new Dimension(200, 200));
 		return outline;
 	}
 	

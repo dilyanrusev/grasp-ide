@@ -39,5 +39,25 @@ public class ExpressionModel extends ElementModel implements IExpression {
 	public void validate(IValidationContext ctx) {
 		evaluate(ctx);
 	}
+	
+	@Override
+	public boolean equals(Object obj) {
+		if (this == obj) return true;
+		if (!(obj instanceof ExpressionModel)) return false;
+		ExpressionModel other = (ExpressionModel) obj;
+		
+		if (!objectsEqual(getValue(), other.getValue())) return false;
+		
+		return true;
+	}
+	
+	@Override
+	public int hashCode() {
+		int result = 17;
+		
+		result = 31 * result + (getValue() != null ? getValue().hashCode() : 0);
+		
+		return result;
+	}
 
 }

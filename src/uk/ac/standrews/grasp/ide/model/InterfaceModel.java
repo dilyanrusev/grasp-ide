@@ -79,4 +79,24 @@ public abstract class InterfaceModel extends BecauseModel implements IInterface 
 	protected abstract IInterface getLinkEndpoint(ILink link);
 
     protected abstract void setLinkEndpoint(ILink link, IInterface endpoint);
+    
+    @Override
+    public boolean equals(Object obj) {
+    	if (!super.equals(obj)) return false;
+    	InterfaceModel other = (InterfaceModel) obj;
+    	
+    	if (getMaxdeg() != other.getMaxdeg()) return false;
+    	// don't compare connections to avoid stack overflow 
+    	// (connections contain links, links check their provides/consumers)
+    	
+    	return true;
+    }
+    
+    @Override
+    public int hashCode() {
+    	int result = super.hashCode();
+    	result = 31 * result + getMaxdeg();
+    	// don't compare connections to avoid stack overflow 
+    	return result;
+    }
 }

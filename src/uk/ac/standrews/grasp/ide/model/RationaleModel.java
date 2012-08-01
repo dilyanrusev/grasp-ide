@@ -25,5 +25,22 @@ public class RationaleModel extends ParameterizedModel implements IRationale {
 	public List<IReason> getReasons() {
 		return reasons;
 	}
+	
+	@Override
+	public boolean equals(Object obj) {
+		return super.equals(obj) &&
+				collectionsEqual(getReasons(), ((RationaleModel) obj).getReasons());
+	}
+	
+	@Override
+	public int hashCode() {
+		int result = super.hashCode();
+		
+		for (IReason reason: getReasons()) {
+			result = 31 * result + reason.hashCode();
+		}
+		
+		return result;
+	}
 
 }

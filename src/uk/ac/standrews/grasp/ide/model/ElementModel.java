@@ -3,7 +3,9 @@ package uk.ac.standrews.grasp.ide.model;
 import grasp.lang.IElement;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
@@ -12,7 +14,7 @@ import org.w3c.dom.Node;
 
 import shared.xml.IXmlWriter;
 
-public abstract class ElementModel implements IElement, IObservable {
+public abstract class ElementModel implements IElement, IObservable, Comparable<ElementModel> {
 	public static final String PROPERTY_TYPE = "type";
 	public static final String PROPERTY_PARENT = "parent";
 	public static final String PROPERTY_ALIAS = "alias";
@@ -20,8 +22,10 @@ public abstract class ElementModel implements IElement, IObservable {
 	public static final String PROPERTY_REFERENCING_NAME = "referencingName";
 	public static final String PROPERTY_QUALIFIED_NAME = "qualifiedName";
 	
+	private static Map<ElementType, Integer> elementWeights;
+	
 	private List<IElementChangedListener> changeListeners = new ArrayList<IElementChangedListener>();
-	private Map<String, IElement> symbolTable = new HashMap<String, IElement>();
+	private Map<String, IElement> symbolTable = new HashMap<String, IElement>();	
 	private ElementType type;
 	private IElement parent;
 	private String name;
@@ -203,4 +207,110 @@ public abstract class ElementModel implements IElement, IObservable {
 		return new StringBuilder().append('[').append(type).append("] ").append(qualifiedName).toString();
 	}
 
+	@Override
+	public int compareTo(ElementModel other) {
+		if (other == this) {
+			return 0;
+		}
+		if (this.getType() != other.getType()) {
+			int myWeight = getElementWeight(getType());
+			int otherWeight = getElementWeight(other.getType());
+			return myWeight - otherWeight;
+		} else {
+			return this.getReferencingName().compareTo(other.getReferencingName());
+		}
+	}
+	
+	@Override
+	public boolean equals(Object obj) {
+		if (this == obj) {
+			return true;
+		}
+		if (!getClass().isInstance(obj)) {
+			return false;
+		}
+		ElementModel other = (ElementModel) obj;
+		if (!getType().equals(other.getType())) return false;
+		if (!objectsEqual(getReferencingName(), other.getReferencingName())) return false;
+		if (!objectsEqual(getQualifiedName(), other.getQualifiedName())) return false;		
+		
+		return true;		
+	}
+	
+	@Override
+	public int hashCode() {
+		int result = 17;
+		result = 31 * result + getType().hashCode();
+		result = 31 * result + getReferencingName().hashCode();
+		result = 31 * result + getQualifiedName().hashCode();
+		
+		return result;
+	}
+	
+	protected static boolean objectsEqual(Object o1, Object o2) {
+		if (o1 == o2) return true;
+		return o1 != null ? o1.equals(o2) : o2 == null;
+	}
+	
+	protected static <E> boolean collectionsEqual(Collection<E> c1, Collection<E> c2) {
+		if (c1 == c2) return true;
+		if (c1.size() != c2.size()) return false;
+		
+		Iterator<E> i1 = c1.iterator();
+		Iterator<E> i2 = c2.iterator();
+		E o1;
+		E o2;
+		
+		while (i1.hasNext()) {
+			if (!i2.hasNext()) return false;
+			o1 = i1.next();
+			o2 = i2.next();
+			if (!objectsEqual(o1, o2)) return false;
+		}
+		
+		return true;
+	}
+	
+	private static int getElementWeight(ElementType type) {
+		// we want elements to be in that order:
+		/*
+		 * annotation
+		 * architecture
+		 * 	* rationale
+		 * 		* reason
+		 * 	* requirement
+		 * 	* quality_attribute
+		 * 	template
+		 * 		provides
+		 * 		requires
+		 * 		* property
+		 * 		* check
+		 * 	system
+		 * 		layer
+		 * 			component
+		 * 			connector
+		 * 			link
+		 */
+		if (elementWeights == null) {
+			elementWeights = new HashMap<ElementType, Integer>(ElementType.values().length);
+			elementWeights.put(ElementType.ANNOTATION, 0);
+			elementWeights.put(ElementType.ARCHITECTURE, 1);
+			elementWeights.put(ElementType.RATIONALE, 2);
+			elementWeights.put(ElementType.REASON, 3);
+			elementWeights.put(ElementType.REQUIREMENT, 4);
+			elementWeights.put(ElementType.QUALITY_ATTRIBUTE, 5);
+			elementWeights.put(ElementType.TEMPLATE, 6);
+			elementWeights.put(ElementType.PROVIDES, 7);
+			elementWeights.put(ElementType.REQUIRES, 8);
+			elementWeights.put(ElementType.PROPERTY, 9);
+			elementWeights.put(ElementType.CHECK, 10);
+			elementWeights.put(ElementType.SYSTEM, 11);
+			elementWeights.put(ElementType.LAYER, 12);
+			elementWeights.put(ElementType.COMPONENT, 13);
+			elementWeights.put(ElementType.CONNECTOR, 14);
+			elementWeights.put(ElementType.LINK, 15);
+		}
+		Integer weight = elementWeights.get(type);
+		return weight != null ? weight : 99;
+	}
 }

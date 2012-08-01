@@ -48,4 +48,25 @@ public class AnnotationModel extends ElementModel implements IAnnotation {
 			child.validate(ctx);
 		}
 	}
+	
+	@Override
+	public boolean equals(Object obj) {
+		if (!super.equals(obj)) return false;
+		AnnotationModel other = (AnnotationModel) obj;
+		
+		if (!objectsEqual(getHandler(), other.getHandler())) return false;
+		if (!collectionsEqual(getNamedValues(), other.getNamedValues())) return false;
+		
+		return true;
+	}
+	
+	@Override
+	public int hashCode() {
+		int result = super.hashCode();
+		result = 31 * result + (getHandler() != null ? getHandler().hashCode() : 0);
+		for (INamedValue nv: getNamedValues()) {
+			result = 31 * result + nv.hashCode();
+		}
+		return result;
+	}
 }

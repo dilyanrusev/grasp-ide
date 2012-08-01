@@ -64,5 +64,26 @@ public class LinkModel extends BecauseModel implements ILink {
 		this.provider = provider;
 		fireElementChanged(PROPERTY_PROVIDER);
 	}
+	
+	@Override
+	public boolean equals(Object obj) {
+		if (!super.equals(obj)) return false;
+		LinkModel other = (LinkModel) obj;
+		
+		if (!objectsEqual(getProvider(), other.getProvider())) return false;
+		if (!objectsEqual(getConsumer(), other.getConsumer())) return false;
+		
+		return true;
+	}
+	
+	@Override
+	public int hashCode() {
+		int result = super.hashCode();
+		
+		result = 31 * result + (getProvider() != null ? getProvider().hashCode() : 0);
+		result = 31 * result + (getConsumer() != null ? getConsumer().hashCode() : 0);
+		
+		return result;
+	}
 
 }

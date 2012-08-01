@@ -1,6 +1,8 @@
 package uk.ac.standrews.grasp.ide.model;
 
 import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Iterator;
 import java.util.List;
 
 import org.eclipse.core.resources.IFile;
@@ -91,5 +93,68 @@ public class ArchitectureModel extends FirstClassModel implements IArchitecture 
 		} else {
 			task.run();
 		}
+	}
+	
+	@Override
+	public boolean equals(Object obj) {
+		if (!super.equals(obj)) return false;
+		ArchitectureModel other = (ArchitectureModel) obj;	
+		
+		if (!objectsEqual(getFile(), other.getFile())) return false;
+		
+		if (getBody().size() != other.getBody().size()) return false;
+		Iterator<IFirstClass> i1 = getBody().iterator();
+		Iterator<IFirstClass> i2 = other.getBody().iterator();
+		
+		while (i1.hasNext()) {
+			if (!i2.hasNext()) return false;
+			IFirstClass child1 = i1.next();
+			IFirstClass child2 = i2.next();
+			if (!childrenEqual(child1, child2)) return false;
+		}
+		
+		return true;
+	}
+	
+	private static boolean childrenEqual(IFirstClass child1, IFirstClass child2) {
+		if (!child1.equals(child2)) return false;
+		Collection<IFirstClass> body1 = child1.getBody();
+		Collection<IFirstClass> body2 = child2.getBody();
+		if (body1.size() != body2.size()) return false;
+		
+		Iterator<IFirstClass> i1 = body1.iterator();
+		Iterator<IFirstClass> i2 = body2.iterator();
+		IFirstClass childOfChild1;
+		IFirstClass childOfChild2;
+		
+		while (i1.hasNext()) {
+			if (!i2.hasNext()) return false;
+			childOfChild1 = i1.next();
+			childOfChild2 = i2.next();
+			if (!childrenEqual(childOfChild1, childOfChild2)) return false;
+		}
+		
+		return true;
+	}
+	
+	@Override
+	public int hashCode() {
+		int result = super.hashCode();
+		
+		for (IFirstClass child: getBody()) {
+			result = 17 * result + computeChildHashCode(child);
+		}
+		
+		return result;
+	}
+	
+	private static int computeChildHashCode(IFirstClass element) {
+		int result = element.hashCode();
+		
+		for (IFirstClass child: element.getBody()) {
+			result = 17 * result + computeChildHashCode(child);
+		}
+		
+		return result;
 	}
 }

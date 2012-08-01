@@ -54,4 +54,24 @@ public abstract class EvaluableModel extends BecauseModel implements IEvaluable 
 			expression.validate(ctx);
 	}
 
+	@Override
+	public boolean equals(Object obj) {
+		if (!super.equals(obj)) return false;
+		EvaluableModel other = (EvaluableModel) obj;
+		
+		if (isInitialized() != other.isInitialized()) return false;
+		if (!objectsEqual(getExpression(), other.getExpression())) return false;
+		
+		return true;
+	}
+	
+	@Override
+	public int hashCode() {
+		int result = super.hashCode();
+		
+		result = 31 * result + (isInitialized() ? 1 : 0);
+		result = 31 * result + (getExpression() != null ? getExpression().hashCode() : 0);
+		
+		return result;
+	}
 }

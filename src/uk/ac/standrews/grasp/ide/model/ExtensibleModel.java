@@ -31,5 +31,18 @@ public abstract class ExtensibleModel extends BecauseModel implements
 		this.extendee = extendee;
 		fireElementChanged(PROPERTY_EXTENDEE);
 	}
+	
+	@Override
+	public boolean equals(Object obj) {
+		if (!super.equals(obj))	 return false;
+		return objectsEqual(getExtendee(), ((ExtensibleModel) obj).getExtendee());
+	}
+	
+	@Override
+	public int hashCode() {
+		int result = super.hashCode();
+		result = 31 * result + (getExtendee() != null ? getExtendee().hashCode() : 0);
+		return result;
+	}
 
 }

@@ -24,5 +24,22 @@ public class LayerModel extends BecauseModel implements ILayer {
 	public List<ILayer> getOver() {
 		return over;
 	}
+	
+	@Override
+	public boolean equals(Object obj) {
+		if (!super.equals(obj)) return false;
+		return collectionsEqual(getOver(), ((LayerModel) obj).getOver());
+	}
+	
+	@Override
+	public int hashCode() {
+		int result = super.hashCode();
+		
+		for (ILayer layer: getOver()) {
+			result = 31 * result + layer.hashCode();
+		}
+		
+		return result;
+	}
 
 }
