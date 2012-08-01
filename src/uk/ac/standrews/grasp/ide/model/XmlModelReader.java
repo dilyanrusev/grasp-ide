@@ -28,6 +28,7 @@ import org.eclipse.core.resources.IFile;
 import org.eclipse.core.runtime.Assert;
 import org.eclipse.core.runtime.AssertionFailedException;
 import org.eclipse.core.runtime.CoreException;
+import org.eclipse.core.runtime.IPath;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.Node;
@@ -77,7 +78,8 @@ public class XmlModelReader {
 		}
 		
 		documentLoadedTasks.clear();
-		ArchitectureModel arch = readArchitecture(doc, input);
+		IFile graspFile = getGraspFile(input);
+		ArchitectureModel arch = readArchitecture(doc, graspFile);
 		if (arch != null) {
 			try {
 				for (Runnable task: documentLoadedTasks) {
@@ -91,6 +93,12 @@ public class XmlModelReader {
 		}
 		
 		return arch;
+	}
+	
+	private IFile getGraspFile(IFile xmlFile) {
+		IPath xmlPath = xmlFile.getProjectRelativePath();
+		IPath graspPath = xmlPath.removeFileExtension();
+		return xmlFile.getProject().getFile(graspPath);
 	}
 
 	private ArchitectureModel readArchitecture(Document doc, IFile file) {

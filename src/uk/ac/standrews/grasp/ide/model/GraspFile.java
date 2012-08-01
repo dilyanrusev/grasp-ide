@@ -5,6 +5,9 @@ import grasp.lang.ISyntaxTree;
 import grasp.lang.Parser;
 
 import java.io.InputStreamReader;
+import java.util.EnumSet;
+import java.util.HashSet;
+import java.util.Set;
 
 import org.eclipse.core.resources.IFile;
 import org.eclipse.core.runtime.CoreException;
@@ -17,8 +20,12 @@ import shared.io.ISource;
 import uk.ac.standrews.grasp.ide.builder.GraspSourceFile;
 import uk.ac.standrews.grasp.ide.builder.NullLogger;
 import uk.ac.standrews.grasp.ide.editors.completion.GraspScanner;
+import uk.ac.standrews.grasp.ide.model.GraspFileChangedEvent.Kind;
 
 public class GraspFile {
+	private static Set<IGraspFileChangedListener> changeListeners =
+			new HashSet<IGraspFileChangedListener>();
+	
 	private IErrorReport errorReport;
 	private ArchitectureModel architecture;
 	private ArchitectureModel lastArchitectureThatCompiled;
@@ -27,24 +34,37 @@ public class GraspFile {
 	private GraspScanner scanner;
 	private IFile file;
 	
+	public static void addChangeListener(IGraspFileChangedListener listener) {
+		changeListeners.add(listener);
+	}
+	
+	public static void removeChangeListener(IGraspFileChangedListener listener) {
+		changeListeners.remove(listener);
+	}
+	
+	private static void fireChange(GraspFile instance, EnumSet<Kind> change) {
+		GraspFileChangedEvent event = new GraspFileChangedEvent(instance, change);
+		for (IGraspFileChangedListener listener: changeListeners) {
+			listener.fileChanged(event);
+		}
+	}
+	
 	public GraspFile(IFile file) {
 		this.file = file;
 	}
 	
 	public void compiled(IArchitecture graph, IErrorReport errorReport) {
-//		if (graph != null && !errorReport.isAny()) {
-//			architecture = new ArchitectureModel(graph, file);
-//			lastArchitectureThatCompiled = architecture;
-//		} else {
-//			architecture = null;
-//		}
 		this.errorReport = errorReport;
+		
+		fireChange(this, EnumSet.of(Kind.Compiled));
 	}
 	
 	public boolean refreshFromXml(IFile xmlFile) {
 		architecture = XmlModelReader.getDefault().readFromFile(xmlFile);
 	    if (architecture != null) {
 		    lastArchitectureThatCompiled = architecture;
+		    
+		    fireChange(this, EnumSet.of(Kind.ArchiectureRefreshed));
 		    return true;
 	    }		
 		return false;
@@ -71,6 +91,12 @@ public class GraspFile {
 		Parser parser = new Parser();
 		ISource source = new GraspSourceFile(file);
 		syntaxTree = parser.parse(source, NullLogger.INSTANCE);
+		
+		EnumSet<Kind> changes = EnumSet.of(Kind.Reparsed);
+		if (syntaxTree != null) {
+			changes.add(Kind.SyntaxTreeChanged);
+		}
+		fireChange(this, changes);		
 	}
 	
 	public IFile getFile() {
@@ -97,6 +123,7 @@ public class GraspFile {
 	
 	public void setSourceViewer(ISourceViewer sourceViewer) {
 		this.sourceViewer = sourceViewer;
+		fireChange(this, EnumSet.of(Kind.SourceViewerChanged));
 	}
 	
 	public IDocument getDocument() {
@@ -109,6 +136,7 @@ public class GraspFile {
 
 	public void setSyntaxTree(ISyntaxTree syntaxTree) {
 		this.syntaxTree = syntaxTree;
+		fireChange(this, EnumSet.of(Kind.SyntaxTreeChanged));
 	}
 
 	public GraspScanner getScanner() {
@@ -117,5 +145,6 @@ public class GraspFile {
 
 	public void setScanner(GraspScanner scanner) {
 		this.scanner = scanner;
+		fireChange(this, EnumSet.of(Kind.ScannerChanged));
 	}
 }

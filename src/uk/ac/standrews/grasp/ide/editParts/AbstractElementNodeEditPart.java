@@ -42,6 +42,7 @@ public abstract class AbstractElementNodeEditPart<TModel extends FirstClassModel
 	@Override
 	protected IFigure createFigure() {
 		IFigure outline = createOutlineFigure();
+		outline.setSize(200, 100);
 		outline.setLayoutManager(new FlowLayout());
 		outline.add(getHeaderLabel());
 		outline.setToolTip(createTooltip());
