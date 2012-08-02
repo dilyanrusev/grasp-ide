@@ -6,6 +6,7 @@ import grasp.lang.ILayer;
 import grasp.lang.ISystem;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 import org.eclipse.swt.graphics.Image;
@@ -38,12 +39,14 @@ public class LayerEditPart extends AbstractElementNodeEditPart<LayerModel> {
 	
 	@Override
 	protected List<LayerOverLayerConnection> getModelSourceConnections() {
-		return sourceOverConnections;
+		//return sourceOverConnections;
+		return Collections.emptyList();
 	}
 	
 	@Override
 	protected List<LayerOverLayerConnection> getModelTargetConnections() {
-		return targetOverConnections;
+		//return targetOverConnections;
+		return Collections.emptyList();
 	}
 	
 	@Override

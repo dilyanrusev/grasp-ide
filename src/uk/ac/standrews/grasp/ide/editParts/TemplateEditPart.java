@@ -4,6 +4,7 @@ import grasp.lang.IElement.ElementType;
 import grasp.lang.IFirstClass;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 import org.eclipse.swt.graphics.Image;
@@ -39,12 +40,14 @@ public class TemplateEditPart extends AbstractElementNodeEditPart<TemplateModel>
 	
 	@Override
 	protected List<TemplateInheritanceConnection> getModelSourceConnections() {
-		return sourceInheritanceConnections;
+		//return sourceInheritanceConnections;
+		return Collections.emptyList();
 	}
 	
 	@Override
 	protected List<TemplateInheritanceConnection> getModelTargetConnections() {
-		return targetInheirtanceConnections;
+		//return targetInheirtanceConnections;
+		return Collections.emptyList();
 	}
 	
 	@Override

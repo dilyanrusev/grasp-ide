@@ -62,10 +62,10 @@ public class GraspPerspective implements IPerspectiveFactory {
 		topLeft.addView(IPageLayout.ID_PROJECT_EXPLORER);
 		
 		IFolderLayout topRight = factory.createFolder(
-				"topRight", IPageLayout.RIGHT, 0.85f, factory.getEditorArea());
+				"topRight", IPageLayout.RIGHT, 0.65f, factory.getEditorArea());
 		topRight.addView(GefView.ID);
-		topRight.addView(IPageLayout.ID_OUTLINE);
-		topRight.addView(IPageLayout.ID_PROP_SHEET);		
+		//topRight.addView(IPageLayout.ID_OUTLINE);
+		//topRight.addView(IPageLayout.ID_PROP_SHEET);		
 		
 		factory.addFastView(GefView.ID);
 		factory.addFastView(ID_ERROR_LOG_VIEW); 

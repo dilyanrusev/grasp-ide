@@ -1,13 +1,8 @@
 package uk.ac.standrews.grasp.ide.editParts;
 
-import org.eclipse.draw2d.Figure;
-import org.eclipse.draw2d.FlowLayout;
 import org.eclipse.draw2d.FreeformLayer;
-import org.eclipse.draw2d.FreeformLayout;
 import org.eclipse.draw2d.IFigure;
-import org.eclipse.draw2d.MarginBorder;
-import org.eclipse.draw2d.Panel;
-import org.eclipse.draw2d.text.FlowPage;
+import org.eclipse.draw2d.ToolbarLayout;
 
 import uk.ac.standrews.grasp.ide.model.ArchitectureModel;
 
@@ -18,9 +13,11 @@ public class ArchitectureEditPart extends AbstractElementEditPart<ArchitectureMo
 
 	@Override
 	protected IFigure createFigure() {
-		Figure f = new FreeformLayer();
-		f.setLayoutManager(new FreeformLayout());
-		f.setBorder(new MarginBorder(5));
+		// NB! Root figure must be FreeformFigure or ScalableFreeformRootEditPart won't size it properly
+		IFigure f = new FreeformLayer();
+		ToolbarLayout layout = new ToolbarLayout(false);
+		layout.setSpacing(20);		
+		f.setLayoutManager(layout);	
 		return f;
 	}
 

@@ -18,4 +18,14 @@ public class LayerOverLayerConnection {
 	public LayerModel getTarget() {
 		return target;
 	}
+	
+	@Override
+	public String toString() {
+		StringBuilder sb = new StringBuilder();
+		sb.append('[');
+	    sb.append(source.getName()).append(" -> ");
+	    sb.append(target.getName());
+	    sb.append(']');
+	    return sb.toString();
+	}
 }
