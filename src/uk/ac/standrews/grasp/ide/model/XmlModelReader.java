@@ -587,7 +587,8 @@ public class XmlModelReader {
 		}
 		AnnotationModel annotation = new AnnotationModel(parent);
 		String handler = annotationElem.getAttribute(IElement.XmlSchema.AT_HANDLER.tag());
-		annotation.setHandler(handler);
+		annotation.setHandler(handler);	
+		annotation.setName(handler);
 		NodeList namedValueNodes = annotationElem.getChildNodes();
 		for (int i = 0, len = namedValueNodes.getLength(); i < len; i++) {
 			Node child = namedValueNodes.item(i);
@@ -621,9 +622,8 @@ public class XmlModelReader {
 		String name = elem.getAttribute(IElement.XmlSchema.AT_NAME.tag());
 		String refName = elem.getAttribute(IElement.XmlSchema.AT_RNAME.tag());
 		
-		if ((name != null && !TextUtil.isIdentifier(name)) || refName == null || !TextUtil.isIdentifier(refName)) {
-			return false;
-		}
+		// don't check for identifier validity - the XML is supposed to be written by the compiler
+		// after successful compilation, so we just assume name/refname are valid
 		
 		if (name == null) {
 			model.setName(refName);

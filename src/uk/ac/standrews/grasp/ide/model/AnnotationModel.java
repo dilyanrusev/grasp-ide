@@ -38,7 +38,7 @@ public class AnnotationModel extends ElementModel implements IAnnotation {
 
 	@Override
 	public void setHandler(String handler) {
-		this.handler = handler;
+		this.handler = handler;		
 		fireElementChanged(PROPERTY_HANDLER);
 	}
 	

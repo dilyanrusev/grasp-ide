@@ -115,6 +115,14 @@ public final class TextUtil {
 		return expression != null && IDENTIFIER_PATTERN.matcher(expression).matches();
 	}
 	
+	public static boolean isNullOrEmpty(String expression) {
+		return expression == null || expression.length() == 0;
+	}
+	
+	public static boolean isNullOrWhitespace(String expression) {
+		return isNullOrEmpty(expression) || expression.trim().length() == 0;
+	}
+	
 	/**
 	 * Determines whether a character is whitespace 
 	 * @author Dilyan Rusev
