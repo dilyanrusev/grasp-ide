@@ -1,29 +1,19 @@
 package uk.ac.standrews.grasp.ide.model;
 
-import java.util.List;
-
-import grasp.lang.IFirstClass;
-import grasp.lang.IQualityAttribute;
-
-public class QualityAttributeModel extends FirstClassModel implements
-		IQualityAttribute {
+public class QualityAttributeModel extends FirstClassModel {
 	
-	private final List<IFirstClass> supports = new ObservableList<IFirstClass>();
+	private final ObservableSet<FirstClassModel> supports = new ObservableSet<FirstClassModel>();
 	
-	public QualityAttributeModel(IQualityAttribute other, IFirstClass parent) {
+	public QualityAttributeModel(QualityAttributeModel other, FirstClassModel parent) {
 		super(other, parent);
-		for (IFirstClass child: other.getSupports()) {
-			IFirstClass observable = (IFirstClass) GraspModel.INSTANCE.makeObservable(child, this);
-			supports.add(observable);
-		}
+		copyCollectionAtTheEndOfCopy(other.getSupports(), supports);
 	}
 	
-	public QualityAttributeModel(IFirstClass parent) {
+	public QualityAttributeModel(FirstClassModel parent) {
 		super(ElementType.QUALITY_ATTRIBUTE, parent);
 	}
 
-	@Override
-	public List<IFirstClass> getSupports() {
+	public ObservableSet<FirstClassModel> getSupports() {
 		return supports;
 	}
 	
@@ -41,7 +31,7 @@ public class QualityAttributeModel extends FirstClassModel implements
 	public int hashCode() {
 		int result = super.hashCode();
 		
-		for (IFirstClass supported: getSupports()) {
+		for (FirstClassModel supported: getSupports()) {
 			result = 31 * result + supported.hashCode();
 		}
 		

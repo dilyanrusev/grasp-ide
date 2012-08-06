@@ -20,4 +20,9 @@ public class NotSupportedEditPart extends AbstractElementNodeEditPart<FirstClass
 		
 	}
 
+	@Override
+	protected boolean isModelChildSupported(FirstClassModel child) {
+		return false;
+	}
+
 }

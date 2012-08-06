@@ -5,15 +5,28 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 
+/**
+ * Implements an observable list using <code>ArrayList</code>
+ * @author Dilyan Rusev
+ *
+ * @param <E> Type of the elements contained
+ */
 public class ObservableList<E> extends AbstractList<E> implements IObservableCollection<E> {
 	private List<E> store;
 	private List<ICollectionChangedListener<E>> listeners =
 			new ArrayList<ICollectionChangedListener<E>>();
 	
+	/**
+	 * Create an empty list
+	 */
 	public ObservableList() {
 		store = new ArrayList<E>();
 	}
 	
+	/**
+	 * Create a copy of another list
+	 * @param other Collection to set as the initial contents of this list
+	 */
 	public ObservableList(Collection<? extends E> other) {
 		store = new ArrayList<E>(other);
 	}

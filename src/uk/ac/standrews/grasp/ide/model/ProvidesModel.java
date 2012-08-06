@@ -1,27 +1,22 @@
 package uk.ac.standrews.grasp.ide.model;
 
-import grasp.lang.IFirstClass;
-import grasp.lang.IInterface;
-import grasp.lang.ILink;
-import grasp.lang.IProvides;
-
-public class ProvidesModel extends InterfaceModel implements IProvides {
+public class ProvidesModel extends InterfaceModel {
 	
-	public ProvidesModel(IProvides other, IFirstClass parent) {
+	public ProvidesModel(ProvidesModel other, FirstClassModel parent) {
 		super(other, parent);
 	}
 	
-	public ProvidesModel(IFirstClass parent) {
+	public ProvidesModel(FirstClassModel parent) {
 		super(ElementType.PROVIDES, parent);
 	}
 
 	@Override
-	protected IInterface getLinkEndpoint(ILink link) {
+	protected InterfaceModel getLinkEndpoint(LinkModel link) {
 		return link.getProvider();
 	}
 
 	@Override
-	protected void setLinkEndpoint(ILink link, IInterface endpoint) {
-		link.setProvider((IProvides)endpoint);
+	protected void setLinkEndpoint(LinkModel link, InterfaceModel endpoint) {
+		link.setProvider((ProvidesModel) endpoint);
 	}
 }

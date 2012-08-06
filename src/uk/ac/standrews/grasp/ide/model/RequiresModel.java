@@ -1,17 +1,12 @@
 package uk.ac.standrews.grasp.ide.model;
 
-import grasp.lang.IFirstClass;
-import grasp.lang.IInterface;
-import grasp.lang.ILink;
-import grasp.lang.IRequires;
-
-public class RequiresModel extends InterfaceModel implements IRequires {
+public class RequiresModel extends InterfaceModel {
 	
-	public RequiresModel(IRequires other, IFirstClass parent) {
+	public RequiresModel(RequiresModel other, FirstClassModel parent) {
 		super(other, parent);
 	}
 	
-	public RequiresModel(IFirstClass parent) {
+	public RequiresModel(FirstClassModel parent) {
 		super(ElementType.REQUIRES, parent);
 	}
 	
@@ -21,12 +16,12 @@ public class RequiresModel extends InterfaceModel implements IRequires {
 	}
 
 	@Override
-	protected IInterface getLinkEndpoint(ILink link) {
+	protected InterfaceModel getLinkEndpoint(LinkModel link) {
 		return link.getConsumer();
 	}
 
 	@Override
-	protected void setLinkEndpoint(ILink link, IInterface endpoint) {
-		link.setConsumer((IRequires) endpoint);
+	protected void setLinkEndpoint(LinkModel link, InterfaceModel endpoint) {
+		link.setConsumer((RequiresModel) endpoint);
 	}
 }

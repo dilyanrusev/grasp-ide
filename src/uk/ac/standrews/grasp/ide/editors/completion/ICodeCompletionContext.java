@@ -1,11 +1,9 @@
 package uk.ac.standrews.grasp.ide.editors.completion;
 
-import grasp.lang.IArchitecture;
-import grasp.lang.ISyntaxNode;
-import grasp.lang.ISyntaxTree;
-
 import org.eclipse.core.resources.IFile;
 import org.eclipse.jface.text.IDocument;
+
+import uk.ac.standrews.grasp.ide.model.ArchitectureModel;
 
 /**
  * Represents the <code>IContentAssistProcessor</code> which provides additional context to aid code completion
@@ -63,14 +61,11 @@ public interface ICodeCompletionContext {
 	 * Returns the AST for the document, if it was compiled successfully, or null if it wasn't compiled or there were compilation errors
 	 * @return AST for the document. May be <code>null</code>
 	 */
-	IArchitecture getModel();
+	ArchitectureModel getModel();
 	
 	/**
 	 * Returns a grasp source code scanner
 	 * @return Lets the user parse the code chunk by chunk
 	 */
 	GraspScanner getCodeScanner();
-	
-	ISyntaxTree getSyntaxTree();
-	ISyntaxNode getNodeAtCursorPosition();
 }

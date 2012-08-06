@@ -13,6 +13,5 @@ public class ComponentEditPart extends AbstractInstantiableEditPart<ComponentMod
 	@Override
 	protected Image getIcon() {
 		return IconsCache.getDefault().getComponentIcon();
-	}
-
+	}	
 }

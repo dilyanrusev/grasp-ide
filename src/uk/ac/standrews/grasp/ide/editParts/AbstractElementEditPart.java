@@ -1,47 +1,48 @@
 package uk.ac.standrews.grasp.ide.editParts;
 
-import grasp.lang.IAnnotation;
-import grasp.lang.IFirstClass;
-
+import java.util.ArrayList;
 import java.util.List;
 
 import org.eclipse.gef.editparts.AbstractGraphicalEditPart;
 
+import uk.ac.standrews.grasp.ide.model.AnnotationModel;
 import uk.ac.standrews.grasp.ide.model.CollectionChangedEvent;
 import uk.ac.standrews.grasp.ide.model.ElementChangedEvent;
 import uk.ac.standrews.grasp.ide.model.FirstClassModel;
 import uk.ac.standrews.grasp.ide.model.ICollectionChangedListener;
 import uk.ac.standrews.grasp.ide.model.IElementChangedListener;
-import uk.ac.standrews.grasp.ide.model.IObservableCollection;
 
 public abstract class AbstractElementEditPart<TModel extends FirstClassModel>
 		extends AbstractGraphicalEditPart
 		implements IElementChangedListener {
 
-	protected ICollectionChangedListener<IAnnotation> annotationChangedListener;
-	protected ICollectionChangedListener<IFirstClass> childElementsChangedListener;
+	private ICollectionChangedListener<AnnotationModel> annotationChangedListener;
+	private ICollectionChangedListener<FirstClassModel> childElementsChangedListener;
+	private List<FirstClassModel> supportedChildren;
 
 	public AbstractElementEditPart(TModel model) {
 		super();
 		setModel(model);
 		annotationChangedListener = new AnnotationsChangedListener();
 		childElementsChangedListener = new ChildElementsChangedListener();
+		supportedChildren = new ArrayList<FirstClassModel>();
+		updateSupportedChildren();
 	}
 
 	@Override
 	public void activate() {
 		super.activate();
 		getElement().addElementChangedListener(this);	
-		getObservableAnnotations().addCollectionChangeListener(annotationChangedListener);		
-		getObservableModelChildren().addCollectionChangeListener(childElementsChangedListener);
+		getElement().getAnnotations().addCollectionChangeListener(annotationChangedListener);		
+		getElement().getBody().addCollectionChangeListener(childElementsChangedListener);
 	}
 
 	@Override
 	public void deactivate() {
 		super.deactivate();
 		getElement().removeElementChangedListener(this);
-		getObservableAnnotations().removeCollectionChangeListener(annotationChangedListener);
-		getObservableModelChildren().removeCollectionChangeListener(childElementsChangedListener);
+		getElement().getAnnotations().removeCollectionChangeListener(annotationChangedListener);
+		getElement().getBody().removeCollectionChangeListener(childElementsChangedListener);
 	}
 
 	@Override
@@ -55,10 +56,13 @@ public abstract class AbstractElementEditPart<TModel extends FirstClassModel>
 		refresh();
 	}
 
-	protected void annotationsChanged(CollectionChangedEvent<IAnnotation> event) {		
+	protected void annotationsChanged(CollectionChangedEvent<AnnotationModel> event) {
+		refresh();
 	}
 
-	protected void childElementsChanged(CollectionChangedEvent<IFirstClass> event) {		
+	protected void childElementsChanged(CollectionChangedEvent<FirstClassModel> event) {
+		updateSupportedChildren();
+		refresh();
 	}
 
 	@SuppressWarnings("unchecked")
@@ -67,29 +71,31 @@ public abstract class AbstractElementEditPart<TModel extends FirstClassModel>
 	}
 
 	@Override
-	protected List<? extends IFirstClass> getModelChildren() {
-		return getElement().getChildElements();
+	protected List<? extends FirstClassModel> getModelChildren() {		
+		return supportedChildren;
 	}
-
-	private IObservableCollection<IAnnotation> getObservableAnnotations() {
-		return (IObservableCollection<IAnnotation>) getElement().getAnnotations();
+	
+	private void updateSupportedChildren() {
+		supportedChildren.clear();
+		for (FirstClassModel childModel: getElement().getBody()) {
+			if (isModelChildSupported(childModel)) {
+				supportedChildren.add(childModel);
+			}
+		}
 	}
-
-	@SuppressWarnings("unchecked")
-	private IObservableCollection<IFirstClass> getObservableModelChildren() {
-		return (IObservableCollection<IFirstClass>) getElement().getChildElements();
-	}
-
-	private final class AnnotationsChangedListener implements ICollectionChangedListener<IAnnotation> {
+	
+	protected abstract boolean isModelChildSupported(FirstClassModel child);
+	
+	private final class AnnotationsChangedListener implements ICollectionChangedListener<AnnotationModel> {
 		@Override
-		public void collectionChanged(CollectionChangedEvent<IAnnotation> event) {
+		public void collectionChanged(CollectionChangedEvent<AnnotationModel> event) {
 			annotationsChanged(event);
 		}
 	}
 	
-	private final class ChildElementsChangedListener implements ICollectionChangedListener<IFirstClass> {
+	private final class ChildElementsChangedListener implements ICollectionChangedListener<FirstClassModel> {
 		@Override
-		public void collectionChanged(CollectionChangedEvent<IFirstClass> event) {
+		public void collectionChanged(CollectionChangedEvent<FirstClassModel> event) {
 			childElementsChanged(event);
 		}
 	}

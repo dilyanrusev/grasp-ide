@@ -1,91 +1,58 @@
 package uk.ac.standrews.grasp.ide.model;
 
-import grasp.lang.IAnnotation;
-import grasp.lang.IElement;
-import grasp.lang.IFirstClass;
-import grasp.lang.IValidationContext;
-
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.List;
 
 import org.eclipse.core.runtime.Assert;
+import org.eclipse.core.runtime.AssertionFailedException;
 
-public abstract class FirstClassModel extends ElementModel implements IFirstClass {
-	public static final String PROPERTY_CHILD = "addChild";
+public abstract class FirstClassModel extends ElementModel {
+	private final ObservableSet<AnnotationModel> annotations = 
+			new ObservableSet<AnnotationModel>();
+	private final ObservableSet<FirstClassModel> body = 
+			new ObservableSet<FirstClassModel>();
 	
-	private final Collection<IAnnotation> annotations = 
-			new ObservableList<IAnnotation>();
-	private final List<IFirstClass> body = 
-			new ObservableList<IFirstClass>();
-	
-	public FirstClassModel(IFirstClass other, IFirstClass parent) {
+	public FirstClassModel(FirstClassModel other, FirstClassModel parent) {
 		super(other, parent);
-		for (IAnnotation annotation: other.getAnnotations()) {
-			IAnnotation observable = new AnnotationModel(annotation, this);
-			annotations.add(observable);
+		for (AnnotationModel annotation: other.getAnnotations()) {
+			AnnotationModel copy = new AnnotationModel(annotation, this);
+			annotations.add(copy);
 		}
-		for (IFirstClass child: other.getBody()) {
-			IFirstClass observable = (IFirstClass)GraspModel.INSTANCE.makeObservable(child, this);
-			addChild(observable, false);
+		for (FirstClassModel child: other.getBody()) {
+			FirstClassModel copy = createCopyOf(child, this);
+			addChild(copy);
 		}
 	}
 	
-	public FirstClassModel(ElementType type, IElement parent) {
+	public FirstClassModel(ElementType type, ElementModel parent) {
 		super(type, parent);
 	}
 
-	@Override
-	public void addChild(IFirstClass child) {
-		addChild(child, true);
-	}
-	
-	private void addChild(IFirstClass child, boolean fireEvent) {
-		Assert.isTrue(child instanceof FirstClassModel
-				&& child.getParent() == this
+	public void addChild(FirstClassModel child) {
+		Assert.isTrue(child.getParent() == this
 				&& child.getReferencingName() != null);
 		symPut(child.getReferencingName(), child);
 		body.add(child);
-		if (fireEvent) {
-			fireElementChanged(PROPERTY_CHILD);
-		}
-	}
+	}	
 
-	@Override
-	public Collection<IAnnotation> getAnnotations() {
+	public ObservableSet<AnnotationModel> getAnnotations() {
 		return annotations;
 	}
-
-	@Override
-	public Collection<IFirstClass> getBody() {
+	
+	public ObservableSet<FirstClassModel> getBody() {
 		return body;
 	}
 	
-	public List<IFirstClass> getChildElements() {
-		return body;
-	}
-
-	@Override
-	public Collection<IFirstClass> getBodyByType(ElementType elementtype) {
-		// do not need to observe
-		Collection<IFirstClass> ofType = new ArrayList<IFirstClass>();
-		for (IFirstClass child: body) {
+	public Collection<FirstClassModel> getBodyByType(ElementType elementtype) {
+		// do not need to observe; should be fast since body is sorted
+		Collection<FirstClassModel> ofType = new ArrayList<FirstClassModel>();
+		for (FirstClassModel child: body) {
 			if (child.getType() == elementtype) {
 				ofType.add(child);
 			}
 		}
 		return ofType;
-	}
-	
-	@Override
-	public void validate(IValidationContext ctx) {
-		for (IAnnotation annotation: annotations) {
-			annotation.validate(ctx);
-		}
-		for (IFirstClass child: body) {
-			child.validate(ctx);
-		}
-	}
+	}	
 	
 	@Override
 	public boolean equals(Object obj) {
@@ -105,10 +72,46 @@ public abstract class FirstClassModel extends ElementModel implements IFirstClas
 		
 		// omit body for speed
 		// annotations might contain important designer data
-		for (IAnnotation annotation: getAnnotations()) {
+		for (AnnotationModel annotation: getAnnotations()) {
 			result = 31 * result + annotation.hashCode();
 		}
 		
 		return result;
+	}
+	
+	@SuppressWarnings("unchecked")
+	protected static <T extends FirstClassModel> T createCopyOf(T source, FirstClassModel parent) {
+		switch (source.getType()) {		
+		case CHECK:
+			return (T) new CheckModel((CheckModel) source, parent);
+		case COMPONENT:
+			return (T) new ComponentModel((ComponentModel) source, parent);
+		case CONNECTOR:
+			return (T) new ConnectorModel((ConnectorModel) source, parent);		
+		case LAYER:
+			return (T) new LayerModel((LayerModel) source, parent);
+		case LINK:
+			return (T) new LinkModel((LinkModel) source, parent);		
+		case PROPERTY:
+			return (T) new PropertyModel((PropertyModel) source, parent);
+		case PROVIDES:
+			return (T) new ProvidesModel((ProvidesModel) source, parent);
+		case QUALITY_ATTRIBUTE:
+			return (T) new QualityAttributeModel((QualityAttributeModel) source, parent);
+		case RATIONALE:
+			return (T) new RationaleModel((RationaleModel) source, parent);
+		case REASON:
+			return (T) new ReasonModel((ReasonModel) source, parent);
+		case REQUIREMENT:
+			return (T) new RequirementModel((RequirementModel) source, parent);
+		case REQUIRES:
+			return (T) new RequiresModel((RequiresModel) source, parent);
+		case SYSTEM:
+			return (T) new SystemModel((SystemModel) source, (ArchitectureModel) parent);
+		case TEMPLATE:
+			return (T) new TemplateModel((TemplateModel) source, parent);
+		default:
+			throw new AssertionFailedException("Cannot create copy of " + source.getType());		
+		}		
 	}
 }

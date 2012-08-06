@@ -1,7 +1,5 @@
 package uk.ac.standrews.grasp.ide.model;
 
-import grasp.lang.IElement;
-
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
@@ -10,11 +8,10 @@ import java.util.List;
 import java.util.Map;
 
 import org.eclipse.core.runtime.Assert;
-import org.w3c.dom.Node;
 
-import shared.xml.IXmlWriter;
+import uk.ac.standrews.grasp.ide.Log;
 
-public abstract class ElementModel implements IElement, IObservable, Comparable<ElementModel> {
+public abstract class ElementModel implements IObservable, Comparable<ElementModel> {
 	public static final String PROPERTY_TYPE = "type";
 	public static final String PROPERTY_PARENT = "parent";
 	public static final String PROPERTY_ALIAS = "alias";
@@ -25,21 +22,21 @@ public abstract class ElementModel implements IElement, IObservable, Comparable<
 	private static Map<ElementType, Integer> elementWeights;
 	
 	private List<IElementChangedListener> changeListeners = new ArrayList<IElementChangedListener>();
-	private Map<String, IElement> symbolTable = new HashMap<String, IElement>();	
+	private Map<String, ElementModel> symbolTable = new HashMap<String, ElementModel>();	
 	private ElementType type;
-	private IElement parent;
+	private ElementModel parent;
 	private String name;
 	private String alias;
 	private String referencingName;
 	private String qualifiedName;
 	private ArchitectureModel architecture;
 	
-	public ElementModel(ElementType type, IElement parent) {
+	public ElementModel(ElementType type, ElementModel parent) {
 		this.type = type;
 		this.parent = parent;
 	}
 	
-	public ElementModel(IElement other, IElement parent) {
+	public ElementModel(ElementModel other, ElementModel parent) {
 		this.type = other.getType();
 		this.parent = parent;
 		this.name = other.getName();
@@ -95,51 +92,40 @@ public abstract class ElementModel implements IElement, IObservable, Comparable<
 		}
 	}
 
-	@Override
 	public int getInstanceId() {
 		return super.hashCode();
 	}
 
-	@Override
 	public ElementType getType() {
 		return type;
 	}
-
-	@Override
-	public IElement getParent() {
+	
+	public ElementModel getParent() {
 		return parent;
 	}
-
-	@Override
+	
 	public String getName() {
 		return name;
 	}
-
-	@Override
+	
 	public String getAlias() {
 		return alias;
 	}
-
-	@Override
+	
 	public String getReferencingName() {
 		return referencingName;
 	}
-
-	@Override
+	
 	public String getQualifiedName() {
 		return qualifiedName;
 	}
-
-	@Override
-	public void setParent(IElement parent) {
-		Assert.isTrue(parent == null || parent instanceof ElementModel, 
-				"Parent must be ElementModel or null");
+	
+	public void setParent(ElementModel parent) {		
 		this.parent = parent;
 		rebuildNames();
 		fireElementChanged(PROPERTY_PARENT, PROPERTY_QUALIFIED_NAME, PROPERTY_REFERENCING_NAME);
 	}
-
-	@Override
+	
 	public void setName(String name) {
 		this.name = name;
 		rebuildNames();
@@ -151,41 +137,26 @@ public abstract class ElementModel implements IElement, IObservable, Comparable<
 		rebuildNames();
 		fireElementChanged(PROPERTY_REFERENCING_NAME);
 	}
-
-	@Override
+	
 	public void setAlias(String alias) {
 		this.alias = alias;
 		rebuildNames();
 		fireElementChanged(PROPERTY_ALIAS, PROPERTY_REFERENCING_NAME);
 	}
-
-	@Override
-	public void symPut(String s, IElement element) {
+	
+	protected void symPut(String s, ElementModel element) {
 		// higher-level method will notify for changes
-		if (!symLookup(s)) {
-			Assert.isTrue(element instanceof ElementModel);
+		if (!symLookup(s)) {			
 			symbolTable.put(s, element);
 		}
 	}
-
-	@Override
-	public IElement symGet(String s) {
+	
+	protected ElementModel symGet(String s) {
 		return symbolTable.get(s);
 	}
-
-	@Override
-	public boolean symLookup(String s) {
+	
+	protected boolean symLookup(String s) {
 		return symbolTable.containsKey(s);
-	}
-
-	@Override
-	public void toXml(IXmlWriter ixmlwriter) {
-		// no serialisation
-	}
-
-	@Override
-	public void serialize(IXmlWriter ixmlwriter, Node node) {
-		// no serialisation
 	}
 	
 	public ArchitectureModel getArchitecture() {
@@ -193,7 +164,7 @@ public abstract class ElementModel implements IElement, IObservable, Comparable<
 			return (ArchitectureModel) this;
 		}
 		if (architecture == null) {
-			IElement arch = parent;
+			ElementModel arch = parent;
 			while (arch.getType() != ElementType.ARCHITECTURE) {
 				arch = arch.getParent();
 			}
@@ -312,5 +283,75 @@ public abstract class ElementModel implements IElement, IObservable, Comparable<
 		}
 		Integer weight = elementWeights.get(type);
 		return weight != null ? weight : 99;
+	}
+	
+	protected <E extends ElementModel> void copyCollectionAtTheEndOfCopy(
+			Collection<E> source, final Collection<E> target) {
+		final List<String> qualifiedNames = extractQualifiedNames(source);
+		final ArchitectureModel arch = getArchitecture();
+		if (qualifiedNames.size() > 0) {
+			arch.executeAtTheEndOfCopy(new Runnable() {				
+				@SuppressWarnings("unchecked")
+				@Override
+				public void run() {
+					for (String qname: qualifiedNames) {
+						E found = (E) arch.findByQualifiedName(qname);
+						Assert.isNotNull(found, "Cannot find " + qname + " in " + arch);
+						target.add(found);
+					}
+				}
+			});
+		}
+	}
+	
+	private static <E extends ElementModel> List<String> extractQualifiedNames(Collection<E> collection) {
+		List<String> qualifiedNames = new ArrayList<String>(collection.size());
+		for (E elem: collection) {
+			qualifiedNames.add(elem.getQualifiedName());
+		}
+		return qualifiedNames;
+	}
+	
+	public static ElementModel createElementByType(ElementType type, FirstClassModel parent) {
+		switch (type) {
+		case ANNOTATION:
+			return new AnnotationModel(parent);
+		case ARCHITECTURE:
+			Log.info("GraspModel.createElementByType: cannot create architecture");
+			return null;
+		case CHECK:
+			return new CheckModel(parent);
+		case COMPONENT:
+			return new ComponentModel(parent);
+		case CONNECTOR:
+			return new ConnectorModel(parent);
+		case EXPRESSION:
+			return new ExpressionModel(parent);
+		case LAYER:
+			return new LayerModel(parent);
+		case LINK:
+			return new LinkModel(parent);		
+		case PROPERTY:
+			return new PropertyModel(parent);
+		case PROVIDES:
+			return new ProvidesModel(parent);
+		case QUALITY_ATTRIBUTE:
+			return new QualityAttributeModel(parent);
+		case RATIONALE:
+			return new RationaleModel(parent);
+		case REASON:
+			return new ReasonModel(parent);
+		case REQUIREMENT:
+			return new RequirementModel(parent);
+		case REQUIRES:
+			return new RequiresModel(parent);
+		case SYSTEM:
+			return new SystemModel((ArchitectureModel) parent);
+		case TEMPLATE:
+			return new TemplateModel(parent);
+		default:
+			Assert.isTrue(false, "Unknown ElmentType: " + type);
+			return null;
+		}
 	}
 }

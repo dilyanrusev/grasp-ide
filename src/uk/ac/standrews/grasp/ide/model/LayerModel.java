@@ -1,27 +1,19 @@
 package uk.ac.standrews.grasp.ide.model;
 
-import grasp.lang.IFirstClass;
-import grasp.lang.ILayer;
-
-import java.util.List;
-
-public class LayerModel extends BecauseModel implements ILayer {
+public class LayerModel extends BecauseModel {
 	
-	private List<ILayer> over = new ObservableList<ILayer>();
+	private ObservableSet<LayerModel> over = new ObservableSet<LayerModel>();
 	
-	public LayerModel(ILayer other, IFirstClass parent) {
+	public LayerModel(LayerModel other, FirstClassModel parent) {
 		super(other, parent);
-		for (ILayer child: over) {
-			over.add(new LayerModel(child, this));
-		}
+		copyCollectionAtTheEndOfCopy(other.getOver(), over);
 	}
 	
-	public LayerModel(IFirstClass parent) {
+	public LayerModel(FirstClassModel parent) {
 		super(ElementType.LAYER, parent);
 	}
 
-	@Override
-	public List<ILayer> getOver() {
+	public ObservableSet<LayerModel> getOver() {
 		return over;
 	}
 	
@@ -35,7 +27,7 @@ public class LayerModel extends BecauseModel implements ILayer {
 	public int hashCode() {
 		int result = super.hashCode();
 		
-		for (ILayer layer: getOver()) {
+		for (LayerModel layer: getOver()) {
 			result = 31 * result + layer.hashCode();
 		}
 		

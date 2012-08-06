@@ -1,33 +1,32 @@
 package uk.ac.standrews.grasp.ide.model;
 
-import grasp.lang.IBecause;
-import grasp.lang.IExtensible;
-import grasp.lang.IFirstClass;
-
-public abstract class ExtensibleModel extends BecauseModel implements
-		IExtensible {
+public abstract class ExtensibleModel extends BecauseModel {
 	public static final String PROPERTY_EXTENDEE = "extendee";
 	
-	private IFirstClass extendee;
+	private FirstClassModel extendee;
 	
-	public ExtensibleModel(IExtensible other, IFirstClass parent) {
-		super((IBecause) other, parent);
+	public ExtensibleModel(ExtensibleModel other, FirstClassModel parent) {
+		super(other, parent);
 		if (other.getExtendee() != null) {
-			extendee = (IFirstClass) GraspModel.INSTANCE.makeObservable(other.getExtendee(), this);
+			final String qname = other.getExtendee().getQualifiedName();
+			getArchitecture().executeAtTheEndOfCopy(new Runnable() {				
+				@Override
+				public void run() {
+					extendee = (FirstClassModel) getArchitecture().findByQualifiedName(qname);
+				}
+			});
 		}
 	}
 	
-	public ExtensibleModel(ElementType type, IFirstClass parent) {
+	public ExtensibleModel(ElementType type, FirstClassModel parent) {
 		super(type, parent);
 	}
 
-	@Override
-	public IFirstClass getExtendee() {
+	public FirstClassModel getExtendee() {
 		return extendee;
 	}
 
-	@Override
-	public void setExtendee(IFirstClass extendee) {
+	public void setExtendee(FirstClassModel extendee) {
 		this.extendee = extendee;
 		fireElementChanged(PROPERTY_EXTENDEE);
 	}

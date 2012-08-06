@@ -15,6 +15,8 @@ import org.eclipse.ui.console.MessageConsole;
 import org.eclipse.ui.plugin.AbstractUIPlugin;
 import org.osgi.framework.BundleContext;
 
+import uk.ac.standrews.grasp.ide.compiler.ICompiler;
+import uk.ac.standrews.grasp.ide.compiler.IntegratedCompiler;
 import uk.ac.standrews.grasp.ide.editParts.IconsCache;
 import uk.ac.standrews.grasp.ide.model.GraspModel;
 
@@ -42,6 +44,7 @@ public class GraspPlugin extends AbstractUIPlugin {
 	private static GraspPlugin plugin;
 	
 	private Map<RGB, Color> colours;	
+	private ICompiler compiler;
 	
 	/**
 	 * The constructor
@@ -56,6 +59,7 @@ public class GraspPlugin extends AbstractUIPlugin {
 	public void start(BundleContext context) throws Exception {
 		super.start(context);
 		plugin = this;		
+		compiler = new IntegratedCompiler();
 		colours = new HashMap<RGB, Color>();
 		GraspModel.INSTANCE.init();
 	}
@@ -92,6 +96,10 @@ public class GraspPlugin extends AbstractUIPlugin {
 	public static ImageDescriptor getImageDescriptor(String path) {
 		return imageDescriptorFromPlugin(PLUGIN_ID, path);
 	}	
+	
+	public ICompiler getDefaultCompiler() {
+		return compiler;
+	}
 	
 	/**
 	 * Get or create a console by name

@@ -1,46 +1,38 @@
 package uk.ac.standrews.grasp.ide.model;
 
-import java.util.List;
-
-import grasp.lang.IBecause;
-import grasp.lang.IFirstClass;
-import grasp.lang.IInstantiable;
-import grasp.lang.ITemplate;
-
-public abstract class InstantiableModel extends BecauseModel implements
-		IInstantiable {
+public abstract class InstantiableModel extends BecauseModel {
 	public static final String PROPERTY_BASE = "base";
 	
-	private final List<IFirstClass> arguments = new ObservableList<IFirstClass>();
-	private ITemplate base;
+	private final ObservableSet<FirstClassModel> arguments = new ObservableSet<FirstClassModel>();
+	private TemplateModel base;
 	
-	public InstantiableModel(IInstantiable other, IFirstClass parent) {
-		super((IBecause) other, parent);
+	public InstantiableModel(InstantiableModel other, FirstClassModel parent) {
+		super(other, parent);
 		if (other.getBase() != null) {
-			this.base = new TemplateModel(other.getBase(), (IFirstClass) other.getBase().getParent());
+			final String qualifiedName = other.getBase().getQualifiedName();			
+			getArchitecture().executeAtTheEndOfCopy(new Runnable() {				
+				@Override
+				public void run() {
+					base = (TemplateModel) getArchitecture().findByQualifiedName(qualifiedName);
+				}
+			});
 		}
-		for (IFirstClass argument: other.getArguments()) {
-			IFirstClass observable = (IFirstClass) GraspModel.INSTANCE.makeObservable(argument, this);
-			arguments.add(observable);
-		}
+		copyCollectionAtTheEndOfCopy(other.getArguments(), arguments);
 	}
 	
-	public InstantiableModel(ElementType type, IFirstClass parent) {
+	public InstantiableModel(ElementType type, FirstClassModel parent) {
 		super(type, parent);
 	}
 
-	@Override
-	public List<IFirstClass> getArguments() {
+	public ObservableSet<FirstClassModel> getArguments() {
 		return arguments;
 	}
 
-	@Override
-	public ITemplate getBase() {
+	public TemplateModel getBase() {
 		return base;
 	}
 
-	@Override
-	public void setBase(ITemplate base) {
+	public void setBase(TemplateModel base) {
 		this.base = base;
 		fireElementChanged(PROPERTY_BASE);
 	}
@@ -61,7 +53,7 @@ public abstract class InstantiableModel extends BecauseModel implements
 		int result = super.hashCode();
 		
 		result = 31 * result + (getBase() != null ? getBase().hashCode() : 0);
-		for (IFirstClass arg: getArguments()) {
+		for (FirstClassModel arg: getArguments()) {
 			result = 31 * result + arg.hashCode();
 		}
 		

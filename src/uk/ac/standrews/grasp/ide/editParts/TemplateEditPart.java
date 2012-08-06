@@ -1,14 +1,13 @@
 package uk.ac.standrews.grasp.ide.editParts;
 
-import grasp.lang.IElement.ElementType;
-import grasp.lang.IFirstClass;
-
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
 import org.eclipse.swt.graphics.Image;
 
+import uk.ac.standrews.grasp.ide.model.ElementType;
+import uk.ac.standrews.grasp.ide.model.FirstClassModel;
 import uk.ac.standrews.grasp.ide.model.TemplateModel;
 
 public class TemplateEditPart extends AbstractElementNodeEditPart<TemplateModel> {
@@ -23,7 +22,7 @@ public class TemplateEditPart extends AbstractElementNodeEditPart<TemplateModel>
 			sourceInheritanceConnections.add(new TemplateInheritanceConnection(model, (TemplateModel) model.getExtendee()));
 		}
 		targetInheirtanceConnections = new ArrayList<TemplateInheritanceConnection>();
-		for (IFirstClass fc: model.getArchitecture().getBodyByType(ElementType.TEMPLATE)) {
+		for (FirstClassModel fc: model.getArchitecture().getBodyByType(ElementType.TEMPLATE)) {
 			TemplateModel other = (TemplateModel) fc;
 			if (!other.getQualifiedName().equalsIgnoreCase(model.getQualifiedName())
 					&& other.getExtendee() != null
@@ -59,6 +58,12 @@ public class TemplateEditPart extends AbstractElementNodeEditPart<TemplateModel>
 	protected void createEditPolicies() {
 		// TODO Auto-generated method stub
 		
+	}
+
+	@Override
+	protected boolean isModelChildSupported(FirstClassModel child) {
+		return child.getType() == ElementType.PROVIDES 
+				|| child.getType() == ElementType.REQUIRES;
 	}
 
 }

@@ -1,52 +1,22 @@
 package uk.ac.standrews.grasp.ide.model;
 
-import java.util.List;
-
-import grasp.lang.IAnnotation;
-import grasp.lang.IElement;
-import grasp.lang.INamedValue;
-import grasp.lang.IValidationContext;
-
-public class AnnotationModel extends ElementModel implements IAnnotation {
-	public static final String PROPERTY_HANDLER = "handler";
+public class AnnotationModel extends ElementModel {	
+	private ObservableSet<NamedValueModel> namedValues = new ObservableSet<NamedValueModel>();
 	
-	private String handler;
-	private List<INamedValue> namedValues = new ObservableList<INamedValue>();
-	
-	public AnnotationModel(IAnnotation other, IElement parent) {
-		super(other, parent);
-		handler = other.getHandler();
-		for (INamedValue namedValue: other.getNamedValues()) {
-			INamedValue observable = new NamedValueModel(namedValue, this);
+	public AnnotationModel(AnnotationModel other, ElementModel parent) {
+		super(other, parent);		
+		for (NamedValueModel namedValue: other.getNamedValues()) {
+			NamedValueModel observable = new NamedValueModel(namedValue, this);
 			namedValues.add(observable);
 		}
 	}
 	
-	public AnnotationModel(IElement parent) {
+	public AnnotationModel(ElementModel parent) {
 		super(ElementType.ANNOTATION, parent);
 	}
-
-	@Override
-	public String getHandler() {
-		return handler;
-	}
-
-	@Override
-	public List<INamedValue> getNamedValues() {
-		return namedValues;
-	}
-
-	@Override
-	public void setHandler(String handler) {
-		this.handler = handler;		
-		fireElementChanged(PROPERTY_HANDLER);
-	}
 	
-	@Override
-	public void validate(IValidationContext ctx) {
-		for (INamedValue child: namedValues) {
-			child.validate(ctx);
-		}
+	public ObservableSet<NamedValueModel> getNamedValues() {
+		return namedValues;
 	}
 	
 	@Override
@@ -54,7 +24,6 @@ public class AnnotationModel extends ElementModel implements IAnnotation {
 		if (!super.equals(obj)) return false;
 		AnnotationModel other = (AnnotationModel) obj;
 		
-		if (!objectsEqual(getHandler(), other.getHandler())) return false;
 		if (!collectionsEqual(getNamedValues(), other.getNamedValues())) return false;
 		
 		return true;
@@ -62,9 +31,8 @@ public class AnnotationModel extends ElementModel implements IAnnotation {
 	
 	@Override
 	public int hashCode() {
-		int result = super.hashCode();
-		result = 31 * result + (getHandler() != null ? getHandler().hashCode() : 0);
-		for (INamedValue nv: getNamedValues()) {
+		int result = super.hashCode();		
+		for (NamedValueModel nv: getNamedValues()) {
 			result = 31 * result + nv.hashCode();
 		}
 		return result;

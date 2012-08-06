@@ -4,6 +4,7 @@ import org.eclipse.draw2d.ColorConstants;
 import org.eclipse.draw2d.FlowLayout;
 import org.eclipse.draw2d.IFigure;
 import org.eclipse.draw2d.Label;
+import org.eclipse.draw2d.OrderedLayout;
 import org.eclipse.draw2d.PositionConstants;
 import org.eclipse.draw2d.RoundedRectangle;
 import org.eclipse.swt.graphics.Image;
@@ -40,8 +41,8 @@ public abstract class AbstractElementNodeEditPart<TModel extends FirstClassModel
 		FlowLayout layout = new FlowLayout(false);		
 		layout.setMajorSpacing(20);
 		layout.setMinorSpacing(10);
-		layout.setMajorAlignment(FlowLayout.ALIGN_CENTER);
-		layout.setMinorAlignment(FlowLayout.ALIGN_CENTER);
+		layout.setMajorAlignment(OrderedLayout.ALIGN_CENTER);
+		layout.setMinorAlignment(OrderedLayout.ALIGN_CENTER);
 		figure.setLayoutManager(layout);
 		headerLabel = new Label(getElement().getReferencingName(), getIcon());
 		headerLabel.setTextAlignment(PositionConstants.CENTER);

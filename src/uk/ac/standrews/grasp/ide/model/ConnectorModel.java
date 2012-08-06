@@ -1,14 +1,11 @@
 package uk.ac.standrews.grasp.ide.model;
 
-import grasp.lang.IConnector;
-import grasp.lang.IFirstClass;
-
-public class ConnectorModel extends InstantiableModel implements IConnector {
-	public ConnectorModel(IConnector other, IFirstClass parent) {
+public class ConnectorModel extends InstantiableModel {
+	public ConnectorModel(ConnectorModel other, FirstClassModel parent) {
 		super(other, parent);
 	}
 	
-	public ConnectorModel(IFirstClass parent) {
+	public ConnectorModel(FirstClassModel parent) {
 		super(ElementType.CONNECTOR, parent);
 	}
 }

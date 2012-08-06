@@ -1,29 +1,19 @@
 package uk.ac.standrews.grasp.ide.model;
 
-import grasp.lang.IBecause;
-import grasp.lang.IFirstClass;
-import grasp.lang.IRationale;
-
-import java.util.List;
-
-public abstract class BecauseModel extends FirstClassModel implements IBecause {
+public abstract class BecauseModel extends FirstClassModel {
 	
-	private final List<IRationale> rationales = new ObservableList<IRationale>();
+	private final ObservableSet<RationaleModel> rationales = new ObservableSet<RationaleModel>();
 	
-	public BecauseModel(IBecause other, IFirstClass parent) {
-		super((IFirstClass)other, parent);		
-		for (IRationale child: other.getRationales()) {
-			IRationale observable = new RationaleModel(child);
-			rationales.add(observable);
-		}
+	public BecauseModel(BecauseModel other, FirstClassModel parent) {
+		super(other, parent);		
+		copyCollectionAtTheEndOfCopy(other.getRationales(), rationales);
 	}
 	
-	public BecauseModel(ElementType type, IFirstClass parent) {
+	public BecauseModel(ElementType type, FirstClassModel parent) {
 		super(type, parent);
 	}
 
-	@Override
-	public List<IRationale> getRationales() {
+	public ObservableSet<RationaleModel> getRationales() {
 		return rationales;
 	}
 	
@@ -41,7 +31,7 @@ public abstract class BecauseModel extends FirstClassModel implements IBecause {
 	public int hashCode() {
 		int result = super.hashCode();
 		
-		for (IRationale rationale: getRationales()) {
+		for (RationaleModel rationale: getRationales()) {
 			result = 31 * result + rationale.hashCode();
 		}
 		

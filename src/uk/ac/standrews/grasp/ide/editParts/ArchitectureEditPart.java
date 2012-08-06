@@ -5,8 +5,11 @@ import org.eclipse.draw2d.IFigure;
 import org.eclipse.draw2d.ToolbarLayout;
 
 import uk.ac.standrews.grasp.ide.model.ArchitectureModel;
+import uk.ac.standrews.grasp.ide.model.ElementType;
+import uk.ac.standrews.grasp.ide.model.FirstClassModel;
 
 public class ArchitectureEditPart extends AbstractElementEditPart<ArchitectureModel> {
+		
 	public ArchitectureEditPart(ArchitectureModel model) {
 		super(model);
 	}
@@ -25,5 +28,10 @@ public class ArchitectureEditPart extends AbstractElementEditPart<ArchitectureMo
 	protected void createEditPolicies() {
 		
 		
+	}
+
+	@Override
+	protected boolean isModelChildSupported(FirstClassModel child) {
+		return child.getType() == ElementType.SYSTEM || child.getType() == ElementType.TEMPLATE;
 	}
 }

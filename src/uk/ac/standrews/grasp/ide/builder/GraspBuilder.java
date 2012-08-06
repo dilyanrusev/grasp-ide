@@ -1,20 +1,9 @@
 package uk.ac.standrews.grasp.ide.builder;
 
-import grasp.lang.Compiler;
-import grasp.lang.IArchitecture;
-import grasp.lang.ICompiler;
-
-import java.io.BufferedWriter;
-import java.io.ByteArrayInputStream;
-import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.LineNumberReader;
-import java.io.StringWriter;
 import java.util.Map;
-
-import javax.xml.parsers.ParserConfigurationException;
-import javax.xml.transform.TransformerException;
 
 import org.eclipse.core.resources.IFile;
 import org.eclipse.core.resources.IMarker;
@@ -25,19 +14,16 @@ import org.eclipse.core.resources.IResourceDeltaVisitor;
 import org.eclipse.core.resources.IResourceVisitor;
 import org.eclipse.core.resources.IncrementalProjectBuilder;
 import org.eclipse.core.runtime.CoreException;
+import org.eclipse.core.runtime.IPath;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.SubMonitor;
 
-import shared.error.IError;
-import shared.error.IErrorReport;
-import shared.io.ISource;
-import shared.logging.ILogger;
-import shared.logging.ILogger.Level;
-import shared.xml.DomXmlWriter;
-import shared.xml.IXmlWriter;
 import uk.ac.standrews.grasp.ide.GraspPlugin;
 import uk.ac.standrews.grasp.ide.Log;
-import uk.ac.standrews.grasp.ide.model.GraspModel;
+import uk.ac.standrews.grasp.ide.compiler.CompilationError;
+import uk.ac.standrews.grasp.ide.compiler.CompilationOptions;
+import uk.ac.standrews.grasp.ide.compiler.CompilationResult;
+import uk.ac.standrews.grasp.ide.compiler.ICompiler;
 
 /**
  * Incremental build for Grasp
@@ -77,60 +63,25 @@ public class GraspBuilder extends IncrementalProjectBuilder  {
 	private void buildIndividualFile(IFile file, SubMonitor progress, boolean buildXml) {	
 		progress.setWorkRemaining(3);
 		progress.setTaskName("Compiling " + file);
-		ISource source = new GraspSourceFile(file);
-		ILogger logger = new GraspCompilationLogger().initialize(file.getName(), Level.ERROR, false);
-		ICompiler compiler = new Compiler();
+		ICompiler compiler = GraspPlugin.getDefault().getDefaultCompiler();
 		
-		try {		
-			IArchitecture graph = compiler.compile(source, logger);
-			progress.worked(1);
-			
-			GraspModel.INSTANCE.ensureFileStats(file).compiled(graph, compiler.getErrors());
+		CompilationOptions options = 
+				new CompilationOptions()
+				.setXmlFile(getXmlFileFor(file))
+				.setProgressMonitor(progress);
+		CompilationResult res = compiler.compile(file, options);
+		if (!res.isSuccessful()) {
+			for (CompilationError err: res.getErrors()) {
+				createProblemMarker(file, err);
+			}
+		}
+				
+	}
 	
-			IErrorReport errorReport = compiler.getErrors();
-			for (IError error: errorReport.getErrors()) {
-				createProblemMarker(file, error);
-			}
-			
-			if (!errorReport.isAny() && graph != null && buildXml) {				
-				progress.setTaskName("Building xml for " + file);
-				IProject project = file.getProject();
-				if (project == null) {
-					Log.error("Cannot find project of " + file, null);
-					return;
-				}
-				IFile xmlFile = project.getFile(file.getProjectRelativePath().addFileExtension("xml"));
-				try {	
-					StringWriter stringWriter = new StringWriter();
-					BufferedWriter output = new BufferedWriter(stringWriter);
-					IXmlWriter xml = new DomXmlWriter();
-					graph.toXml(xml);
-					xml.serialize(output);
-					output.close();
-					String txt = stringWriter.toString();	
-					if (!xmlFile.exists()) {
-						xmlFile.create(new ByteArrayInputStream(txt.getBytes("utf-8")), true, progress.newChild(1));
-					}
-					else {
-						xmlFile.setContents(new ByteArrayInputStream(txt.getBytes("utf-8")), true, true, progress.newChild(1));
-					}
-					xmlFile.setDerived(true, progress.newChild(1));
-					GraspModel.INSTANCE.ensureFileStats(file).refreshFromXml(xmlFile);
-				} catch (CoreException e) {
-					Log.error(e);
-				} catch (FileNotFoundException e) {
-					Log.error(e);
-				} catch (IOException e) {
-					Log.error(e);
-				} catch (ParserConfigurationException e) {
-					Log.error(e);
-				} catch (TransformerException e) {
-					Log.error(e);
-				} 				
-			}
-		} finally {
-			logger.shutdown();
-		}		
+	private IFile getXmlFileFor(IFile graspFile) {
+		IPath path = graspFile.getProjectRelativePath();
+		path = path.addFileExtension("xml");
+		return graspFile.getProject().getFile(path);
 	}
 
 	private void fullBuild(final IProgressMonitor monitor) throws CoreException {		
@@ -159,24 +110,19 @@ public class GraspBuilder extends IncrementalProjectBuilder  {
 		});
 	}
 	
-	private void createProblemMarker(IFile file, IError error) {
+	private void createProblemMarker(IFile file, CompilationError error) {
 		try {
 			IMarker marker = file.createMarker(GraspPlugin.ID_PROBLEM_MARKER);
 			marker.setAttribute(IMarker.MESSAGE, error.getMessage());
 			marker.setAttribute(IMarker.SEVERITY, IMarker.SEVERITY_ERROR);
-			int lineNumber = error.getLine();
-			if (lineNumber == -1) {
-				lineNumber = 1;
-			}
+			int lineNumber = error.getLine();			
 			marker.setAttribute(IMarker.LINE_NUMBER, lineNumber);
 			
 			int linePos = getLinePositionInFile(file, lineNumber);
-			if (linePos != -1) {								
-				int errorColumn = error.getColumn() + 1;
-				int errorColumnEnd = error.getColumnEnd() + 2;
-				marker.setAttribute(IMarker.CHAR_START, linePos + errorColumn);
-				marker.setAttribute(IMarker.CHAR_END, linePos + errorColumnEnd);	
-				marker.setAttribute(IMarker.LOCATION, String.format("line %d [%d:%d]", lineNumber, errorColumn, errorColumnEnd));
+			if (linePos != -1) {				
+				marker.setAttribute(IMarker.CHAR_START, linePos + error.getColumn());
+				marker.setAttribute(IMarker.CHAR_END, linePos + error.getColumnEnd());	
+				marker.setAttribute(IMarker.LOCATION, String.format("line %d [%d:%d]", lineNumber, error.getColumn(), error.getColumnEnd()));
 			}
 			
 		} catch (CoreException e) {

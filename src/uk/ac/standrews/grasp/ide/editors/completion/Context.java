@@ -1,10 +1,5 @@
 package uk.ac.standrews.grasp.ide.editors.completion;
 
-import grasp.lang.IArchitecture;
-import grasp.lang.ISyntaxNode;
-import grasp.lang.ISyntaxTree;
-import grasp.lang.Parser;
-
 import java.io.StringReader;
 
 import org.eclipse.core.resources.IFile;
@@ -12,11 +7,9 @@ import org.eclipse.core.runtime.Assert;
 import org.eclipse.jface.text.BadLocationException;
 import org.eclipse.jface.text.IDocument;
 
-import shared.io.ISource;
 import uk.ac.standrews.grasp.ide.Log;
-import uk.ac.standrews.grasp.ide.builder.GraspStringSource;
-import uk.ac.standrews.grasp.ide.builder.NullLogger;
 import uk.ac.standrews.grasp.ide.editors.TextUtil;
+import uk.ac.standrews.grasp.ide.model.ArchitectureModel;
 import uk.ac.standrews.grasp.ide.model.GraspModel;
 
 /**
@@ -33,8 +26,7 @@ public class Context implements ICodeCompletionContext {
 	private String wordAtCursor;
 	private GraspScanner scanner;
 	private int line;
-	private int column;
-	private ISyntaxTree syntaxTree;
+	private int column;	
 	
 	@Override
 	public void computeFor(IFile file, IDocument doc, int position) {
@@ -46,8 +38,7 @@ public class Context implements ICodeCompletionContext {
 		this.wordAtCursor = null;
 		this.scanner = null;
 		this.line = -1;
-		this.column = -1;
-		this.syntaxTree = null;
+		this.column = -1;		
 	}
 
 	@Override
@@ -111,29 +102,10 @@ public class Context implements ICodeCompletionContext {
 			wordAtCursor = getWordBeforeCursor() + getWordAfterCursor();
 		}
 		return wordAtCursor;
-	}		
-	
-	@Override
-	public ISyntaxNode getNodeAtCursorPosition() {
-		return getNodeAtPosition(this.getSyntaxTree().getRoot(), line, column);
 	}
 	
-	private ISyntaxNode getNodeAtPosition(ISyntaxNode start, int line, int column) {
-		if (start == null) return null;
-		if (start.getLine() == line
-				&& column >= start.getStartPosition() 
-				&& column < start.getEndPosition()) {
-			return start;
-		}
-		for (ISyntaxNode child: start.getChildren()) {
-			ISyntaxNode found = getNodeAtPosition(child, line, column);
-			if (found != null) return found;
-		}
-		return null;
-	}	
-	
 	@Override
-	public IArchitecture getModel() {
+	public ArchitectureModel getModel() {
 		Assert.isNotNull(file);
 		return GraspModel.INSTANCE.ensureFileStats(file).getLastArchitectureThatCompiled();
 	}
@@ -145,17 +117,7 @@ public class Context implements ICodeCompletionContext {
 			scanner.parse(new StringReader(document.get()));			
 		}
 		return scanner;
-	}
-	
-	@Override
-	public ISyntaxTree getSyntaxTree() {
-		if (syntaxTree == null) {			
-			Parser p = new Parser();
-			ISource source = new GraspStringSource("", "", document.get());
-			syntaxTree = p.parse(source, NullLogger.INSTANCE);					
-		}
-		return syntaxTree;
-	}
+	}	
 
 	@Override
 	public int getLine() {

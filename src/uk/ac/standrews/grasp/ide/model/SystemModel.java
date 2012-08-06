@@ -1,15 +1,12 @@
 package uk.ac.standrews.grasp.ide.model;
 
-import grasp.lang.IFirstClass;
-import grasp.lang.ISystem;
-
-public class SystemModel extends BecauseModel implements ISystem {
+public class SystemModel extends BecauseModel {
 	
-	public SystemModel(ISystem other, IFirstClass parent) {
+	public SystemModel(SystemModel other, ArchitectureModel parent) {
 		super(other, parent);
 	}
 	
-	public SystemModel(IFirstClass parent) {
+	public SystemModel(ArchitectureModel parent) {
 		super(ElementType.SYSTEM, parent);
 	}
 	

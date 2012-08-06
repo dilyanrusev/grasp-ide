@@ -1,28 +1,18 @@
 package uk.ac.standrews.grasp.ide.model;
 
-import java.util.List;
-
-import grasp.lang.IFirstClass;
-import grasp.lang.IRationale;
-import grasp.lang.IReason;
-
-public class RationaleModel extends ParameterizedModel implements IRationale {
-	private final List<IReason> reasons = new ObservableList<IReason>();
+public class RationaleModel extends ParameterizedModel {
+	private final ObservableSet<ReasonModel> reasons = new ObservableSet<ReasonModel>();
 	
-	public RationaleModel(IRationale other, IFirstClass parent) {
+	public RationaleModel(RationaleModel other, FirstClassModel parent) {
 		super(other, parent);
-		for (IReason reason: other.getReasons()) {
-			IReason observable = new ReasonModel(reason, this);
-			reasons.add(observable);
-		}
+		copyCollectionAtTheEndOfCopy(other.getReasons(), reasons);
 	}
 	
-	public RationaleModel(IFirstClass parent) {
+	public RationaleModel(FirstClassModel parent) {
 		super(ElementType.RATIONALE, parent);
 	}
 
-	@Override
-	public List<IReason> getReasons() {
+	public ObservableSet<ReasonModel> getReasons() {
 		return reasons;
 	}
 	
@@ -36,7 +26,7 @@ public class RationaleModel extends ParameterizedModel implements IRationale {
 	public int hashCode() {
 		int result = super.hashCode();
 		
-		for (IReason reason: getReasons()) {
+		for (ReasonModel reason: getReasons()) {
 			result = 31 * result + reason.hashCode();
 		}
 		

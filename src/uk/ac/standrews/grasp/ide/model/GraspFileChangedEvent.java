@@ -5,11 +5,9 @@ import java.util.EnumSet;
 public class GraspFileChangedEvent {
 	public enum Kind {
 		Compiled,
-		Reparsed,
 		ArchiectureRefreshed,
 		ScannerChanged,
 		SourceViewerChanged,
-		SyntaxTreeChanged
 	}
 	
 	private final EnumSet<Kind> kind;

@@ -1,16 +1,6 @@
 package uk.ac.standrews.grasp.ide.model;
 
-import grasp.lang.IElement;
-import grasp.lang.IElement.ElementType;
 import grasp.lang.IElement.XmlSchema;
-import grasp.lang.IFirstClass;
-import grasp.lang.ILayer;
-import grasp.lang.ILink;
-import grasp.lang.IProvides;
-import grasp.lang.IRationale;
-import grasp.lang.IReason;
-import grasp.lang.IRequires;
-import grasp.lang.ITemplate;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -125,9 +115,9 @@ public class XmlModelReader {
 			if (childNode.getNodeType() != Node.ELEMENT_NODE) {
 				continue;
 			}			
-			if (IElement.XmlSchema.ANNOTATIONS.tag().equalsIgnoreCase(childNode.getNodeName())) {
+			if (XmlSchema.ANNOTATIONS.tag().equalsIgnoreCase(childNode.getNodeName())) {
 				readAnnotations((Element) childNode, model);
-			} else if (IElement.XmlSchema.BODY.tag().equalsIgnoreCase(childNode.getNodeName())) {
+			} else if (XmlSchema.BODY.tag().equalsIgnoreCase(childNode.getNodeName())) {
 				readBody((Element) childNode, model);
 			}
 		}
@@ -207,7 +197,7 @@ public class XmlModelReader {
 		}
 		case SYSTEM:
 		{
-			SystemModel model = new SystemModel(parent);
+			SystemModel model = new SystemModel((ArchitectureModel) parent);
 			return readBecause(node, parent, model) ? model : null;
 		}
 		case TEMPLATE:
@@ -586,8 +576,7 @@ public class XmlModelReader {
 			return null;
 		}
 		AnnotationModel annotation = new AnnotationModel(parent);
-		String handler = annotationElem.getAttribute(IElement.XmlSchema.AT_HANDLER.tag());
-		annotation.setHandler(handler);	
+		String handler = annotationElem.getAttribute(XmlSchema.AT_HANDLER.tag());		
 		annotation.setName(handler);
 		NodeList namedValueNodes = annotationElem.getChildNodes();
 		for (int i = 0, len = namedValueNodes.getLength(); i < len; i++) {
@@ -604,11 +593,11 @@ public class XmlModelReader {
 	}
 	
 	private NamedValueModel readNamedValue(Element elem, AnnotationModel parent) {
-		String name = elem.getAttribute(IElement.XmlSchema.AT_NAME.tag());
+		String name = elem.getAttribute(XmlSchema.AT_NAME.tag());
 		if (!TextUtil.isIdentifier(name)) {
 			return null;
 		}
-		String value = elem.getAttribute(IElement.XmlSchema.AT_VALUE.tag());
+		String value = elem.getAttribute(XmlSchema.AT_VALUE.tag());
 		NamedValueModel nv = new NamedValueModel(parent);
 		nv.setName(name);
 		nv.setExpression(ExpressionModel.createLiteral(nv, value));
@@ -619,8 +608,8 @@ public class XmlModelReader {
 		if (elem == null || model == null || !elem.getNodeName().equalsIgnoreCase(model.getType().name())) {
 			return false;
 		}
-		String name = elem.getAttribute(IElement.XmlSchema.AT_NAME.tag());
-		String refName = elem.getAttribute(IElement.XmlSchema.AT_RNAME.tag());
+		String name = elem.getAttribute(XmlSchema.AT_NAME.tag());
+		String refName = elem.getAttribute(XmlSchema.AT_RNAME.tag());
 		
 		// don't check for identifier validity - the XML is supposed to be written by the compiler
 		// after successful compilation, so we just assume name/refname are valid
@@ -677,14 +666,14 @@ public class XmlModelReader {
 		}
 		
 		@SuppressWarnings("unchecked")
-		protected <T extends IElement> T getElementByQualifiedName(Class<T> resType, String qualifiedName) {
+		protected <T extends ElementModel> T getElementByQualifiedName(Class<T> resType, String qualifiedName) {
 			Assert.isNotNull(resType);
 			Assert.isNotNull(qualifiedName);
 			
 			ArchitectureModel arch = parent.getArchitecture();
 			Assert.isNotNull(arch, "Cannot get architecture from parent elment");
 			
-			IElement found = arch.findByQualifiedName(qualifiedName);
+			ElementModel found = arch.findByQualifiedName(qualifiedName);
 			if (resType.isInstance(found)) {
 				return (T) found;
 			} else {
@@ -704,7 +693,7 @@ public class XmlModelReader {
 
 		@Override
 		public void run() {
-			IRationale reference = getElementByQualifiedName(IRationale.class, rationaleQualifiedName);
+			RationaleModel reference = getElementByQualifiedName(RationaleModel.class, rationaleQualifiedName);
 			parent.getRationales().add(reference);
 		}		
 	}
@@ -719,7 +708,7 @@ public class XmlModelReader {
 		
 		@Override
 		public void run() {
-			ITemplate base = getElementByQualifiedName(ITemplate.class, templateQualifiedName);
+			TemplateModel base = getElementByQualifiedName(TemplateModel.class, templateQualifiedName);
 			parent.setBase(base);
 		}
 	}
@@ -765,7 +754,7 @@ public class XmlModelReader {
 		public void run() {			
 			Collections.sort(parameters, ParameterReferenceInfo.ORDINAL_COMPARATOR);
 			for (ParameterReferenceInfo param: parameters) {
-				IFirstClass argument = getElementByQualifiedName(IFirstClass.class, param.getQualifiedName());
+				FirstClassModel argument = getElementByQualifiedName(FirstClassModel.class, param.getQualifiedName());
 				parent.getArguments().add(argument);					
 			}			
 		}		
@@ -782,7 +771,7 @@ public class XmlModelReader {
 		@Override
 		public void run() {			
 			for (String qualifiedName: layerQualifiedNames) {
-				ILayer overRef = getElementByQualifiedName(ILayer.class, qualifiedName);
+				LayerModel overRef = getElementByQualifiedName(LayerModel.class, qualifiedName);
 				parent.getOver().add(overRef);
 			}
 		}
@@ -801,8 +790,8 @@ public class XmlModelReader {
 		
 		@Override
 		public void run() {
-			IProvides providerRef = getElementByQualifiedName(IProvides.class, providerQualifiedName);
-			IRequires consumerRef = getElementByQualifiedName(IRequires.class, consumerQualifiedName);
+			ProvidesModel providerRef = getElementByQualifiedName(ProvidesModel.class, providerQualifiedName);
+			RequiresModel consumerRef = getElementByQualifiedName(RequiresModel.class, consumerQualifiedName);
 			parent.setProvider(providerRef);
 			parent.setConsumer(consumerRef);			
 		}
@@ -819,7 +808,7 @@ public class XmlModelReader {
 		@Override
 		public void run() {
 			for (String qualifiedName: linkQualifiedNames) {
-				ILink link = getElementByQualifiedName(ILink.class, qualifiedName);
+				LinkModel link = getElementByQualifiedName(LinkModel.class, qualifiedName);
 				parent.getConnections().add(link);
 			}
 		}
@@ -836,7 +825,7 @@ public class XmlModelReader {
 		@Override
 		public void run() {
 			for (String qualifiedName: supporteeQualifiedNames) {
-				IFirstClass supportee = getElementByQualifiedName(IFirstClass.class, qualifiedName);
+				FirstClassModel supportee = getElementByQualifiedName(FirstClassModel.class, qualifiedName);
 				parent.getSupports().add(supportee);
 			}
 		}
@@ -852,7 +841,7 @@ public class XmlModelReader {
 		
 		@Override
 		public void run() {
-			IFirstClass extendee = getElementByQualifiedName(IFirstClass.class, extendeeQualifiedName);
+			FirstClassModel extendee = getElementByQualifiedName(FirstClassModel.class, extendeeQualifiedName);
 			parent.setExtendee(extendee);
 		}
 	}
@@ -868,7 +857,7 @@ public class XmlModelReader {
 		@Override
 		public void run() {
 			for (String qualifiedName: reasonQualifiedNames) {
-				IReason reason = getElementByQualifiedName(IReason.class, qualifiedName);
+				ReasonModel reason = getElementByQualifiedName(ReasonModel.class, qualifiedName);
 				parent.getReasons().add(reason);
 			}
 		}
@@ -888,11 +877,11 @@ public class XmlModelReader {
 		@Override
 		public void run() {
 			for (String qualifiedName: supportsQualifiedNames) {
-				IFirstClass supportee = getElementByQualifiedName(IFirstClass.class, qualifiedName);
+				ReasonModel supportee = getElementByQualifiedName(ReasonModel.class, qualifiedName);
 				parent.getSupports().add(supportee);
 			}
 			for (String qualifiedName: inhibitsQualifiedNames) {
-				IFirstClass inhibitee = getElementByQualifiedName(IFirstClass.class, qualifiedName);
+				ReasonModel inhibitee = getElementByQualifiedName(ReasonModel.class, qualifiedName);
 				parent.getInhibits().add(inhibitee);
 			}
 		}
