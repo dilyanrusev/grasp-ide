@@ -28,6 +28,7 @@ import org.eclipse.ui.console.MessageConsoleStream;
 
 import shared.error.IError;
 import shared.error.IErrorReport;
+import shared.error.ISourceError;
 import shared.io.ISource;
 import shared.logging.ILogger;
 import shared.logging.ILogger.Level;
@@ -76,13 +77,17 @@ public class IntegratedCompiler implements ICompiler {
 			IErrorReport errorReport = compiler.getErrors();
 			List<CompilationError> errors = new ArrayList<CompilationError>();
 			if (errorReport.isAny()) {
-				for (IError compilerError: errorReport.getErrors()) {
-					errors.add(new CompilationError()
-						.setMessage(compilerError.getMessage())
-						.setLocation(
-								compilerError.getLine() >= 1 ? compilerError.getLine() : 1, 
-								compilerError.getColumn() + 1, 
-								compilerError.getColumnEnd() + 2));
+				for (IError error: errorReport.getErrors()) {
+					CompilationError errorModel = new CompilationError();
+					errorModel.setMessage(error.getMessage());
+					if (error instanceof ISourceError) {
+						ISourceError sourceError = (ISourceError) error;
+						errorModel.setLocation(
+								sourceError.getLine() >= 1 ? sourceError.getLine() : 1,
+										sourceError.getColumn() + 1, 
+										sourceError.getColumnEnd() + 2);
+					}
+					errors.add(errorModel);
 				}
 			}
 			result.setErrors(errors);
@@ -252,14 +257,14 @@ final class GraspCompilationLogger implements ILogger {
 	}
 	
 	@Override
-	public void compiler_error(String format, Object... args) {
+	public void print_error(String format, Object... args) {
 		// always print errors
 		String message = String.format(format, args);
 		printToConsole("COMPILER_ERROR", message);
 	}
 
 	@Override
-	public void compiler_warn(String format, Object... args) {
+	public void print_warn(String format, Object... args) {
 		// always print warnings
 		String message = String.format(format, args);
 		printToConsole("COMPILER_WARNING", message);
@@ -341,12 +346,6 @@ final class NullLogger implements ILogger {
 	public static final NullLogger INSTANCE = new NullLogger();	
 	
 	@Override
-	public void compiler_error(String s, Object... aobj) {}
-
-	@Override
-	public void compiler_warn(String s, Object... aobj) {}
-
-	@Override
 	public void error(String s, Object... aobj) {}
 
 	@Override
@@ -372,4 +371,10 @@ final class NullLogger implements ILogger {
 
 	@Override
 	public void warn(String s, Object... aobj) {}
+
+	@Override
+	public void print_error(String s, Object... aobj) {}
+
+	@Override
+	public void print_warn(String s, Object... aobj) {}
 }

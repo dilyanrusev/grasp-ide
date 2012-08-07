@@ -1,6 +1,6 @@
 package uk.ac.standrews.grasp.ide.model;
 
-import grasp.lang.IElement.XmlSchema;
+import grasp.lang.ISerializable.XmlSchema;
 
 import java.io.IOException;
 import java.util.ArrayList;

@@ -1,11 +1,12 @@
 package uk.ac.standrews.grasp.ide.editors.completion;
 
-import grasp.lang.IArchitecture;
-import grasp.lang.IElement;
-import grasp.lang.elements.Architecture;
-
 import java.util.ArrayList;
 import java.util.List;
+
+import org.eclipse.core.resources.IFile;
+
+import uk.ac.standrews.grasp.ide.model.ArchitectureModel;
+import uk.ac.standrews.grasp.ide.model.ElementModel;
 
 public class StatementReader {
 	private GraspScanner scanner;
@@ -17,13 +18,13 @@ public class StatementReader {
 		this.statements = new ArrayList<Statement>();
 	}
 	
-	public void parse() {
-		parseArchitecture();		
+	public void parse(IFile archFile) {
+		parseArchitecture(archFile);		
 	}
 	
-	private IArchitecture parseArchitecture() {
+	private ArchitectureModel parseArchitecture(IFile archFile) {
 		scanner.reset();
-		IArchitecture arch = new Architecture();
+		ArchitectureModel arch = new ArchitectureModel(archFile);
 		Statement statement = new Statement(arch);
 		IChunk chunk = scanner.nextChunk();
 		if (chunk == null) { finishStatement(statement, null); return arch; }
@@ -69,18 +70,18 @@ public class StatementReader {
 }
 
 class Statement {
-	private IElement element;
+	private ElementModel element;
 	private IChunk chunkStart;
 	private IChunk chunkEnd;
 	
-	public Statement(IElement elem) {
+	public Statement(ElementModel elem) {
 		this.element = elem;
 	}
 	
-	public IElement getElement() {
+	public ElementModel getElement() {
 		return element;
 	}
-	public void setElement(IElement element) {
+	public void setElement(ElementModel element) {
 		this.element = element;
 	}
 	public IChunk getChunkStart() {

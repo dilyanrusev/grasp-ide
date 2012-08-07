@@ -109,7 +109,7 @@ class SourceCode {
 			"	}\n\n" +
 
 			"	// Runtime static model\n" +
-			"	@Visualiser(Canvas = [1000,1000])\n" +
+			"	@Visualiser(Canvas = \"1000,1000\")\n" +
 			"	system StaticModel\n" +
 			"	{\n" +
 			"		layer UtilityLayer because R1()\n" +
