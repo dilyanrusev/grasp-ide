@@ -121,7 +121,7 @@ public final class TextUtil {
 	
 	public static boolean isNullOrWhitespace(String expression) {
 		return isNullOrEmpty(expression) || expression.trim().length() == 0;
-	}
+	}	
 	
 	/**
 	 * Determines whether a character is whitespace 

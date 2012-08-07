@@ -121,5 +121,31 @@
             project="false">
       </wizard>
    </extension>
+   <extension
+         point="org.eclipse.ui.preferencePages">
+      <page
+            class="uk.ac.standrews.grasp.ide.preferences.GraspPreferencePage"
+            id="uk.ac.standrews.grasp.ide.preferences.Grasp"
+            name="Grasp">
+      </page>
+      <page
+            category="uk.ac.standrews.grasp.ide.preferences.Grasp"
+            class="uk.ac.standrews.grasp.ide.preferences.TextEditorPreferencesPage"
+            id="uk.ac.standrews.grasp.ide.preferences.TextEditor"
+            name="Text Editor">
+      </page>
+      <page
+            category="uk.ac.standrews.grasp.ide.preferences.Grasp"
+            class="uk.ac.standrews.grasp.ide.preferences.CompilerPreferencesPage"
+            id="uk.ac.standrews.grasp.ide.preferences.Compiler"
+            name="Compiler">
+      </page>
+   </extension>
+   <extension
+         point="org.eclipse.core.runtime.preferences">
+      <initializer
+            class="uk.ac.standrews.grasp.ide.preferences.PreferenceInitializer">
+      </initializer>
+   </extension>
 
 </plugin>
