@@ -62,7 +62,8 @@ public class GefView
 	@Override
 	public void activeEditorChanged(ActiveEditorChangedEvent event) {
 		IFile currentFile = getCurrentFile();
-		if (currentFile == null || !currentFile.equals(lastActiveFile)) {
+		IFile eventFile = event.getEditorArchitecture().getFile();
+		if (currentFile == null || !currentFile.equals(eventFile) || !currentFile.equals(lastActiveFile)) {
 			System.out.println("Active architecture: " + event.getEditorArchitecture());
 			bindView(event.getEditorArchitecture());
 			lastActiveFile = currentFile;
