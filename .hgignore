@@ -1,3 +1,5 @@
 syntax: glob
 bin/*
 *.dump.txt
+libs/wsa_simulator.grasp
+libs/wsa_simulator.grasp.xml
