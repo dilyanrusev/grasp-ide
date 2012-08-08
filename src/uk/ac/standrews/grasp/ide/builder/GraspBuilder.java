@@ -23,6 +23,7 @@ import uk.ac.standrews.grasp.ide.Log;
 import uk.ac.standrews.grasp.ide.compiler.CompilationError;
 import uk.ac.standrews.grasp.ide.compiler.CompilationOptions;
 import uk.ac.standrews.grasp.ide.compiler.CompilationResult;
+import uk.ac.standrews.grasp.ide.compiler.Compilers;
 import uk.ac.standrews.grasp.ide.compiler.ICompiler;
 
 /**
@@ -63,7 +64,7 @@ public class GraspBuilder extends IncrementalProjectBuilder  {
 	private void buildIndividualFile(IFile file, SubMonitor progress, boolean buildXml) {	
 		progress.setWorkRemaining(3);
 		progress.setTaskName("Compiling " + file);
-		ICompiler compiler = GraspPlugin.getDefault().getDefaultCompiler();
+		ICompiler compiler = Compilers.getCurrent();
 		
 		CompilationOptions options = 
 				new CompilationOptions()

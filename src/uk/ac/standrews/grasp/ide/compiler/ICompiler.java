@@ -16,12 +16,4 @@ public interface ICompiler {
 	 * @return Whether the compilation was successful, and the errors in case it wasn't
 	 */
 	CompilationResult compile(IFile file, CompilationOptions options);
-	
-	/**
-	 * Compile from text in memory
-	 * @param text Text to compile
-	 * @param options Specify compilation options. Cannot be <code>null</code>
-	 * @return Whether the compilation was successful, and the errors in case it wasn't
-	 */
-	CompilationResult compile(String text, CompilationOptions options);
 }

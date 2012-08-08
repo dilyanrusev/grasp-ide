@@ -55,11 +55,6 @@ public class IntegratedCompiler implements ICompiler {
 		}
 		return doCompile(file, new GraspSourceFile(file), logger, options);
 	}
-
-	@Override
-	public CompilationResult compile(String text, CompilationOptions options) {
-		return doCompile(null, new GraspStringSource("<memory>", "<none>", text), NullLogger.INSTANCE, options);
-	}
 	
 	private CompilationResult doCompile(IFile file, ISource source, ILogger logger, CompilationOptions options) {
 		Compiler compiler = new Compiler();
@@ -84,8 +79,8 @@ public class IntegratedCompiler implements ICompiler {
 						ISourceError sourceError = (ISourceError) error;
 						errorModel.setLocation(
 								sourceError.getLine() >= 1 ? sourceError.getLine() : 1,
-										sourceError.getColumn() + 1, 
-										sourceError.getColumnEnd() + 2);
+										sourceError.getColumn(), 
+										sourceError.getColumnEnd() + 1);
 					}
 					errors.add(errorModel);
 				}
