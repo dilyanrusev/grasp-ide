@@ -17,6 +17,7 @@ import org.eclipse.ui.editors.text.FileDocumentProvider;
 import org.eclipse.ui.editors.text.TextEditor;
 
 import uk.ac.standrews.grasp.ide.model.GraspModel;
+import uk.ac.standrews.grasp.ide.preferences.Preferences;
 
 /**
  * Text editor for Grasp code
@@ -24,9 +25,9 @@ import uk.ac.standrews.grasp.ide.model.GraspModel;
  *
  */
 public class GraspTextEditor extends TextEditor {
-	
 	public GraspTextEditor() {
 		super();
+		setPreferenceStore(Preferences.getStore());
 		setSourceViewerConfiguration(new GraspSourceViewerConfiguration());
 		setDocumentProvider(new GraspDocumentProvider());
 	}
@@ -40,11 +41,6 @@ public class GraspTextEditor extends TextEditor {
 	@Override
 	public void dispose() {
 		super.dispose();
-	}	
-	
-	@Override
-	protected boolean isLineNumberRulerVisible() {
-		return true;
 	}
 	
 	@Override

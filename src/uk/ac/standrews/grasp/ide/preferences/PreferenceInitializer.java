@@ -20,11 +20,11 @@ public class PreferenceInitializer extends AbstractPreferenceInitializer {
 	public void initializeDefaultPreferences() {
 		IPreferenceStore store = GraspPlugin.getDefault().getPreferenceStore();		
 		
-		store.setDefault(PreferenceKeys.ENABLE_SYNTAX_HIGHLIGHTING.getSettingName(), true);
-		store.setDefault(PreferenceKeys.ENABLE_CODE_COMPLETION.getSettingName(), true);
+		store.setDefault(PreferenceKeys.ENABLE_SYNTAX_HIGHLIGHTING.getSettingName(), true);		
 		store.setDefault(PreferenceKeys.ENABLE_KEYWORD_COMPLETION.getSettingName(), true);
 		store.setDefault(PreferenceKeys.ENABLE_SHOW_LINE_NUMBERS.getSettingName(), true);
 		store.setDefault(PreferenceKeys.ENABLE_SHOW_LINE_NUMBERS.getSettingName(), true);
+		store.setDefault(PreferenceKeys.ENABLE_INTEGRATED_COMPILER.getSettingName(), true);		
 		
 		store.setDefault(PreferenceKeys.COLOUR_KEYWORD.getSettingName(), 
 				StringConverter.asString(new RGB(127, 0, 85)));		

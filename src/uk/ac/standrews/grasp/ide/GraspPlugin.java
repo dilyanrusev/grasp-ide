@@ -1,6 +1,8 @@
 package uk.ac.standrews.grasp.ide;
 
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 import org.eclipse.core.runtime.Assert;
@@ -45,6 +47,7 @@ public class GraspPlugin extends AbstractUIPlugin {
 	
 	private Map<RGB, Color> colours;	
 	private ICompiler compiler;
+	private List<Runnable> pluginCloseTasks;
 	
 	/**
 	 * The constructor
@@ -61,6 +64,7 @@ public class GraspPlugin extends AbstractUIPlugin {
 		plugin = this;		
 		compiler = new IntegratedCompiler();
 		colours = new HashMap<RGB, Color>();
+		pluginCloseTasks = new ArrayList<Runnable>();
 		GraspModel.INSTANCE.init();
 	}
 
@@ -68,7 +72,11 @@ public class GraspPlugin extends AbstractUIPlugin {
 	 * (non-Javadoc)
 	 * @see org.eclipse.ui.plugin.AbstractUIPlugin#stop(org.osgi.framework.BundleContext)
 	 */
-	public void stop(BundleContext context) throws Exception {	
+	public void stop(BundleContext context) throws Exception {
+		for (Runnable task: pluginCloseTasks) {
+			task.run();			
+		}
+		pluginCloseTasks.clear();
 		IconsCache.getDefault().dispose();
 		GraspModel.INSTANCE.dispose();
 		disposeOfColours();
@@ -76,6 +84,10 @@ public class GraspPlugin extends AbstractUIPlugin {
 		super.stop(context);
 		
 	}	
+	
+	public void executeAtPluginStop(Runnable task) {
+		pluginCloseTasks.add(task);
+	}
 
 	/**
 	 * Returns the shared instance

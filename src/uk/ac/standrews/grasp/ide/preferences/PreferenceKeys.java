@@ -1,18 +1,19 @@
 package uk.ac.standrews.grasp.ide.preferences;
 
+import org.eclipse.jface.util.PropertyChangeEvent;
+import org.eclipse.ui.texteditor.AbstractDecoratedTextEditorPreferenceConstants;
+
 /**
  * Constant definitions for plug-in preferences
  */
 public enum PreferenceKeys {
 	
 	/** Enable or disable syntax highlighting */
-	ENABLE_SYNTAX_HIGHLIGHTING ("enable-syntax-highlighting"),
-	/** Enable or disable code completion (code assistance) */
-	ENABLE_CODE_COMPLETION ("enable-code-completion"),
+	ENABLE_SYNTAX_HIGHLIGHTING ("enable-syntax-highlighting"),	
 	/** Enable or disable code completion for keywords */
 	ENABLE_KEYWORD_COMPLETION ("enable-keyword-completion"),
 	/** Enable or disable showing line numbers in text editor */
-	ENABLE_SHOW_LINE_NUMBERS ("show-line-numbers"),
+	ENABLE_SHOW_LINE_NUMBERS (AbstractDecoratedTextEditorPreferenceConstants.EDITOR_LINE_NUMBER_RULER),
 	/** Colour used in syntax highlighting for keywords */ 
 	COLOUR_KEYWORD ("colour-keyword"),
 	/** Colour used in syntax highlighting for inline comments */
@@ -41,5 +42,9 @@ public enum PreferenceKeys {
 	 */
 	public String getSettingName() {
 		return settingName;
+	}
+	
+	public boolean equals(PropertyChangeEvent propChangeEvent) {
+		return settingName.equals(propChangeEvent.getProperty());
 	}
 }

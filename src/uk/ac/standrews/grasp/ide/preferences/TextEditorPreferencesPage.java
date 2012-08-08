@@ -22,7 +22,9 @@ public class TextEditorPreferencesPage extends FieldEditorPreferencePage
 	public TextEditorPreferencesPage() {
 		super(GRID);
 		setPreferenceStore(GraspPlugin.getDefault().getPreferenceStore());
-		setDescription("Set up the behaviour of the Grasp source code editor");
+		setDescription("NOTE: Syntax highlighting changes will take effect only"
+				+ " for newly started editors. Opened editors will have to be closed"
+				+ " and reopened");
 	}
 
 	@Override
@@ -58,11 +60,7 @@ public class TextEditorPreferencesPage extends FieldEditorPreferencePage
 		addField(new ColorFieldEditor(
 				PreferenceKeys.COLOUR_DECLARATIVE_LITERAL.getSettingName(), 
 				"Declarative literals", 
-				getFieldEditorParent()));
-		addField(new BooleanFieldEditor(
-				PreferenceKeys.ENABLE_CODE_COMPLETION.getSettingName(), 
-				"Enable code completion", 
-				getFieldEditorParent()));
+				getFieldEditorParent()));		
 		addField(new BooleanFieldEditor(
 				PreferenceKeys.ENABLE_KEYWORD_COMPLETION.getSettingName(), 
 				"Enable keyword code completion", 

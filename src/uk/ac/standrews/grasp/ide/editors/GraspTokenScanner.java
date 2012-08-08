@@ -14,9 +14,7 @@ import org.eclipse.jface.text.rules.Token;
  *
  */
 public class GraspTokenScanner extends RuleBasedScanner {
-	public static final GraspTokenScanner INSTANCE = new GraspTokenScanner();
-
-	private GraspTokenScanner() {	
+	public GraspTokenScanner() {	
 		IToken stringLiteral = new Token(new TextAttribute(TextUtil.getStringLiteralColour()));
 		IToken declarativeLiteral = new Token(new TextAttribute(TextUtil.getDeclarativeLiteralColour()));
 		IToken keyword = new Token(new TextAttribute(TextUtil.getKeywordColour()));

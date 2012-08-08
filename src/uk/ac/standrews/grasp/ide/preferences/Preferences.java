@@ -24,15 +24,6 @@ public final class Preferences {
 	}
 	
 	/**
-	 * Queries preference store if code completion is enabled
-	 * @return
-	 */
-	public static boolean isCodeCompletionEnabled() {
-		return getStore().getBoolean(
-				PreferenceKeys.ENABLE_CODE_COMPLETION.getSettingName());
-	}
-	
-	/**
 	 * Queries preference store if text editor should show line numbers
 	 * @return
 	 */
@@ -111,9 +102,13 @@ public final class Preferences {
 	public static String getExternalCompilerPath() {
 		return getStore().getString(
 				PreferenceKeys.FILE_EXTERNAL_COMPILER.getSettingName());
-	}
+	}	
 	
-	private static IPreferenceStore getStore() {
+	/**
+	 * Shortcut for GraspPlugin.getDefault().getPreferenceStore()
+	 * @return
+	 */
+	public static IPreferenceStore getStore() {
 		return GraspPlugin.getDefault().getPreferenceStore();
 	}
 }

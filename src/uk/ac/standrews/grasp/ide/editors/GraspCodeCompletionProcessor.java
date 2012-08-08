@@ -10,14 +10,19 @@ import org.eclipse.jface.text.contentassist.ICompletionProposal;
 import org.eclipse.jface.text.contentassist.IContentAssistProcessor;
 import org.eclipse.jface.text.contentassist.IContextInformation;
 import org.eclipse.jface.text.contentassist.IContextInformationValidator;
+import org.eclipse.jface.util.IPropertyChangeListener;
+import org.eclipse.jface.util.PropertyChangeEvent;
+import org.eclipse.swt.widgets.Display;
 import org.eclipse.ui.IEditorInput;
 import org.eclipse.ui.IFileEditorInput;
 
+import uk.ac.standrews.grasp.ide.GraspPlugin;
 import uk.ac.standrews.grasp.ide.editors.completion.Context;
 import uk.ac.standrews.grasp.ide.editors.completion.ICodeCompletionContext;
 import uk.ac.standrews.grasp.ide.editors.completion.ICodeCompletionProcessor;
 import uk.ac.standrews.grasp.ide.editors.completion.KeywordCodeCompletion;
-import uk.ac.standrews.grasp.ide.editors.completion.LinkStatementCodeCompletion;
+import uk.ac.standrews.grasp.ide.preferences.PreferenceKeys;
+import uk.ac.standrews.grasp.ide.preferences.Preferences;
 
 /**
  * Code completion for Grasp
@@ -25,17 +30,55 @@ import uk.ac.standrews.grasp.ide.editors.completion.LinkStatementCodeCompletion;
  *
  */
 class GraspCodeCompletionProcessor implements IContentAssistProcessor {
+	public static final GraspCodeCompletionProcessor INSTANCE 
+		= new GraspCodeCompletionProcessor();
+	
 	private static final IContextInformation[] EMPTY_CONTEXT_LIST = { };
+	private static final ICodeCompletionProcessor[] EMPTY_PROCESSOR_LIST = { };
+	private static final ICodeCompletionProcessor[] DEFAULT_PROCESSOR_LIST = {
+		new KeywordCodeCompletion()
+	};
 	private static final char[] PROPOSAL_ACTIVATION_CHARS = {};
 	private static final char[] INFORMATION_ACTIVATION_CHARS = {};
+	
+	
 	private ICodeCompletionContext context = new Context();
 	private ICodeCompletionProcessor[] rules;
+	private final Runnable updateRulesTask;
+	private final IPropertyChangeListener preferencesChangedListener;
+
 	
-	public GraspCodeCompletionProcessor() {
-		this.rules = new ICodeCompletionProcessor[] {
-				new LinkStatementCodeCompletion(),
-				new KeywordCodeCompletion()
+	private GraspCodeCompletionProcessor() {
+		updateRulesTask = new Runnable() {			
+			@Override
+			public void run() {
+				if (Preferences.isKeywordCompletionEnabled()) {
+					rules = DEFAULT_PROCESSOR_LIST;
+				} else {
+					rules = EMPTY_PROCESSOR_LIST;
+				}				
+			}
 		};
+		preferencesChangedListener = new IPropertyChangeListener() {
+			@Override
+			public void propertyChange(PropertyChangeEvent event) {
+				if (PreferenceKeys.ENABLE_KEYWORD_COMPLETION.equals(event)) {
+					updateRules();
+				}
+			}
+		};
+		updateRules();	
+		Preferences.getStore().addPropertyChangeListener(preferencesChangedListener);
+		GraspPlugin.getDefault().executeAtPluginStop(new Runnable() {			
+			@Override
+			public void run() {
+				Preferences.getStore().removePropertyChangeListener(preferencesChangedListener);
+			}
+		});
+	}
+	
+	private void updateRules() {
+		Display.getDefault().asyncExec(updateRulesTask);
 	}
 
 	@Override

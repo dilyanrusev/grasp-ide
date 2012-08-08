@@ -2,8 +2,8 @@ package uk.ac.standrews.grasp.ide.editors;
 
 import java.util.Arrays;
 import java.util.Collections;
-import java.util.HashSet;
 import java.util.Set;
+import java.util.TreeSet;
 import java.util.regex.Pattern;
 
 import org.eclipse.jface.text.rules.EndOfLineRule;
@@ -15,25 +15,20 @@ import org.eclipse.jface.text.rules.MultiLineRule;
 import org.eclipse.jface.text.rules.SingleLineRule;
 import org.eclipse.jface.text.rules.WhitespaceRule;
 import org.eclipse.swt.graphics.Color;
-import org.eclipse.swt.graphics.RGB;
 
 import uk.ac.standrews.grasp.ide.GraspPlugin;
+import uk.ac.standrews.grasp.ide.preferences.Preferences;
 
 public final class TextUtil {
 	/** Lists all keywords in Grasp */
 	public static final Set<String> KEYWORDS = 
-			Collections.unmodifiableSet(new HashSet<String>(Arrays.asList(new String[] {
+			Collections.unmodifiableSet(new TreeSet<String>(Arrays.asList(new String[] {
 			"architecture", "requirement", "quality_attribute", "property",
 			"rationale", "reason", "template", "system", "layer", "over",
 			"component", "connector", "provides", "requires", "check",
 			"link", "extends", "because", "supports", "inhibits", "to", 
 			"true", "false", "subsetof", "accepts"
-	})));
-	public static final RGB RGB_KEYWORD = new RGB(127, 0, 85);
-	public static final RGB RGB_INLINE_COMMENT = new RGB(63, 127, 95);
-	public static final RGB RGB_BLOCK_COMMENT = new RGB(63, 127, 95);
-	public static final RGB RGB_STRING_LITERAL = new RGB(42, 0, 255);
-	public static final RGB RGB_DECLARATIVE_LITERAL = new RGB(63, 95, 191);
+	})));	
 	
 	private static final String ALPHA_CHAR = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ";
 	private static final String DECIMAL_DIGIT = "0123456789";
@@ -52,23 +47,23 @@ public final class TextUtil {
 	}
 	
 	public static Color getKeywordColour() {
-		return GraspPlugin.getDefault().getColour(RGB_KEYWORD);
+		return GraspPlugin.getDefault().getColour(Preferences.getKeywordRgb());
 	}
 	
 	public static Color getInlineCommentColour() {
-		return GraspPlugin.getDefault().getColour(RGB_INLINE_COMMENT);
+		return GraspPlugin.getDefault().getColour(Preferences.getInlineCommentRgb());
 	}
 	
 	public static Color getBlockCommentColour() {
-		return GraspPlugin.getDefault().getColour(RGB_BLOCK_COMMENT);
+		return GraspPlugin.getDefault().getColour(Preferences.getBlockCommentRgb());
 	}
 	
 	public static Color getStringLiteralColour() {
-		return GraspPlugin.getDefault().getColour(RGB_STRING_LITERAL);
+		return GraspPlugin.getDefault().getColour(Preferences.getStringLiteralRgb());
 	}
 	
 	public static Color getDeclarativeLiteralColour() {
-		return GraspPlugin.getDefault().getColour(RGB_DECLARATIVE_LITERAL);
+		return GraspPlugin.getDefault().getColour(Preferences.getDeclarativeLiteralRgb());
 	}	
 	
 	public static IPredicateRule createInlineCommentsRule(IToken token) {
