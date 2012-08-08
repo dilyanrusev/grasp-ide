@@ -19,7 +19,7 @@ import uk.ac.standrews.grasp.ide.Log;
 import uk.ac.standrews.grasp.ide.model.GraspModel;
 import uk.ac.standrews.grasp.ide.preferences.Preferences;
 
-public class ExternalCompiler implements ICompiler {
+class ExternalCompiler implements ICompiler {
 	// file_name [line_number, column_start:column_end]: message
 	private static final Pattern ERROR_PATTERN = 
 			Pattern.compile("\\[(\\d+), +(\\d+) *: *(\\d+)\\] *:(.+)");
@@ -138,16 +138,7 @@ public class ExternalCompiler implements ICompiler {
 				options.getXmlFile() != null 
 				? options.getXmlFile().getLocation().toOSString()
 				: file.getLocation().addFileExtension("xml").toOSString();		
-		String[] command = { java, argJar, argCompiler, argInput, argOutput };
-		
-		if (log != null) {
-			for (String cmdPart: command) {
-				log.print(cmdPart);
-				log.print(" ");
-			}
-			log.println();
-		}			
-		 
+		String[] command = { java, argJar, argCompiler, argInput, argOutput }; 
 		return new ProcessBuilder(command).redirectErrorStream(true).start();
 	}
 

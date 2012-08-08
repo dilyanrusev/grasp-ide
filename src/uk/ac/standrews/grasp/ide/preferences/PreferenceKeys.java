@@ -1,7 +1,6 @@
 package uk.ac.standrews.grasp.ide.preferences;
 
 import org.eclipse.jface.util.PropertyChangeEvent;
-import org.eclipse.ui.texteditor.AbstractDecoratedTextEditorPreferenceConstants;
 
 /**
  * Constant definitions for plug-in preferences
@@ -11,9 +10,7 @@ public enum PreferenceKeys {
 	/** Enable or disable syntax highlighting */
 	ENABLE_SYNTAX_HIGHLIGHTING ("enable-syntax-highlighting"),	
 	/** Enable or disable code completion for keywords */
-	ENABLE_KEYWORD_COMPLETION ("enable-keyword-completion"),
-	/** Enable or disable showing line numbers in text editor */
-	ENABLE_SHOW_LINE_NUMBERS (AbstractDecoratedTextEditorPreferenceConstants.EDITOR_LINE_NUMBER_RULER),
+	ENABLE_KEYWORD_COMPLETION ("enable-keyword-completion"),	
 	/** Colour used in syntax highlighting for keywords */ 
 	COLOUR_KEYWORD ("colour-keyword"),
 	/** Colour used in syntax highlighting for inline comments */

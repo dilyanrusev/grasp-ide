@@ -43,7 +43,7 @@ import uk.ac.standrews.grasp.ide.model.GraspModel;
  * @author Dilyan Rusev
  *
  */
-public class IntegratedCompiler implements ICompiler {
+class IntegratedCompiler implements ICompiler {
 
 	@Override
 	public CompilationResult compile(IFile file, CompilationOptions options) {

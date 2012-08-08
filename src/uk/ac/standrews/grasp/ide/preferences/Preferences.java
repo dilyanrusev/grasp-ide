@@ -24,15 +24,6 @@ public final class Preferences {
 	}
 	
 	/**
-	 * Queries preference store if text editor should show line numbers
-	 * @return
-	 */
-	public static boolean isShowLineNumbersEnabled() {
-		return getStore().getBoolean(
-				PreferenceKeys.ENABLE_SHOW_LINE_NUMBERS.getSettingName());
-	}
-	
-	/**
 	 * Queries preference store if text editor should enable keyword code completion processor
 	 * @return
 	 */

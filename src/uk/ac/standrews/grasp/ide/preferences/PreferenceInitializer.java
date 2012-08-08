@@ -4,6 +4,9 @@ import org.eclipse.core.runtime.preferences.AbstractPreferenceInitializer;
 import org.eclipse.jface.preference.IPreferenceStore;
 import org.eclipse.jface.resource.StringConverter;
 import org.eclipse.swt.graphics.RGB;
+import org.eclipse.ui.texteditor.AbstractDecoratedTextEditorPreferenceConstants;
+
+import static org.eclipse.ui.texteditor.AbstractDecoratedTextEditorPreferenceConstants.EDITOR_LINE_NUMBER_RULER;
 
 import uk.ac.standrews.grasp.ide.GraspPlugin;
 
@@ -21,9 +24,7 @@ public class PreferenceInitializer extends AbstractPreferenceInitializer {
 		IPreferenceStore store = GraspPlugin.getDefault().getPreferenceStore();		
 		
 		store.setDefault(PreferenceKeys.ENABLE_SYNTAX_HIGHLIGHTING.getSettingName(), true);		
-		store.setDefault(PreferenceKeys.ENABLE_KEYWORD_COMPLETION.getSettingName(), true);
-		store.setDefault(PreferenceKeys.ENABLE_SHOW_LINE_NUMBERS.getSettingName(), true);
-		store.setDefault(PreferenceKeys.ENABLE_SHOW_LINE_NUMBERS.getSettingName(), true);
+		store.setDefault(PreferenceKeys.ENABLE_KEYWORD_COMPLETION.getSettingName(), true);			
 		store.setDefault(PreferenceKeys.ENABLE_INTEGRATED_COMPILER.getSettingName(), true);		
 		
 		store.setDefault(PreferenceKeys.COLOUR_KEYWORD.getSettingName(), 
@@ -36,6 +37,11 @@ public class PreferenceInitializer extends AbstractPreferenceInitializer {
 				StringConverter.asString(new RGB(42, 0, 255)));		
 		store.setDefault(PreferenceKeys.COLOUR_DECLARATIVE_LITERAL.getSettingName(), 
 				StringConverter.asString(new RGB(63, 95, 191)));
+		
+		// text editor preferences
+		AbstractDecoratedTextEditorPreferenceConstants
+			.initializeDefaultValues(store);
+		store.setDefault(EDITOR_LINE_NUMBER_RULER, true);		
 	}
 
 }
