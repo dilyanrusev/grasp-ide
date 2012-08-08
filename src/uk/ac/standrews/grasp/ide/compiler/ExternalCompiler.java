@@ -16,6 +16,7 @@ import org.eclipse.ui.console.MessageConsoleStream;
 
 import uk.ac.standrews.grasp.ide.GraspPlugin;
 import uk.ac.standrews.grasp.ide.Log;
+import uk.ac.standrews.grasp.ide.model.GraspModel;
 import uk.ac.standrews.grasp.ide.preferences.Preferences;
 
 public class ExternalCompiler implements ICompiler {
@@ -37,10 +38,12 @@ public class ExternalCompiler implements ICompiler {
 			compiler.waitFor();
 			List<CompilationError> errors = parseCompilerOutput(file, compiler, log); 
 			result.setErrors(errors);
+			GraspModel.INSTANCE.ensureFileStats(file).compiled(result);
 			if (options.getXmlFile() != null) {
 				try {
 					file.getProject().refreshLocal(0, null);
 					result.setXmlBuilt(true);
+					GraspModel.INSTANCE.ensureFileStats(file).refreshFromXml(options.getXmlFile());
 				} catch (CoreException e) {	
 					Log.error(e);
 				}

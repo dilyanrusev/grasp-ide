@@ -93,7 +93,7 @@ public class NewProjectWizard extends Wizard implements INewWizard {
 		
 		try {
 			IDE.openEditor(workbench.getActiveWorkbenchWindow().getActivePage(), 
-					project.getFile("src/wsa_simulator.grasp"));
+					project.getFile("src/wsn_simulator.grasp"));
 		} catch (PartInitException e) {
 			Log.error(e);
 		}
