@@ -70,6 +70,18 @@
       </perspective>
    </extension>
    <extension
+         point="org.eclipse.ui.perspectiveExtensions">
+      <perspectiveExtension
+            targetID="org.eclipse.ui.resourcePerspective">
+         <newWizardShortcut
+               id="uk.ac.standrews.grasp.ide.wizards.newArchitecture">
+         </newWizardShortcut>
+         <newWizardShortcut
+               id="uk.ac.standrews.grasp.ide.wizards.newProject">
+         </newWizardShortcut>
+      </perspectiveExtension>
+   </extension>
+   <extension
          point="org.eclipse.ui.views">
       <category
             name="Grasp"
@@ -146,6 +158,14 @@
       <initializer
             class="uk.ac.standrews.grasp.ide.preferences.PreferenceInitializer">
       </initializer>
+   </extension>
+   <extension
+         point="org.eclipse.ui.navigator.navigatorContent">
+      <commonWizard
+            type="new"
+            wizardId="uk.ac.standrews.grasp.ide.wizards.newArchitecture">
+         <enablement></enablement>
+      </commonWizard>
    </extension>
 
 </plugin>

@@ -77,7 +77,7 @@ class CreateProjectOperation extends WorkspaceModifyOperation {
 			progress.setWorkRemaining(2);
 		}
 		
-		IFile sampleFile = srcFolder.getFile("wsa_simulator.grasp");
+		IFile sampleFile = srcFolder.getFile("wsn_simulator.grasp");
 		InputStream contents = new ByteArrayInputStream(GraspExamples.WSN_SIMULATOR.getText("WsnSimulator").getBytes());
 		if (!sampleFile.exists()) {
 			sampleFile.create(contents, true, progress.newChild(1));			

@@ -74,7 +74,7 @@ public class NewProjectWizard extends Wizard implements INewWizard {
 			getContainer().run(false, true, createProjectOp);
 		} catch (InvocationTargetException e) {
 			String message = "Cannot create project " + projectName;
-			Msg.showError(getShell(), message, null, e);
+			Msg.showError(getShell(), null, message, e);
 			Log.error(message, e);
 			return false;
 		} catch (InterruptedException e) {
