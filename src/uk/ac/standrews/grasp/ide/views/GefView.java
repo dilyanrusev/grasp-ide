@@ -4,8 +4,13 @@ package uk.ac.standrews.grasp.ide.views;
 import org.eclipse.core.resources.IFile;
 import org.eclipse.gef.editparts.ScalableFreeformRootEditPart;
 import org.eclipse.gef.ui.parts.ScrollingGraphicalViewer;
+import org.eclipse.jface.viewers.ISelection;
+import org.eclipse.jface.viewers.ITreeSelection;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Display;
+import org.eclipse.ui.IPageLayout;
+import org.eclipse.ui.ISelectionListener;
+import org.eclipse.ui.IWorkbenchPart;
 import org.eclipse.ui.part.ViewPart;
 
 import uk.ac.standrews.grasp.ide.editParts.ArchitectureEditPart;
@@ -14,11 +19,14 @@ import uk.ac.standrews.grasp.ide.model.ArchitectureModel;
 import uk.ac.standrews.grasp.ide.model.GraspFile;
 import uk.ac.standrews.grasp.ide.model.GraspFileChangedEvent;
 import uk.ac.standrews.grasp.ide.model.GraspFileChangedEvent.Kind;
+import uk.ac.standrews.grasp.ide.model.GraspModel;
 import uk.ac.standrews.grasp.ide.model.IGraspFileChangedListener;
 
 public class GefView 
 	extends ViewPart 
-	implements IActiveEditorChangedListener, IGraspFileChangedListener {
+	implements IActiveEditorChangedListener 
+	, IGraspFileChangedListener
+	, ISelectionListener {
 
 	/**
 	 * The ID of the view as specified by the extension.
@@ -45,12 +53,16 @@ public class GefView
 		activeEditorChangeWatcher.start(getSite().getWorkbenchWindow().getWorkbench());
 		
 		GraspFile.addChangeListener(this);
+		getSite().getWorkbenchWindow().getSelectionService()
+			.addSelectionListener(IPageLayout.ID_PROJECT_EXPLORER, this);
 	}
 	
 	@Override
 	public void dispose() {
-		GraspFile.removeChangeListener(this);
 		activeEditorChangeWatcher.dispose();
+		GraspFile.removeChangeListener(this);
+		getSite().getWorkbenchWindow().getSelectionService()
+			.removeSelectionListener(IPageLayout.ID_PROJECT_EXPLORER, this);		
 		super.dispose();
 	}
 
@@ -83,6 +95,21 @@ public class GefView
 		}
 	}
 	
+	@Override
+	public void selectionChanged(IWorkbenchPart part, ISelection selection) {
+		if (!(selection instanceof ITreeSelection)) return;
+		ITreeSelection theSelection = (ITreeSelection) selection;
+		if (theSelection.isEmpty()) return;
+		Object selected = theSelection.getFirstElement();
+		if (selected instanceof IFile) {
+			IFile selectedFile = (IFile) selected;
+			ArchitectureModel arch = GraspModel.INSTANCE.ensureFileStats(selectedFile).getArchitecture();
+			if (arch != null) {
+				bindView(arch);
+			}
+		}
+	}
+	
 	private void bindView(final ArchitectureModel model) {
 		if (Display.getCurrent() != null) {
 			graphicalViewer.setContents(model);
@@ -103,4 +130,6 @@ public class GefView
 		}
 		return null;
 	}
+
+	
 }

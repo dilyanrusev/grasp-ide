@@ -89,14 +89,15 @@ public class GraspPerspective implements IPerspectiveFactory {
 		factory.addNewWizardShortcut("org.eclipse.ui.wizards.new.file");//NON-NLS-1
 	}
 
-	private void addViewShortcuts() {
-		
+	private void addViewShortcuts() {		
 		factory.addFastView(GefView.ID);
 		factory.addFastView(IPageLayout.ID_PROP_SHEET);
 		factory.addFastView(IPageLayout.ID_OUTLINE);
-		factory.addShowViewShortcut(IConsoleConstants.ID_CONSOLE_VIEW);
-		factory.addShowViewShortcut(IPageLayout.ID_PROBLEM_VIEW);
 		factory.addFastView(ID_ERROR_LOG_VIEW); 
+		
+		factory.addShowViewShortcut(GefView.ID);
+		factory.addShowViewShortcut(IConsoleConstants.ID_CONSOLE_VIEW);
+		factory.addShowViewShortcut(IPageLayout.ID_PROBLEM_VIEW);		
 		factory.addShowViewShortcut(IPageLayout.ID_PROJECT_EXPLORER);
 	}
 
