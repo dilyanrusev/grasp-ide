@@ -1,7 +1,8 @@
 package uk.ac.standrews.grasp.ide.editParts;
 
-import org.eclipse.swt.graphics.Image;
+import org.eclipse.draw2d.IFigure;
 
+import uk.ac.standrews.grasp.ide.figures.ConnectorFigure;
 import uk.ac.standrews.grasp.ide.model.ConnectorModel;
 
 public class ConnectorEditPart extends
@@ -12,8 +13,8 @@ public class ConnectorEditPart extends
 	}
 	
 	@Override
-	protected Image getIcon() {
-		return IconsCache.getDefault().getConnectorIcon();
+	protected IFigure createFigure() {
+		return new ConnectorFigure();
 	}
 
 }

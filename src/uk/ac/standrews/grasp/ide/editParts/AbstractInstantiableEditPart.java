@@ -1,8 +1,13 @@
 package uk.ac.standrews.grasp.ide.editParts;
 
+import org.eclipse.swt.graphics.Image;
+
+import uk.ac.standrews.grasp.ide.figures.IInstantiableFigure;
 import uk.ac.standrews.grasp.ide.model.ElementType;
 import uk.ac.standrews.grasp.ide.model.FirstClassModel;
 import uk.ac.standrews.grasp.ide.model.InstantiableModel;
+import uk.ac.standrews.grasp.ide.model.ProvidesModel;
+import uk.ac.standrews.grasp.ide.model.RequiresModel;
 
 public abstract class AbstractInstantiableEditPart<TModel extends InstantiableModel> extends
 		AbstractElementNodeEditPart<TModel> {
@@ -17,7 +22,27 @@ public abstract class AbstractInstantiableEditPart<TModel extends InstantiableMo
 	}
 	
 	@Override
+	protected void refreshVisuals() {		
+		IInstantiableFigure figure = (IInstantiableFigure) getFigure();
+		figure.setHeaderText(getElement().getReferencingName());
+		figure.clearBody();
+		for (FirstClassModel child: getElement().getBodyByType(ElementType.PROVIDES)) {
+			ProvidesModel provides = (ProvidesModel) child;
+			figure.addProvides(provides.getReferencingName());
+		}
+		for (FirstClassModel child: getElement().getBodyByType(ElementType.REQUIRES)) {
+			RequiresModel requires = (RequiresModel) child;
+			figure.addRequires(requires.getReferencingName());
+		}
+	}
+	
+	@Override
 	protected boolean isModelChildSupported(FirstClassModel child) {
-		return child.getType() == ElementType.PROVIDES || child.getType() == ElementType.REQUIRES;
+		return false;
+	}
+	
+	@Override
+	protected Image getIcon() {	
+		return null;
 	}
 }

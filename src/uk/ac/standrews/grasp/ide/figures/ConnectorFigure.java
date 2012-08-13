@@ -7,19 +7,19 @@ import uk.ac.standrews.grasp.ide.GraspPlugin;
 import uk.ac.standrews.grasp.ide.editParts.IconsCache;
 
 /**
- * Figure to draw Grasp components
+ * Figure to draw Grasp connectors
  * @author Dilyan Rusev
  *
  */
-public class ComponentFigure extends AbstractInstantiableFigure {
-
+public class ConnectorFigure extends AbstractInstantiableFigure {
+	
 	@Override
 	protected Label createHeadLabel() {
-		return new Label("<<component>>", IconsCache.getDefault().getComponentIcon());		
+		return new Label("<<connector>>", IconsCache.getDefault().getConnectorIcon());
 	}
 	
 	@Override
 	protected Color createBackgroundColour() {
-		return GraspPlugin.getDefault().getColour(200, 200, 255);
+		return GraspPlugin.getDefault().getColour(255, 200, 200);
 	}
 }
