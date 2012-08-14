@@ -1,6 +1,7 @@
 package uk.ac.standrews.grasp.ide.model;
 
-public class LayerModel extends BecauseModel implements IConnectionEndpoint {
+public class LayerModel extends BecauseModel 
+	implements IConnectionEndpoint {
 	
 	private ObservableSet<LayerModel> over = new ObservableSet<LayerModel>();
 	private ObservableList<ConnectionModel> sourceConnections = new ObservableList<ConnectionModel>();
@@ -78,4 +79,24 @@ public class LayerModel extends BecauseModel implements IConnectionEndpoint {
 		return targetConnections;
 	}
 
+	@Override
+	public ConnectionModel getConnectionWith(IConnectionEndpoint other,
+			EndpointKind kind) {
+		if (kind == EndpointKind.Source) {
+			for (ConnectionModel connection: targetConnections) {
+				if (connection.getSource() == other) {
+					return connection;
+				}
+			}
+		} else {
+			for (ConnectionModel connection: sourceConnections) {
+				if (connection.getTarget() == other) {
+					return connection;
+				}
+			}
+		}
+		return null;
+	}
+
+	
 }

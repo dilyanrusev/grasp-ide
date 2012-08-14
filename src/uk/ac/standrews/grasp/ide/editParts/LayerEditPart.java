@@ -10,17 +10,50 @@ import org.eclipse.gef.NodeEditPart;
 import org.eclipse.gef.Request;
 
 import uk.ac.standrews.grasp.ide.figures.LayerFigure;
+import uk.ac.standrews.grasp.ide.model.CollectionChangedEvent;
 import uk.ac.standrews.grasp.ide.model.ConnectionModel;
 import uk.ac.standrews.grasp.ide.model.ElementType;
 import uk.ac.standrews.grasp.ide.model.FirstClassModel;
+import uk.ac.standrews.grasp.ide.model.ICollectionChangedListener;
 import uk.ac.standrews.grasp.ide.model.LayerModel;
+import uk.ac.standrews.grasp.ide.model.IConnectionEndpoint.EndpointKind;
 
 public class LayerEditPart extends AbstractElementNodeEditPart<LayerModel> 
 	implements NodeEditPart {	
 
+	private ICollectionChangedListener<LayerModel> overListener;
+	
 	public LayerEditPart(LayerModel model) {
-		super(model);				
+		super(model);	
+		for (LayerModel over: model.getOver()) {
+			 new ConnectionModel(model, over, ElementType.LAYER).connect();
+		}
 	}	
+	
+	@Override
+	public void activate() {	
+		super.activate();
+		overListener = new ICollectionChangedListener<LayerModel>() {			
+			@Override
+			public void collectionChanged(CollectionChangedEvent<LayerModel> event) {
+				for (LayerModel added: event.getAdded()) {
+					new ConnectionModel(getElement(), added, ElementType.LAYER).connect();
+				}
+				for (LayerModel removed: event.getRemoved()) {					
+					ConnectionModel connection = removed.getConnectionWith(getElement(), EndpointKind.Source);
+					connection.disconnect();
+				}
+			}
+		};
+		getElement().getOver().addCollectionChangeListener(overListener);
+	}
+	
+	@Override
+	public void deactivate() {
+		getElement().getOver().removeCollectionChangeListener(overListener);
+		overListener = null;
+		super.deactivate();
+	}
 	
 	@Override
 	protected void createEditPolicies() {
@@ -35,6 +68,11 @@ public class LayerEditPart extends AbstractElementNodeEditPart<LayerModel>
 				;
 	}
 
+	@Override
+	protected void refreshVisuals() {		
+		super.refreshVisuals();		
+	}
+	
 	@Override
 	protected IFigure createFigure() {
 		return new LayerFigure();

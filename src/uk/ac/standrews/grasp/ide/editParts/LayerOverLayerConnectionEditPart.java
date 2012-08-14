@@ -15,7 +15,7 @@ public class LayerOverLayerConnectionEditPart extends
 	public LayerOverLayerConnectionEditPart(ConnectionModel model) {
 		setModel(model);
 	}
-
+	
 	@Override
 	protected void createEditPolicies() {
 
@@ -23,12 +23,12 @@ public class LayerOverLayerConnectionEditPart extends
 	
 	@Override
 	protected IFigure createFigure() {
-		PolylineConnection connection = new PolylineConnection();
-		
+		PolylineConnection connection = new PolylineConnection();		
 		
 		PolygonDecoration decoration = new PolygonDecoration();
 		decoration.setTemplate(PolygonDecoration.TRIANGLE_TIP);
 		
+		//String str = getModel().toString();
 		Label label = new Label("over");
 		label.setOpaque(true);
 		

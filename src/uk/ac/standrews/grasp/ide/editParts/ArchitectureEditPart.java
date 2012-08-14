@@ -30,7 +30,7 @@ public class ArchitectureEditPart extends AbstractElementEditPart<ArchitectureMo
 		f.setOpaque(true);
 		ConnectionLayer connLayer = (ConnectionLayer) getLayer(LayerConstants.CONNECTION_LAYER);
         connLayer.setAntialias(SWT.ON);
-        connLayer.setConnectionRouter(new ShortestPathConnectionRouter(figure));
+        connLayer.setConnectionRouter(new ShortestPathConnectionRouter(f));
 		return f;
 	}
 

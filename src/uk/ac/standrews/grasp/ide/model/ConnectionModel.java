@@ -85,5 +85,8 @@ public class ConnectionModel {
 		connect();
 	}
 	
-	
+	@Override
+	public String toString() {
+		return new StringBuilder("s=").append(source).append(" t=").append(target).toString();
+	}
 }
