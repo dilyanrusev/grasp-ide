@@ -1,13 +1,12 @@
 package uk.ac.standrews.grasp.ide.figures;
 
-import org.eclipse.draw2d.IFigure;
 
 /**
  * Common interface for all figures that draw first-class elements
  * @author Dilyan Rusev
  *
  */
-public interface IFirstClassFigure extends IFigure {
+public interface IFirstClassFigure {
 
 	/**
 	 * Set the text in the header label
@@ -16,9 +15,8 @@ public interface IFirstClassFigure extends IFigure {
 	void setHeaderText(String text);
 	
 	/**
-	 * Insert child figures here
-	 * @return Children container
+	 * Set the tooltip text
+	 * @param text Tooltip text
 	 */
-	BodyFigure getBody();
-
+	void setTooltipText(String text);
 }

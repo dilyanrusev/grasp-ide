@@ -14,7 +14,8 @@ public class ConnectorEditPart extends
 	
 	@Override
 	protected IFigure createFigure() {
-		return new ConnectorFigure();
+		ConnectorFigure figure = new ConnectorFigure();		
+		return figure;
 	}
 
 }

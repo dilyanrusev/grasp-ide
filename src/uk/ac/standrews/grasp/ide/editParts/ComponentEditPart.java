@@ -13,7 +13,7 @@ public class ComponentEditPart extends AbstractInstantiableEditPart<ComponentMod
 	
 	@Override
 	protected IFigure createFigure() {
-		ComponentFigure figure = new ComponentFigure();
+		ComponentFigure figure = new ComponentFigure();		
 		return figure;
 	}
 		

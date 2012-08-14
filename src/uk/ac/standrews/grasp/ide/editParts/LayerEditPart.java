@@ -4,8 +4,9 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
-import org.eclipse.swt.graphics.Image;
+import org.eclipse.draw2d.IFigure;
 
+import uk.ac.standrews.grasp.ide.figures.LayerFigure;
 import uk.ac.standrews.grasp.ide.model.ElementType;
 import uk.ac.standrews.grasp.ide.model.FirstClassModel;
 import uk.ac.standrews.grasp.ide.model.LayerModel;
@@ -46,22 +47,9 @@ public class LayerEditPart extends AbstractElementNodeEditPart<LayerModel> {
 		//return targetOverConnections;
 		return Collections.emptyList();
 	}
-	
-	@Override
-	public void activate() {
-		super.activate();
-		
-	}
-	
-	@Override
-	protected Image getIcon() {
-		return IconsCache.getDefault().getLayerIcon();
-	}
-
 	@Override
 	protected void createEditPolicies() {
-		// TODO Auto-generated method stub
-		
+				
 	}
 
 	@Override
@@ -71,4 +59,10 @@ public class LayerEditPart extends AbstractElementNodeEditPart<LayerModel> {
 				//|| child.getType() == ElementType.LINK
 				;
 	}
+
+	@Override
+	protected IFigure createFigure() {
+		return new LayerFigure();
+	}	
+	
 }

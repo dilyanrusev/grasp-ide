@@ -16,7 +16,7 @@ import org.eclipse.swt.graphics.Image;
  * @author Dilyan Rusev
  *
  */
-public class HeaderBorder extends AbstractBorder {
+public class HeaderBorder extends AbstractBorder implements IHeaderBorder {
 	private Image icon;
 	private String text;
 	private Font font;
@@ -89,36 +89,36 @@ public class HeaderBorder extends AbstractBorder {
 		invalidate();
 	}
 	
-	/**
-	 * Set the text. Should not be null at the time of rendering
-	 * @param newText Text of the header
+	/* (non-Javadoc)
+	 * @see uk.ac.standrews.grasp.ide.figures.IHeaderBorder#setText(java.lang.String)
 	 */
+	@Override
 	public void setText(String newText) {
 		text = newText;
 		invalidate();
 	}
 	
-	/**
-	 * Get the header text
-	 * @return
+	/* (non-Javadoc)
+	 * @see uk.ac.standrews.grasp.ide.figures.IHeaderBorder#getText()
 	 */
+	@Override
 	public String getText() {
 		return text;
 	}
 	
-	/**
-	 * Set the icon that is displayed before the text in the header
-	 * @param newIcon Icon to display
+	/* (non-Javadoc)
+	 * @see uk.ac.standrews.grasp.ide.figures.IHeaderBorder#setIcon(org.eclipse.swt.graphics.Image)
 	 */
+	@Override
 	public void setIcon(Image newIcon) {
 		icon = newIcon;
 		invalidate();
 	}
 	
-	/**
-	 * Gets the icon to be displayed before the text
-	 * @return
+	/* (non-Javadoc)
+	 * @see uk.ac.standrews.grasp.ide.figures.IHeaderBorder#getIcon()
 	 */
+	@Override
 	public Image getIcon() {
 		return icon;
 	}

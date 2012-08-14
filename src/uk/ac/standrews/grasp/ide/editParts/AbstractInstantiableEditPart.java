@@ -1,7 +1,5 @@
 package uk.ac.standrews.grasp.ide.editParts;
 
-import org.eclipse.swt.graphics.Image;
-
 import uk.ac.standrews.grasp.ide.figures.IInstantiableFigure;
 import uk.ac.standrews.grasp.ide.model.ElementType;
 import uk.ac.standrews.grasp.ide.model.FirstClassModel;
@@ -22,9 +20,9 @@ public abstract class AbstractInstantiableEditPart<TModel extends InstantiableMo
 	}
 	
 	@Override
-	protected void refreshVisuals() {		
-		IInstantiableFigure figure = (IInstantiableFigure) getFigure();
-		figure.setHeaderText(getDisplayName(getElement()));
+	protected void refreshVisuals() {	
+		super.refreshVisuals();
+		IInstantiableFigure figure = (IInstantiableFigure) getFigure();		
 		figure.clearBody();
 		for (FirstClassModel child: getElement().getBodyByType(ElementType.PROVIDES)) {
 			ProvidesModel provides = (ProvidesModel) child;
@@ -39,10 +37,5 @@ public abstract class AbstractInstantiableEditPart<TModel extends InstantiableMo
 	@Override
 	protected boolean isModelChildSupported(FirstClassModel child) {
 		return false;
-	}
-	
-	@Override
-	protected Image getIcon() {	
-		return null;
 	}
 }

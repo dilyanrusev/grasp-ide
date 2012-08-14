@@ -54,11 +54,11 @@ public abstract class AbstractElementEditPart<TModel extends FirstClassModel>
 	}
 	
 	protected void elementPropertyChanged(String propertyName) {
-		refresh();
+		refreshVisuals();
 	}
 
 	protected void annotationsChanged(CollectionChangedEvent<AnnotationModel> event) {
-		refresh();
+		refreshVisuals();
 	}
 
 	protected void childElementsChanged(CollectionChangedEvent<FirstClassModel> event) {
@@ -77,6 +77,7 @@ public abstract class AbstractElementEditPart<TModel extends FirstClassModel>
 	}
 	
 	private void updateSupportedChildren() {
+		getElement().getBody().resort();
 		supportedChildren.clear();
 		for (FirstClassModel childModel: getElement().getBody()) {
 			if (isModelChildSupported(childModel)) {

@@ -1,7 +1,6 @@
 package uk.ac.standrews.grasp.ide.editParts;
 
 import org.eclipse.draw2d.IFigure;
-import org.eclipse.swt.graphics.Image;
 
 import uk.ac.standrews.grasp.ide.figures.SystemFigure;
 import uk.ac.standrews.grasp.ide.model.ElementType;
@@ -15,25 +14,14 @@ public class SystemEditPart extends AbstractElementNodeEditPart<SystemModel> {
 	}
 	
 	@Override
-	protected Image getIcon() {
-		return IconsCache.getDefault().getSystemIcon();
-	}
-
-	@Override
 	protected void createEditPolicies() {
 				
 	}
 	
 	@Override
 	protected IFigure createFigure() {
-		SystemFigure figure = new SystemFigure();
+		SystemFigure figure = new SystemFigure();		
 		return figure;
-	}
-	
-	@Override
-	protected void refreshVisuals() {
-		SystemFigure figure = (SystemFigure) getFigure();				
-		figure.setHeaderText(getElement().getQualifiedName());
 	}
 
 	@Override
