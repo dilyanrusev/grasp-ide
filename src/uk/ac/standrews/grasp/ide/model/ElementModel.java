@@ -188,8 +188,12 @@ public abstract class ElementModel implements IObservable, Comparable<ElementMod
 			int otherWeight = getElementWeight(other.getType());
 			return myWeight - otherWeight;
 		} else {
-			return this.getReferencingName().compareTo(other.getReferencingName());
+			return doCompareTo(other);
 		}
+	}
+	
+	protected int doCompareTo(ElementModel other) {
+		return this.getReferencingName().compareTo(other.getReferencingName());
 	}
 	
 	@Override

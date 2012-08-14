@@ -15,7 +15,7 @@ public class ComponentFigure extends AbstractInstantiableFigure {
 
 	@Override
 	protected Label createHeadLabel() {
-		return new Label("<<component>>", IconsCache.getDefault().getComponentIcon());		
+		return new Label(IconsCache.getDefault().getComponentIcon());		
 	}
 	
 	@Override

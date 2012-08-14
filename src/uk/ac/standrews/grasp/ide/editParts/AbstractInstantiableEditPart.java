@@ -24,15 +24,15 @@ public abstract class AbstractInstantiableEditPart<TModel extends InstantiableMo
 	@Override
 	protected void refreshVisuals() {		
 		IInstantiableFigure figure = (IInstantiableFigure) getFigure();
-		figure.setHeaderText(getElement().getReferencingName());
+		figure.setHeaderText(getDisplayName(getElement()));
 		figure.clearBody();
 		for (FirstClassModel child: getElement().getBodyByType(ElementType.PROVIDES)) {
 			ProvidesModel provides = (ProvidesModel) child;
-			figure.addProvides(provides.getReferencingName());
+			figure.addProvides(getDisplayName(provides));
 		}
 		for (FirstClassModel child: getElement().getBodyByType(ElementType.REQUIRES)) {
 			RequiresModel requires = (RequiresModel) child;
-			figure.addRequires(requires.getReferencingName());
+			figure.addRequires(getDisplayName(requires));
 		}
 	}
 	

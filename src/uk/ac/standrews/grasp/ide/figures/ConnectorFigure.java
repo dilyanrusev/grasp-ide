@@ -15,7 +15,7 @@ public class ConnectorFigure extends AbstractInstantiableFigure {
 	
 	@Override
 	protected Label createHeadLabel() {
-		return new Label("<<connector>>", IconsCache.getDefault().getConnectorIcon());
+		return new Label(IconsCache.getDefault().getConnectorIcon());
 	}
 	
 	@Override

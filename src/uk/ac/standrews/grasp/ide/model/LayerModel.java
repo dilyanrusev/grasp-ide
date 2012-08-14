@@ -18,6 +18,18 @@ public class LayerModel extends BecauseModel {
 	}
 	
 	@Override
+	protected int doCompareTo(ElementModel elem) {
+		LayerModel other = (LayerModel) elem;
+		if (this.getOver().contains(other)) {
+			return 1;
+		}
+		if (other.getOver().contains(this)) {
+			return -1;
+		}
+		return super.doCompareTo(other);
+	}
+	
+	@Override
 	public boolean equals(Object obj) {
 		if (!super.equals(obj)) return false;
 		return collectionsEqual(getOver(), ((LayerModel) obj).getOver());

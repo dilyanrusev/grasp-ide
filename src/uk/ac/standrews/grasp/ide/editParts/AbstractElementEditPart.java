@@ -8,6 +8,7 @@ import org.eclipse.gef.editparts.AbstractGraphicalEditPart;
 import uk.ac.standrews.grasp.ide.model.AnnotationModel;
 import uk.ac.standrews.grasp.ide.model.CollectionChangedEvent;
 import uk.ac.standrews.grasp.ide.model.ElementChangedEvent;
+import uk.ac.standrews.grasp.ide.model.ElementModel;
 import uk.ac.standrews.grasp.ide.model.FirstClassModel;
 import uk.ac.standrews.grasp.ide.model.ICollectionChangedListener;
 import uk.ac.standrews.grasp.ide.model.IElementChangedListener;
@@ -18,7 +19,7 @@ public abstract class AbstractElementEditPart<TModel extends FirstClassModel>
 
 	private ICollectionChangedListener<AnnotationModel> annotationChangedListener;
 	private ICollectionChangedListener<FirstClassModel> childElementsChangedListener;
-	private List<FirstClassModel> supportedChildren;
+	private List<FirstClassModel> supportedChildren;	
 
 	public AbstractElementEditPart(TModel model) {
 		super();
@@ -62,7 +63,7 @@ public abstract class AbstractElementEditPart<TModel extends FirstClassModel>
 
 	protected void childElementsChanged(CollectionChangedEvent<FirstClassModel> event) {
 		updateSupportedChildren();
-		refresh();
+		refreshChildren();
 	}
 
 	@SuppressWarnings("unchecked")
@@ -82,6 +83,21 @@ public abstract class AbstractElementEditPart<TModel extends FirstClassModel>
 				supportedChildren.add(childModel);
 			}
 		}
+	}
+	
+	protected static String getDisplayName(ElementModel element) {
+		StringBuilder name = new StringBuilder();
+		if (element.getName() != null && element.getAlias() == null) {
+			name.append(element.getName());
+		} else if (element.getName() != null && element.getAlias() != null) {
+			name.append(element.getName());
+			name.append(' ');
+			name.append(element.getAlias());
+		} else {
+			name.append(element.getReferencingName());
+		}
+		
+		return name.toString();
 	}
 	
 	protected abstract boolean isModelChildSupported(FirstClassModel child);

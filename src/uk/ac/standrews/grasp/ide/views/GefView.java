@@ -78,8 +78,7 @@ public class GefView
 				event.getEditorArchitecture() != null
 				? event.getEditorArchitecture().getFile()
 				: null;
-		if (currentFile == null || !currentFile.equals(eventFile) || !currentFile.equals(lastActiveFile)) {
-			System.out.println("Active architecture: " + event.getEditorArchitecture());
+		if (currentFile == null || !currentFile.equals(eventFile) || !currentFile.equals(lastActiveFile)) {			
 			bindView(event.getEditorArchitecture());
 			lastActiveFile = currentFile;
 		}
@@ -89,8 +88,7 @@ public class GefView
 	public void fileChanged(GraspFileChangedEvent event) {
 		if (event.getKind().contains(Kind.ArchiectureRefreshed)) {
 			if (event.getSource().getFile().equals(getCurrentFile())) {
-				bindView(event.getSource().getArchitecture());
-				System.out.println("Refreshed from " + getCurrentFile());
+				bindView(event.getSource().getArchitecture());			
 			}
 		}
 	}

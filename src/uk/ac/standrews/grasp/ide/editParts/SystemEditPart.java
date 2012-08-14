@@ -32,8 +32,8 @@ public class SystemEditPart extends AbstractElementNodeEditPart<SystemModel> {
 	
 	@Override
 	protected void refreshVisuals() {
-		SystemFigure figure = (SystemFigure) getFigure();
-		figure.setHeaderText(getElement().getReferencingName());
+		SystemFigure figure = (SystemFigure) getFigure();				
+		figure.setHeaderText(getElement().getQualifiedName());
 	}
 
 	@Override
@@ -41,7 +41,8 @@ public class SystemEditPart extends AbstractElementNodeEditPart<SystemModel> {
 		return child.getType() == ElementType.LAYER
 				|| child.getType() == ElementType.COMPONENT
 				|| child.getType() == ElementType.CONNECTOR
-				|| child.getType() == ElementType.LINK;
+				//|| child.getType() == ElementType.LINK
+				;
 	}
 
 }

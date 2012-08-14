@@ -1,5 +1,6 @@
 package uk.ac.standrews.grasp.ide.editParts;
 
+import org.eclipse.draw2d.ColorConstants;
 import org.eclipse.draw2d.FreeformLayer;
 import org.eclipse.draw2d.IFigure;
 import org.eclipse.draw2d.ToolbarLayout;
@@ -20,7 +21,9 @@ public class ArchitectureEditPart extends AbstractElementEditPart<ArchitectureMo
 		IFigure f = new FreeformLayer();
 		ToolbarLayout layout = new ToolbarLayout(false);
 		layout.setSpacing(20);		
-		f.setLayoutManager(layout);	
+		f.setLayoutManager(layout);
+		f.setBackgroundColor(ColorConstants.white);
+		f.setOpaque(true);
 		return f;
 	}
 
@@ -32,6 +35,6 @@ public class ArchitectureEditPart extends AbstractElementEditPart<ArchitectureMo
 
 	@Override
 	protected boolean isModelChildSupported(FirstClassModel child) {
-		return child.getType() == ElementType.SYSTEM || child.getType() == ElementType.TEMPLATE;
+		return child.getType() == ElementType.SYSTEM;
 	}
 }

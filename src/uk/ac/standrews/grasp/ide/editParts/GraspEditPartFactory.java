@@ -6,7 +6,6 @@ import org.eclipse.gef.EditPartFactory;
 import uk.ac.standrews.grasp.ide.model.ArchitectureModel;
 import uk.ac.standrews.grasp.ide.model.ComponentModel;
 import uk.ac.standrews.grasp.ide.model.ConnectorModel;
-import uk.ac.standrews.grasp.ide.model.FirstClassModel;
 import uk.ac.standrews.grasp.ide.model.LayerModel;
 import uk.ac.standrews.grasp.ide.model.SystemModel;
 import uk.ac.standrews.grasp.ide.model.TemplateModel;
@@ -35,10 +34,9 @@ public class GraspEditPartFactory implements EditPartFactory {
 		if (model instanceof TemplateModel)
 			return new TemplateEditPart((TemplateModel) model);
 		if (model instanceof TemplateInheritanceConnection)
-			return new TemplateInheritanceConnectionEditPart((TemplateInheritanceConnection) model);
+			return new TemplateInheritanceConnectionEditPart((TemplateInheritanceConnection) model);		
 		
-		return new NotSupportedEditPart((FirstClassModel) model);
-		//throw new IllegalStateException("Can not create edit part for model of type " + model.getClass());
+		throw new IllegalStateException("Can not create edit part for model of type " + model.getClass());
 	}
 	
 }
