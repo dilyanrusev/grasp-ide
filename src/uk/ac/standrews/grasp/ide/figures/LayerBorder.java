@@ -5,40 +5,40 @@ import org.eclipse.draw2d.IFigure;
 import org.eclipse.draw2d.geometry.Insets;
 import org.eclipse.swt.graphics.Image;
 
-public class RoundedHeaderBorder extends HeaderBorder {
-	private int vertSpace; 
+public class LayerBorder extends HeaderBorder {	 
+	private Insets childrenMargin;
 
-	public RoundedHeaderBorder(Image icon) {
+	public LayerBorder(Image icon) {
 		super(icon);		
-		Insets theMargin = getMargin();
-		vertSpace = theMargin.bottom;
+		Insets theMargin = getMargin();		
 		theMargin.bottom = 0;
-		setMargin(theMargin);		
+		setMargin(theMargin);
+		childrenMargin = new Insets(5);
 	}
 	
 	/**
-	 * Set the vertical space between the border and the figure's children
+	 * Set the spacing between the border and the figure's children
 	 * @param newVertSpace
 	 */
-	public void setVertSpace(int newVertSpace) {
-		vertSpace = newVertSpace;
+	public void setChildrenMargin(Insets newInsets) {
+		childrenMargin = newInsets;
 	}
 	
 	/**
-	 * Vertical space between the border and the figure's children
+	 * Return a copy of the margin between the border and the figure's children
 	 * @return
 	 */
-	public int getVertSpace() {
-		return vertSpace;
+	public Insets getChildrenMargin() {
+		return new Insets(childrenMargin);
 	}
 	
 	@Override
 	public Insets getInsets(IFigure figure) {
 		Insets insets = super.getInsets(figure);
-		insets.top += 1 + vertSpace;
-		insets.bottom += 1;
-		insets.left += 1;
-		insets.right += 1;
+		insets.top += 1 + childrenMargin.top;
+		insets.bottom += 1 + childrenMargin.bottom;
+		insets.left += 1 + childrenMargin.left;
+		insets.right += 1 + childrenMargin.right;
 		return insets;
 	}
 	

@@ -1,52 +1,27 @@
 package uk.ac.standrews.grasp.ide.editParts;
 
-import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
 
+import org.eclipse.draw2d.ChopboxAnchor;
+import org.eclipse.draw2d.ConnectionAnchor;
 import org.eclipse.draw2d.IFigure;
+import org.eclipse.gef.ConnectionEditPart;
+import org.eclipse.gef.NodeEditPart;
+import org.eclipse.gef.Request;
 
 import uk.ac.standrews.grasp.ide.figures.LayerFigure;
+import uk.ac.standrews.grasp.ide.model.ConnectionModel;
 import uk.ac.standrews.grasp.ide.model.ElementType;
 import uk.ac.standrews.grasp.ide.model.FirstClassModel;
 import uk.ac.standrews.grasp.ide.model.LayerModel;
-import uk.ac.standrews.grasp.ide.model.SystemModel;
 
-public class LayerEditPart extends AbstractElementNodeEditPart<LayerModel> {
-	private final List<LayerOverLayerConnection> sourceOverConnections;
-	private final List<LayerOverLayerConnection> targetOverConnections;
+public class LayerEditPart extends AbstractElementNodeEditPart<LayerModel> 
+	implements NodeEditPart {	
 
 	public LayerEditPart(LayerModel model) {
-		super(model);	
-		sourceOverConnections = new ArrayList<LayerOverLayerConnection>(model.getOver().size());
-		for (LayerModel layer: model.getOver()) {
-			sourceOverConnections.add(new LayerOverLayerConnection(model, (LayerModel) layer));
-		}
-		targetOverConnections = new ArrayList<LayerOverLayerConnection>();
-		SystemModel system = (SystemModel) model.getArchitecture().getBodyByType(ElementType.SYSTEM).iterator().next();
-		for (FirstClassModel fc: system.getBodyByType(ElementType.LAYER)) {
-			LayerModel layer = (LayerModel) fc;
-			if (!layer.getQualifiedName().equalsIgnoreCase(model.getQualifiedName())) {
-				for (LayerModel over: layer.getOver()) {
-					if (over.getQualifiedName().equalsIgnoreCase(model.getQualifiedName())) {
-						targetOverConnections.add(new LayerOverLayerConnection((LayerModel) layer, model));
-					}
-				}
-			}
-		}
-	}
+		super(model);				
+	}	
 	
-	@Override
-	protected List<LayerOverLayerConnection> getModelSourceConnections() {
-		//return sourceOverConnections;
-		return Collections.emptyList();
-	}
-	
-	@Override
-	protected List<LayerOverLayerConnection> getModelTargetConnections() {
-		//return targetOverConnections;
-		return Collections.emptyList();
-	}
 	@Override
 	protected void createEditPolicies() {
 				
@@ -63,6 +38,38 @@ public class LayerEditPart extends AbstractElementNodeEditPart<LayerModel> {
 	@Override
 	protected IFigure createFigure() {
 		return new LayerFigure();
+	}
+
+	@Override
+	protected List<ConnectionModel> getModelSourceConnections() {
+		return getElement().getSourceConnections();		
+	}
+	
+	@Override
+	protected List<ConnectionModel> getModelTargetConnections() {
+		return getElement().getTargetConnections();	
+	}
+	
+	@Override
+	public ConnectionAnchor getSourceConnectionAnchor(
+			ConnectionEditPart connection) {
+		return new ChopboxAnchor(getFigure());
+	}
+
+	@Override
+	public ConnectionAnchor getTargetConnectionAnchor(
+			ConnectionEditPart connection) {
+		return new ChopboxAnchor(getFigure());
+	}
+
+	@Override
+	public ConnectionAnchor getSourceConnectionAnchor(Request request) {
+		return new ChopboxAnchor(getFigure());
+	}
+
+	@Override
+	public ConnectionAnchor getTargetConnectionAnchor(Request request) {
+		return new ChopboxAnchor(getFigure());
 	}	
 	
 }

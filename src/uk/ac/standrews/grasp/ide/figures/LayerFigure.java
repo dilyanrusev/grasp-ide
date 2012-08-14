@@ -13,7 +13,7 @@ public class LayerFigure extends AbstractFirstClassContainer {
 	
 	@Override
 	protected IHeaderBorder createBorder() {
-		return new RoundedHeaderBorder(getIcon());
+		return new LayerBorder(getIcon());
 	}
 
 }

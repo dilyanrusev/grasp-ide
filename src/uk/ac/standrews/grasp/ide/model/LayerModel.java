@@ -1,8 +1,10 @@
 package uk.ac.standrews.grasp.ide.model;
 
-public class LayerModel extends BecauseModel {
+public class LayerModel extends BecauseModel implements IConnectionEndpoint {
 	
 	private ObservableSet<LayerModel> over = new ObservableSet<LayerModel>();
+	private ObservableList<ConnectionModel> sourceConnections = new ObservableList<ConnectionModel>();
+	private ObservableList<ConnectionModel> targetConnections = new ObservableList<ConnectionModel>();
 	
 	public LayerModel(LayerModel other, FirstClassModel parent) {
 		super(other, parent);
@@ -44,6 +46,36 @@ public class LayerModel extends BecauseModel {
 		}
 		
 		return result;
+	}
+
+	@Override
+	public boolean addConnection(ConnectionModel connection) {
+		if (this == connection.getSource()) {
+			return sourceConnections.add(connection);
+		} else if (this == connection.getTarget()) {
+			return targetConnections.add(connection);
+		}
+		return false;
+	}
+
+	@Override
+	public boolean removeConnection(ConnectionModel connection) {
+		if (this == connection.getSource()) {
+			return sourceConnections.remove(connection);
+		} else if (this == connection.getTarget()) {
+			return targetConnections.remove(connection);
+		}
+		return false;
+	}
+
+	@Override
+	public ObservableList<ConnectionModel> getSourceConnections() {
+		return sourceConnections;
+	}
+
+	@Override
+	public ObservableList<ConnectionModel> getTargetConnections() {
+		return targetConnections;
 	}
 
 }
