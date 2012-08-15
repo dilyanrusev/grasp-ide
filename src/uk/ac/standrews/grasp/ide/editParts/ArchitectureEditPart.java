@@ -4,6 +4,7 @@ import org.eclipse.draw2d.ColorConstants;
 import org.eclipse.draw2d.ConnectionLayer;
 import org.eclipse.draw2d.FreeformLayer;
 import org.eclipse.draw2d.IFigure;
+import org.eclipse.draw2d.ManhattanConnectionRouter;
 import org.eclipse.draw2d.ShortestPathConnectionRouter;
 import org.eclipse.draw2d.ToolbarLayout;
 import org.eclipse.gef.LayerConstants;
@@ -36,8 +37,6 @@ public class ArchitectureEditPart extends AbstractElementEditPart<ArchitectureMo
 
 	@Override
 	protected void createEditPolicies() {
-		
-		
 	}
 
 	@Override

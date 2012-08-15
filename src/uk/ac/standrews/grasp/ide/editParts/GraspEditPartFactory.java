@@ -31,7 +31,7 @@ public class GraspEditPartFactory implements EditPartFactory {
 		if (model instanceof ConnectionModel) {
 			ConnectionModel con = (ConnectionModel) model;
 			if (con.getEndpointType() == ElementType.LAYER) {
-				return new LayerOverLayerConnectionEditPart(con);
+				return new LayerOverLayerConnection(con);
 			}
 		}
 		

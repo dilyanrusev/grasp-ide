@@ -9,11 +9,11 @@ import org.eclipse.gef.editparts.AbstractConnectionEditPart;
 
 import uk.ac.standrews.grasp.ide.model.ConnectionModel;
 
-public class LayerOverLayerConnectionEditPart extends
+public class LayerOverLayerConnection extends
 		AbstractConnectionEditPart {	
 	
-	public LayerOverLayerConnectionEditPart(ConnectionModel model) {
-		setModel(model);
+	public LayerOverLayerConnection(ConnectionModel model) {
+		setModel(model);		
 	}
 	
 	@Override
@@ -28,8 +28,8 @@ public class LayerOverLayerConnectionEditPart extends
 		PolygonDecoration decoration = new PolygonDecoration();
 		decoration.setTemplate(PolygonDecoration.TRIANGLE_TIP);
 		
-		//String str = getModel().toString();
-		Label label = new Label("over");
+		Label label = new Label();
+		label.setText("over");		
 		label.setOpaque(true);
 		
 		connection.setLineWidth(2);

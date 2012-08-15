@@ -1,7 +1,5 @@
 package uk.ac.standrews.grasp.ide.editParts;
 
-import java.util.List;
-
 import org.eclipse.draw2d.ChopboxAnchor;
 import org.eclipse.draw2d.ConnectionAnchor;
 import org.eclipse.draw2d.IFigure;
@@ -15,8 +13,8 @@ import uk.ac.standrews.grasp.ide.model.ConnectionModel;
 import uk.ac.standrews.grasp.ide.model.ElementType;
 import uk.ac.standrews.grasp.ide.model.FirstClassModel;
 import uk.ac.standrews.grasp.ide.model.ICollectionChangedListener;
-import uk.ac.standrews.grasp.ide.model.LayerModel;
 import uk.ac.standrews.grasp.ide.model.IConnectionEndpoint.EndpointKind;
+import uk.ac.standrews.grasp.ide.model.LayerModel;
 
 public class LayerEditPart extends AbstractElementNodeEditPart<LayerModel> 
 	implements NodeEditPart {	
@@ -78,15 +76,15 @@ public class LayerEditPart extends AbstractElementNodeEditPart<LayerModel>
 		return new LayerFigure();
 	}
 
-	@Override
-	protected List<ConnectionModel> getModelSourceConnections() {
-		return getElement().getSourceConnections();		
-	}
-	
-	@Override
-	protected List<ConnectionModel> getModelTargetConnections() {
-		return getElement().getTargetConnections();	
-	}
+//	@Override
+//	protected List<ConnectionModel> getModelSourceConnections() {
+//		return getElement().getSourceConnections();		
+//	}
+//	
+//	@Override
+//	protected List<ConnectionModel> getModelTargetConnections() {
+//		return getElement().getTargetConnections();	
+//	}
 	
 	@Override
 	public ConnectionAnchor getSourceConnectionAnchor(
