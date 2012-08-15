@@ -59,6 +59,13 @@
             id="uk.ac.standrews.grasp.ide.editors.GraspTextEditor"
             name="Grasp Text Editor">
       </editor>
+      <editor
+            class="uk.ac.standrews.grasp.ide.editors.GraspDesigner"
+            contributorClass="uk.ac.standrews.grasp.ide.editors.GraspDesignerContributor"
+            default="false"
+            id="uk.ac.standrews.grasp.ide.editors.GraspDesigner"
+            name="Grasp Designer">
+      </editor>
    </extension>
    <extension
          point="org.eclipse.ui.perspectives">
@@ -166,6 +173,21 @@
             wizardId="uk.ac.standrews.grasp.ide.wizards.newArchitecture">
          <enablement></enablement>
       </commonWizard>
+   </extension>
+   <extension
+         point="org.eclipse.ui.handlers">
+      <handler
+            class="uk.ac.standrews.grasp.ide.handlers.DesignerDeleteHandler"
+            commandId="org.eclipse.ui.edit.delete">
+         <activeWhen>
+            <with
+                  variable="activeEditorId">
+               <equals
+                     value="uk.ac.standrews.grasp.ide.editors.GraspDesigner">
+               </equals>
+            </with>
+         </activeWhen>
+      </handler>
    </extension>
 
 </plugin>

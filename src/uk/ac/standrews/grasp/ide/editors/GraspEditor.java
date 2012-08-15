@@ -11,11 +11,7 @@ import org.eclipse.core.resources.IResourceDeltaVisitor;
 import org.eclipse.core.resources.ResourcesPlugin;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IProgressMonitor;
-import org.eclipse.swt.SWT;
-import org.eclipse.swt.layout.GridLayout;
-import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Display;
-import org.eclipse.swt.widgets.Label;
 import org.eclipse.ui.IEditorInput;
 import org.eclipse.ui.IEditorPart;
 import org.eclipse.ui.IEditorReference;
@@ -44,6 +40,10 @@ public class GraspEditor extends MultiPageEditorPart implements IResourceChangeL
 
 	/** The text editor used in page 0. */
 	private GraspTextEditor textEditor;
+	private GraspDesigner designer;
+	
+	private int designerIndex;
+	private int textEditorIndex;
 	
 	/**
 	 * Creates a new instance of the Grasp Editor
@@ -92,8 +92,8 @@ public class GraspEditor extends MultiPageEditorPart implements IResourceChangeL
 	@Override
 	protected void createPages() {
 		try {
-			createTextEditorPage();
 			createGraphicalEditorPage();
+			createTextEditorPage();
 		} catch (PartInitException e) {
 			Log.error(e);
 		}		
@@ -106,22 +106,18 @@ public class GraspEditor extends MultiPageEditorPart implements IResourceChangeL
 	 */
 	private void createTextEditorPage() throws PartInitException {
 		textEditor = new GraspTextEditor();
-		int pageIndex = addPage(textEditor, getEditorInput());
-		setPageText(pageIndex, "Source");
+		textEditorIndex = addPage(textEditor, getEditorInput());
+		setPageText(textEditorIndex, "Source");
 	}	
 	
 	/**
 	 * Creates graphical designer page
 	 */
-	private void createGraphicalEditorPage() {
-		Composite container = new Composite(getContainer(), SWT.NONE);
-		container.setLayout(new GridLayout(1, false));
-		Label labelTodo = new Label(container, SWT.NONE);
-		labelTodo.setText("Not yet implemented");
-		int pageIndex = addPage(container);
-		setPageText(pageIndex, "Designer");
-	}	
-	
+	private void createGraphicalEditorPage() throws PartInitException {
+		designer = new GraspDesigner();		
+		designerIndex = addPage(designer, getEditorInput());
+		setPageText(designerIndex, "Designer");
+	}		
 	
 	
 	/**
@@ -140,7 +136,11 @@ public class GraspEditor extends MultiPageEditorPart implements IResourceChangeL
 	 */
 	@Override
 	public void doSave(IProgressMonitor monitor) {		
-		getEditor(0).doSave(monitor);
+		int active = getActivePage();
+		if (active != -1) {
+			getEditor(active).doSave(monitor);
+		}
+		Log.warn("GraspEditor.doSave -> no active editor");
 	}
 	/**
 	 * Saves the multi-page editor's document as another file.
@@ -149,10 +149,13 @@ public class GraspEditor extends MultiPageEditorPart implements IResourceChangeL
 	 */
 	@Override
 	public void doSaveAs() {
-		IEditorPart editor = getEditor(0);
-		editor.doSaveAs();
-		setPageText(0, editor.getTitle());
-		setInput(editor.getEditorInput());
+		int active = getActivePage();
+		if (active != -1) {
+			IEditorPart editor = getEditor(active);
+			editor.doSaveAs();
+			setPageText(active, editor.getTitle());
+			setInput(editor.getEditorInput());
+		}		
 	}
 	
 	public void gotoMarker(IMarker marker) {

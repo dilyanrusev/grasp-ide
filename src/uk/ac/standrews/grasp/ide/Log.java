@@ -22,6 +22,14 @@ public final class Log {
 	}
 	
 	/**
+	 * Log warning that can be a potential error
+	 * @param message Text of the warning
+	 */
+	public static void warn(String message) {
+		log(IStatus.WARNING, IStatus.OK, message, null);
+	}
+	
+	/**
 	 * Log an exception with high severity
 	 * @param exception Instance of an exception object
 	 */

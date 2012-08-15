@@ -6,12 +6,22 @@ import java.util.Collection;
 import org.eclipse.core.runtime.Assert;
 import org.eclipse.core.runtime.AssertionFailedException;
 
+/**
+ * Base class for elements that can appear as top-level elements and can have children on their own
+ * @author Dilyan Rusev
+ *
+ */
 public abstract class FirstClassModel extends ElementModel {
 	private final ObservableSet<AnnotationModel> annotations = 
 			new ObservableSet<AnnotationModel>();
 	private final ObservableSet<FirstClassModel> body = 
 			new ObservableSet<FirstClassModel>();
 	
+	/**
+	 * Construct a copy of another element
+	 * @param other Source
+	 * @param parent Parent
+	 */
 	public FirstClassModel(FirstClassModel other, FirstClassModel parent) {
 		super(other, parent);
 		for (AnnotationModel annotation: other.getAnnotations()) {
@@ -24,10 +34,20 @@ public abstract class FirstClassModel extends ElementModel {
 		}
 	}
 	
+	/**
+	 * Create a new element
+	 * @param type Type of the element
+	 * @param parent Parent
+	 */
 	public FirstClassModel(ElementType type, ElementModel parent) {
 		super(type, parent);
 	}
 
+	/**
+	 * Adds an element as a child of this, and also puts the child to this element's symbol table
+	 * Use this instead of manually adding children to {@link #getBody()}. 
+	 * @param child Element to add as a child
+	 */
 	public void addChild(FirstClassModel child) {
 		Assert.isTrue(child.getParent() == this
 				&& child.getReferencingName() != null);
@@ -35,14 +55,27 @@ public abstract class FirstClassModel extends ElementModel {
 		body.add(child);
 	}	
 
+	/**
+	 * Get this element's annotations
+	 * @return 
+	 */
 	public ObservableSet<AnnotationModel> getAnnotations() {
 		return annotations;
 	}
 	
+	/**
+	 * Get this element's children
+	 * @return
+	 */
 	public ObservableSet<FirstClassModel> getBody() {
 		return body;
 	}
 	
+	/**
+	 * Get direct children of this element by type
+	 * @param elementtype Type of children to look for
+	 * @return
+	 */
 	public Collection<FirstClassModel> getBodyByType(ElementType elementtype) {
 		// do not need to observe; should be fast since body is sorted
 		Collection<FirstClassModel> ofType = new ArrayList<FirstClassModel>();
@@ -53,6 +86,25 @@ public abstract class FirstClassModel extends ElementModel {
 		}
 		return ofType;
 	}	
+	
+	@Override
+	public ElementModel removeFromParent() {
+		if (getParent() instanceof FirstClassModel) {
+			FirstClassModel theParent = (FirstClassModel) getParent();
+			if (theParent.getBody().remove(this)) {
+				return theParent;
+			}
+		}
+		return null;
+	}
+	
+	@Override
+	public boolean addChildElement(ElementModel child) {
+		if (child instanceof FirstClassModel && this != child) {
+			return getBody().add((FirstClassModel) child);
+		}
+		return false;
+	}
 	
 	@Override
 	public boolean equals(Object obj) {
@@ -79,6 +131,12 @@ public abstract class FirstClassModel extends ElementModel {
 		return result;
 	}
 	
+	/**
+	 * Helper method that constructs a copy via the copy constructor of another element
+	 * @param source Source to be copied
+	 * @param parent Parent of the requested copy
+	 * @return
+	 */
 	@SuppressWarnings("unchecked")
 	protected static <T extends FirstClassModel> T createCopyOf(T source, FirstClassModel parent) {
 		switch (source.getType()) {		

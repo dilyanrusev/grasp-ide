@@ -11,12 +11,23 @@ import org.eclipse.core.runtime.Assert;
 
 import uk.ac.standrews.grasp.ide.Log;
 
+/**
+ * Base class for all Grasp elements
+ * @author Dilyan Rusev
+ *
+ */
 public abstract class ElementModel implements IObservable, Comparable<ElementModel> {
+	/** Element Type */
 	public static final String PROPERTY_TYPE = "type";
+	/** Parent of the element */
 	public static final String PROPERTY_PARENT = "parent";
+	/** Alias */
 	public static final String PROPERTY_ALIAS = "alias";
+	/** Name */
 	public static final String PROPERTY_NAME = "name";
+	/** Referencing name */
 	public static final String PROPERTY_REFERENCING_NAME = "referencingName";
+	/** Qualified name */
 	public static final String PROPERTY_QUALIFIED_NAME = "qualifiedName";
 	
 	private static Map<ElementType, Integer> elementWeights;
@@ -31,11 +42,21 @@ public abstract class ElementModel implements IObservable, Comparable<ElementMod
 	private String qualifiedName;
 	private ArchitectureModel architecture;
 	
+	/**
+	 * Create a new element model
+	 * @param type Type of the element
+	 * @param parent Parent of the element, or null
+	 */
 	public ElementModel(ElementType type, ElementModel parent) {
 		this.type = type;
 		this.parent = parent;
 	}
 	
+	/**
+	 * Construct an element that is copy of other
+	 * @param other Element to copy
+	 * @param parent Parent of the element, or null
+	 */
 	public ElementModel(ElementModel other, ElementModel parent) {
 		this.type = other.getType();
 		this.parent = parent;
@@ -92,58 +113,122 @@ public abstract class ElementModel implements IObservable, Comparable<ElementMod
 		}
 	}
 
+	/**
+	 * Return the Java reference of this object
+	 * @return
+	 */
 	public int getInstanceId() {
 		return super.hashCode();
 	}
 
+	/**
+	 * Return the element type
+	 * @return
+	 */
 	public ElementType getType() {
 		return type;
 	}
 	
+	/**
+	 * Return the parent. Architectures have no parent
+	 * @return
+	 */
 	public ElementModel getParent() {
 		return parent;
 	}
 	
+	/**
+	 * Return the name of the element
+	 * @return
+	 */
 	public String getName() {
 		return name;
 	}
 	
+	/**
+	 * Return the name of the element
+	 * @return
+	 */
 	public String getAlias() {
 		return alias;
 	}
 	
+	/**
+	 * Return the referencing name. Unlike name and alias, this cannot be null
+	 * @return
+	 */
 	public String getReferencingName() {
 		return referencingName;
 	}
 	
+	/**
+	 * Return the qualified name - in the form of List.Of.Parents.MyReferenceingName
+	 * @return
+	 */
 	public String getQualifiedName() {
 		return qualifiedName;
 	}
 	
+	/**
+	 * Set the element parent
+	 * @param parent
+	 */
 	public void setParent(ElementModel parent) {		
 		this.parent = parent;
 		rebuildNames();
 		fireElementChanged(PROPERTY_PARENT, PROPERTY_QUALIFIED_NAME, PROPERTY_REFERENCING_NAME);
 	}
 	
+	/**
+	 * Set the element name
+	 * @param name
+	 */
 	public void setName(String name) {
 		this.name = name;
 		rebuildNames();
 		fireElementChanged(PROPERTY_NAME, PROPERTY_REFERENCING_NAME);
 	}
 	
-	void setReferencingName(String name) {
+	/**
+	 * Set the referencing name
+	 * @param name
+	 */
+	public void setReferencingName(String name) {
 		this.referencingName = name;
 		rebuildNames();
 		fireElementChanged(PROPERTY_REFERENCING_NAME);
 	}
 	
+	/**
+	 * Set the element alias
+	 * @param alias
+	 */
 	public void setAlias(String alias) {
 		this.alias = alias;
 		rebuildNames();
 		fireElementChanged(PROPERTY_ALIAS, PROPERTY_REFERENCING_NAME);
 	}
 	
+	public String getDisplayName() {
+		rebuildNames();
+		StringBuilder sb = new StringBuilder();
+		if (name != null) {
+			sb.append(name);
+			if (alias != null) {
+				sb.append(' ');
+				sb.append(alias);
+			}			
+		} else {
+			sb.append(referencingName);
+		}		
+		return sb.toString();
+	}
+	
+	/**
+	 * Put an element into the symbol table. Does not raise events.
+	 * @param s Name of the element
+	 * @param element Child element
+	 */
 	protected void symPut(String s, ElementModel element) {
 		// higher-level method will notify for changes
 		if (!symLookup(s)) {			
@@ -151,14 +236,41 @@ public abstract class ElementModel implements IObservable, Comparable<ElementMod
 		}
 	}
 	
+	/**
+	 * Retrieve a child by name
+	 * @param s Name of the child
+	 * @return Instance of the child element, if contained within the symbol table
+	 */
 	protected ElementModel symGet(String s) {
 		return symbolTable.get(s);
 	}
 	
+	/**
+	 * Check if a child is contained by name
+	 * @param s Name of the child
+	 * @return True if contained within the symbol table
+	 */
 	protected boolean symLookup(String s) {
 		return symbolTable.containsKey(s);
 	}
 	
+	/**
+	 * Attempt to remove from parent
+	 * @return Element that used to be parent, or null
+	 */
+	public abstract ElementModel removeFromParent();
+	
+	/**
+	 * Add element as a child
+	 * @param child Element to add. Query type to determine how to add this
+	 * @return true if successful
+	 */
+	public abstract boolean addChildElement(ElementModel child);
+	
+	/**
+	 * Return a cached copy of the architecture containing this element, or this if architecture
+	 * @return Architecture containing this element, or null
+	 */
 	public ArchitectureModel getArchitecture() {
 		if (type == ElementType.ARCHITECTURE) {
 			return (ArchitectureModel) this;
@@ -192,6 +304,11 @@ public abstract class ElementModel implements IObservable, Comparable<ElementMod
 		}
 	}
 	
+	/**
+	 * Compare to another element of the same type. By default compares referencing name.
+	 * @param other Element guaranteed to be of the same type
+	 * @return -1 if this is less, 0 if equal, and 1 if this is more than the other element
+	 */
 	protected int doCompareTo(ElementModel other) {
 		return this.getReferencingName().compareTo(other.getReferencingName());
 	}
@@ -222,11 +339,23 @@ public abstract class ElementModel implements IObservable, Comparable<ElementMod
 		return result;
 	}
 	
+	/**
+	 * Test if two objects are equal, allowing for null
+	 * @param o1 First object
+	 * @param o2 Second object
+	 * @return True if equal or if both parameters are null
+	 */
 	protected static boolean objectsEqual(Object o1, Object o2) {
 		if (o1 == o2) return true;
 		return o1 != null ? o1.equals(o2) : o2 == null;
 	}
 	
+	/**
+	 * Compare two collections, element by element, to see if they are equal.
+	 * @param c1 First collection
+	 * @param c2 Second collection
+	 * @return True if all elements are equal
+	 */
 	protected static <E> boolean collectionsEqual(Collection<E> c1, Collection<E> c2) {
 		if (c1 == c2) return true;
 		if (c1.size() != c2.size()) return false;
@@ -289,6 +418,12 @@ public abstract class ElementModel implements IObservable, Comparable<ElementMod
 		return weight != null ? weight : 99;
 	}
 	
+	/**
+	 * Append a task that will copy one collection into the other when the architecture
+	 * containing this element has completed copying the whole tree
+	 * @param source Collection that will be copied into target
+	 * @param target Collection that will be the same as source
+	 */
 	protected <E extends ElementModel> void copyCollectionAtTheEndOfCopy(
 			Collection<E> source, final Collection<E> target) {
 		final List<String> qualifiedNames = extractQualifiedNames(source);
@@ -316,6 +451,12 @@ public abstract class ElementModel implements IObservable, Comparable<ElementMod
 		return qualifiedNames;
 	}
 	
+	/**
+	 * Helper method to create an element based on type (to prevent reflection)
+	 * @param type Type of the element to create. Cannot be {@link ElementType#ARCHITECTURE}
+	 * @param parent Parent element, if any. 
+	 * @return Instance of the requested type
+	 */
 	public static ElementModel createElementByType(ElementType type, FirstClassModel parent) {
 		switch (type) {
 		case ANNOTATION:

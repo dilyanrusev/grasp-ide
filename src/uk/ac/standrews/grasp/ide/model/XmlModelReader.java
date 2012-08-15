@@ -27,6 +27,7 @@ import org.xml.sax.SAXException;
 
 import uk.ac.standrews.grasp.ide.Log;
 import uk.ac.standrews.grasp.ide.editors.TextUtil;
+import uk.ac.standrews.grasp.ide.model.expressions.ExpressionParser;
 
 public class XmlModelReader {
 	private static final XmlModelReader INSTANCE = new XmlModelReader();
@@ -529,9 +530,12 @@ public class XmlModelReader {
 		return true;
 	}
 	
-	private ExpressionModel readExpression(Element elem, FirstClassModel parent) {
+	private ExpressionModel readExpression(Element elem, ElementModel parent) {
 		String val = elem.getAttribute(XmlSchema.AT_VALUE.tag());
-		return ExpressionModel.createLiteral(parent, val);		
+		String text = elem.getAttribute(XmlSchema.AT_TEXT.tag());
+		String type = elem.getAttribute(XmlSchema.AT_TYPE.tag());
+		
+		return ExpressionParser.construct(val, text, type, parent);		
 	}
 	
 	private boolean readBecause(Element elem, FirstClassModel parent, BecauseModel model) {
@@ -597,10 +601,11 @@ public class XmlModelReader {
 		if (!TextUtil.isIdentifier(name)) {
 			return null;
 		}
-		String value = elem.getAttribute(XmlSchema.AT_VALUE.tag());
+		
 		NamedValueModel nv = new NamedValueModel(parent);
 		nv.setName(name);
-		nv.setExpression(ExpressionModel.createLiteral(nv, value));
+		ExpressionModel expression = readExpression(elem, nv);
+		nv.setExpression(expression);
 		return nv;
 	}
 

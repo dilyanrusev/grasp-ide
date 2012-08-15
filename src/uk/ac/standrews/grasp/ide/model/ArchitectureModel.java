@@ -7,17 +7,31 @@ import java.util.List;
 
 import org.eclipse.core.resources.IFile;
 
+/**
+ * Root model for the Grasp model. Contains all other elements
+ * @author Dilyan Rusev
+ *
+ */
 public class ArchitectureModel extends FirstClassModel {
 	private IFile file;
 	private List<Runnable> archBuiltTasks;
 	private boolean fullyCopied = false;
 	
+	/**
+	 * Construct a new architecture
+	 * @param file File from which the architecture was loaded
+	 */
 	public ArchitectureModel(IFile file) {
 		super(ElementType.ARCHITECTURE, null);
 		this.file = file;
 		fullyCopied = true;
 	}
 	
+	/**
+	 * Construct a copy of another architecture
+	 * @param other Architecture to copy
+	 * @param file File to report that this architecture was loaded from
+	 */
 	public ArchitectureModel(ArchitectureModel other, IFile file) {
 		super(other, null);
 		this.file = file;
@@ -31,6 +45,11 @@ public class ArchitectureModel extends FirstClassModel {
 		fullyCopied = true;
 	}
 	
+	/**
+	 * Attempt to find an element belonging to the architecture graph
+	 * @param qualifiedName Fully qualified name of the element to look up
+	 * @return Instance of the element, or null if not found
+	 */
 	public ElementModel findByQualifiedName(String qualifiedName) {
 		ElementModel found = findByQualifiedName(this, qualifiedName);
 		// could be an alias
@@ -75,10 +94,19 @@ public class ArchitectureModel extends FirstClassModel {
     	return null;
     }
 	
+	/**
+	 * Return the file from which this architecture was read
+	 * @return
+	 */
 	public IFile getFile() {
 		return file;
 	}
 	
+	/**
+	 * Execute a task at the end of the copy operation (when copying one architecture from another),
+	 * or execute immediately if not performing a copy
+	 * @param task Task to execute. Cannot be null.
+	 */
 	void executeAtTheEndOfCopy(Runnable task) {
 		if (!fullyCopied) {
 			if (archBuiltTasks == null) {

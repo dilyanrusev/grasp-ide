@@ -1,25 +1,99 @@
 package uk.ac.standrews.grasp.ide.model;
 
+import uk.ac.standrews.grasp.ide.Log;
+
+/**
+ * Common class for Grasp expressions
+ * @author Dilyan Rusev
+ *
+ */
 public class ExpressionModel extends ElementModel {
-	private Object value;
+	/**
+	 * Value of the evaluated expression
+	 */
+	public static final String PROPERTY_VALUE = "value";
+	/**
+	 * Type of the expression
+	 */
+	public static final String PROPERTY_EXPRESSION_TYPE = "type";
+	/**
+	 * Text from which the expression was evaluated
+	 */
+	public static final String PROPERTY_TEXT = "text";	
 	
+	private Object value;
+	private String text;
+	private ExpressionType expressionType;
+	
+	/**
+	 * Construct a new expression
+	 * @param parent Object that contains this expression
+	 */
 	public ExpressionModel(ElementModel parent) {
 		super(ElementType.EXPRESSION, parent);
 	}
 	
-	public static ExpressionModel createLiteral(ElementModel parent, Object value) {
-		ExpressionModel literal = new ExpressionModel(parent);
-		literal.value = value;
-		return literal;
-	}
-	
+	/**
+	 * Construct a copy of another expression
+	 * @param other
+	 * @param parent
+	 */
 	public ExpressionModel(ExpressionModel other, ElementModel parent) {
 		super(other, parent);
 		this.value = other.getValue();
+		this.text = other.getText();
+		this.expressionType = other.getExpressionType();
 	}
 
+	/**
+	 * Return the evaluated expression
+	 * @return
+	 */
 	public Object getValue() {
 		return value;
+	}
+	
+	/**
+	 * Return the expression type
+	 * @return
+	 */
+	public ExpressionType getExpressionType() {
+		return expressionType;
+	}
+	
+	/**
+	 * Retrieve the text which produced this expression
+	 * @return
+	 */
+	public String getText() {
+		return text;
+	}
+
+	/**
+	 * Set the expression's evaluated value
+	 * @param value Evaluated value
+	 */
+	public void setValue(Object value) {
+		this.value = value;
+		this.fireElementChanged(PROPERTY_VALUE);
+	}
+	
+	/**
+	 * Set the expression type
+	 * @param type Type of the expression
+	 */
+	public void setExpressionType(ExpressionType type) {
+		this.expressionType = type;
+		this.fireElementChanged(PROPERTY_EXPRESSION_TYPE);
+	}
+	
+	/**
+	 * Set the text from which this expression originates
+	 * @param text
+	 */
+	public void setText(String text) {
+		this.text = text;
+		this.fireElementChanged(PROPERTY_TEXT);
 	}
 	
 	@Override
@@ -40,6 +114,18 @@ public class ExpressionModel extends ElementModel {
 		result = 31 * result + (getValue() != null ? getValue().hashCode() : 0);
 		
 		return result;
+	}
+
+	@Override
+	public ElementModel removeFromParent() {
+		Log.warn("Expreession.removeFromParent called");
+		return null;
+	}
+
+	@Override
+	public boolean addChildElement(ElementModel child) {
+		Log.warn("Expression.addChildElement called");
+		return false;
 	}
 
 }

@@ -35,6 +35,8 @@ public class GraspPlugin extends AbstractUIPlugin {
 	public static final String ID_GRASP_EDITOR = "uk.ac.standrews.grasp.ide.editors.GraspEditor";
 	/** ID of the Grasp source code editor */
 	public static final String ID_GRASP_TEXT_EDITOR = "uk.ac.standrews.grasp.ide.editors.GraspTextEditor";
+	/** ID of the Grasp Designer editor */
+	public static final String ID_GRASP_DESIGNER = "uk.ac.standrews.grasp.ide.editors.GraspDesigner";
 	/** Builder ID, as per plugin.xml */
 	public static final String ID_BUILDER = "uk.ac.standrews.grasp.ide.graspBuilder";
 	/** Problem and text marker ID used to report compilation errors */

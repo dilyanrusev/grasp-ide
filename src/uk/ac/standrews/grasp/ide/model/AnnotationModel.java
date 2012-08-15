@@ -37,4 +37,23 @@ public class AnnotationModel extends ElementModel {
 		}
 		return result;
 	}
+
+	@Override
+	public ElementModel removeFromParent() {
+		if (getParent() instanceof FirstClassModel) {
+			FirstClassModel theParent = (FirstClassModel) getParent();
+			if (theParent.getAnnotations().remove(this)) {
+				return theParent;
+			}
+		}
+		return null;
+	}
+
+	@Override
+	public boolean addChildElement(ElementModel child) {
+		if (child instanceof NamedValueModel) {
+			return getNamedValues().add((NamedValueModel) child);
+		}
+		return false;
+	}
 }
