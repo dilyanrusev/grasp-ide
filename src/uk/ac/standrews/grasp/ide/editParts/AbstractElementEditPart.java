@@ -34,6 +34,7 @@ public abstract class AbstractElementEditPart<TModel extends FirstClassModel>
 	 */
 	public AbstractElementEditPart(TModel model) {
 		super();
+		supportedChildren = new ArrayList<FirstClassModel>();
 		setModel(model);		
 		updateSupportedChildren();
 	}
@@ -43,8 +44,7 @@ public abstract class AbstractElementEditPart<TModel extends FirstClassModel>
 		super.activate();
 		annotationChangedListener = new AnnotationsChangedListener();
 		annotationModifiedListener = new AnnotationModifiedListener();
-		childElementsChangedListener = new ChildElementsChangedListener();
-		supportedChildren = new ArrayList<FirstClassModel>();
+		childElementsChangedListener = new ChildElementsChangedListener();		
 		getElement().addElementChangedListener(this);	
 		getElement().getAnnotations().addCollectionChangeListener(annotationChangedListener);		
 		getElement().getBody().addCollectionChangeListener(childElementsChangedListener);
@@ -138,7 +138,7 @@ public abstract class AbstractElementEditPart<TModel extends FirstClassModel>
 	}
 	
 	private void updateSupportedChildren() {
-		getElement().getBody().resort();
+		getElement().getBody().resort();		
 		supportedChildren.clear();
 		for (FirstClassModel childModel: getElement().getBody()) {
 			if (isModelChildSupported(childModel)) {

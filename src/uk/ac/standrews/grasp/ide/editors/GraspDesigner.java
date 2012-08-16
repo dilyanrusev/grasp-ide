@@ -26,9 +26,11 @@ public class GraspDesigner extends GraphicalEditorWithFlyoutPalette
 	@Override
 	public void init(IEditorSite site, IEditorInput input)
 			throws PartInitException {		
-		super.init(site, input);	
 		setEditDomain(new GraspEditDomain(this));
+		getEditDomain().setPaletteRoot(getPaletteRoot());
 		GraspFile.addChangeListener(this);
+		super.init(site, input);	
+		
 	}
 	
 	private ArchitectureModel getModel() {
