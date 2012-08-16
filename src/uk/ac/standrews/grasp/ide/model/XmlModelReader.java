@@ -29,6 +29,11 @@ import uk.ac.standrews.grasp.ide.Log;
 import uk.ac.standrews.grasp.ide.editors.TextUtil;
 import uk.ac.standrews.grasp.ide.model.expressions.ExpressionParser;
 
+/**
+ * Reads Grasp architecture Graph from XML
+ * @author Dilyan Rusev
+ *
+ */
 public class XmlModelReader {
 	private static final XmlModelReader INSTANCE = new XmlModelReader();
 	
@@ -36,6 +41,10 @@ public class XmlModelReader {
 	private Map<String, ElementType> elementNameToType;
 	private List<Runnable> documentLoadedTasks;
 	
+	/**
+	 * Returns the singleton instance of this reader
+	 * @return
+	 */
 	public static XmlModelReader getDefault() {
 		return INSTANCE;
 	}
@@ -49,6 +58,11 @@ public class XmlModelReader {
 		}
 	}
 	
+	/**
+	 * Read an XML file and produce Grasp graph from it
+	 * @param input XML file to parse
+	 * @return Grasp architecture graph or null on failure
+	 */
 	public ArchitectureModel readFromFile(IFile input) {
 		Document doc;
 		try {
@@ -86,12 +100,23 @@ public class XmlModelReader {
 		return arch;
 	}
 	
+	/**
+	 * Obtain a handle to the file containig the grasp source code from a handle to the file that contains the XML
+	 * @param xmlFile Handle to the XML file
+	 * @return Handle to the file containing the source code
+	 */
 	private IFile getGraspFile(IFile xmlFile) {
 		IPath xmlPath = xmlFile.getProjectRelativePath();
 		IPath graspPath = xmlPath.removeFileExtension();
 		return xmlFile.getProject().getFile(graspPath);
 	}
 
+	/**
+	 * Read an architecture element from an XML document
+	 * @param doc XML DOM document
+	 * @param file Handle to the file containing the Grasp source code, not the XML
+	 * @return Instance of the Grasp architecture graph, or null on failure
+	 */
 	private ArchitectureModel readArchitecture(Document doc, IFile file) {
 		Node archNode = doc.getFirstChild();
 		if (!(archNode instanceof Element)) {
@@ -105,6 +130,13 @@ public class XmlModelReader {
 		return arch;
 	}
 	
+	/**
+	 * Read FirstClassModel from an XML DOM element
+	 * @param elem XML DOM element to read from
+	 * @param model Instance to fill-in with information
+	 * @param parent Parent Grasp element
+	 * @return false on any error
+	 */
 	private boolean readFirstClass(Element elem, FirstClassModel model, FirstClassModel parent) {		
 		if (!readElement(elem, model)) {
 			return false;
@@ -126,6 +158,11 @@ public class XmlModelReader {
 		return true;
 	}
 	
+	/**
+	 * Read the children of a FirstClassModel
+	 * @param body XML DOM element to read from
+	 * @param parent FirstClassModel whose body should be read
+	 */
 	private void readBody(Element body, FirstClassModel parent) {
 		NodeList childNodes = body.getChildNodes();
 		for (int i = 0, len = childNodes.getLength(); i < len; i++) {
@@ -144,6 +181,13 @@ public class XmlModelReader {
 		}
 	}
 	
+	/**
+	 * Polymorphic read of an element
+	 * @param node DOM XML element to read from
+	 * @param type Type of the element to be read
+	 * @param parent Parent Grasp Element
+	 * @return Instance of the Grasp element that was read, or null on error
+	 */
 	private FirstClassModel readElementByType(Element node, ElementType type, FirstClassModel parent) {
 		switch (type) {
 		case ANNOTATION:
@@ -209,6 +253,12 @@ public class XmlModelReader {
 		}
 	}
 	
+	/**
+	 * Read a template from an XML DOM element
+	 * @param node XML DOM element
+	 * @param parent Parent Grasp element
+	 * @return Template that was read or null on error
+	 */
 	private TemplateModel readTemplate(Element node, FirstClassModel parent) {
 		TemplateModel model = new TemplateModel(parent);
 		if (!readParameterised(node, parent, model)) {
@@ -217,6 +267,12 @@ public class XmlModelReader {
 		return model;
 	}
 	
+	/**
+	 * Read a Grasp requirement element from XML
+	 * @param node XML DOM element to read from
+	 * @param parent Grasp parent element
+	 * @return Instance or null on error
+	 */
 	private RequirementModel readRequirement(Element node, FirstClassModel parent) {
 		RequirementModel model = new RequirementModel(parent);
 		if (!readFirstClass(node, model, parent)) {
@@ -234,6 +290,12 @@ public class XmlModelReader {
 		return model;
 	}
 	
+	/**
+	 * Read Grasp reason element from XML
+	 * @param node XML DOM node to read from
+	 * @param parent Parent Grasp element
+	 * @return Instance or null on error
+	 */
 	private ReasonModel readReason(Element node, FirstClassModel parent) {
 		ReasonModel model = new ReasonModel(parent);
 		if (!readFirstClass(node, model, parent)) {

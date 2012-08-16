@@ -1,8 +1,18 @@
 package uk.ac.standrews.grasp.ide.model;
 
+/**
+ * Represents Grasp annotations
+ * @author Dilyan Rusev
+ *
+ */
 public class AnnotationModel extends ElementModel {	
 	private ObservableSet<NamedValueModel> namedValues = new ObservableSet<NamedValueModel>();
 	
+	/**
+	 * Create a copy of another annotation
+	 * @param other Source
+	 * @param parent Parent
+	 */
 	public AnnotationModel(AnnotationModel other, ElementModel parent) {
 		super(other, parent);		
 		for (NamedValueModel namedValue: other.getNamedValues()) {
@@ -11,10 +21,18 @@ public class AnnotationModel extends ElementModel {
 		}
 	}
 	
+	/**
+	 * Create a new annotation
+	 * @param parent Parent
+	 */
 	public AnnotationModel(ElementModel parent) {
 		super(ElementType.ANNOTATION, parent);
 	}
 	
+	/**
+	 * Return the values stored in this annotation
+	 * @return
+	 */
 	public ObservableSet<NamedValueModel> getNamedValues() {
 		return namedValues;
 	}

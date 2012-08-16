@@ -21,7 +21,13 @@ import org.eclipse.core.runtime.content.IContentDescription;
 import uk.ac.standrews.grasp.ide.GraspPlugin;
 import uk.ac.standrews.grasp.ide.Log;
 
+/**
+ * Helper class that contains statistics about the Grasp model
+ * @author Dilyan Rusev
+ *
+ */
 public final class GraspModel {
+	/** Singleton instance */
 	public static final GraspModel INSTANCE = new GraspModel();
 	
 	private IResourceChangeListener resourceChangeListener;
@@ -66,6 +72,11 @@ public final class GraspModel {
 		};
 	}
 	
+	/**
+	 * Retrieve file-model mapping for a particular file. Mapping will be created if it didn't exist
+	 * @param file File whose model is requested
+	 * @return
+	 */
 	public GraspFile ensureFileStats(IFile file) {
 		GraspFile stats = fileStats.get(file);
 		if (stats == null) {
@@ -79,10 +90,16 @@ public final class GraspModel {
 		fileStats.remove(file);
 	}	
 	
+	/**
+	 * Called in the plugin's start method to subscribe to global events
+	 */
 	public void init() {
 		ResourcesPlugin.getWorkspace().addResourceChangeListener(resourceChangeListener, IResourceChangeEvent.POST_CHANGE);
 	}
 	
+	/**
+	 * Called in the plugin's stop method to remove subscriptions from global events
+	 */
 	public void dispose() {
 		ResourcesPlugin.getWorkspace().removeResourceChangeListener(resourceChangeListener);
 	}
@@ -95,6 +112,11 @@ public final class GraspModel {
 		return indent;
 	}
 
+	/**
+	 * Print an architecture to a string for debugging purposes
+	 * @param arch Architecture to print
+	 * @return
+	 */
 	public String dumpArchitecture(ArchitectureModel arch) {
 		StringBuilder sb = new StringBuilder();
 		if (arch != null) {
@@ -105,6 +127,11 @@ public final class GraspModel {
 		return sb.toString();
 	}
 	
+	/**
+	 * Print an architecture to a file for debugging purposes
+	 * @param arch Architecture to print
+	 * @param filename File to write to
+	 */
 	public void dumpArchitectureToFile(ArchitectureModel arch, String filename) {
 		File f = new File(filename);
 		System.out.println(f.getAbsolutePath());

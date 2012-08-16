@@ -1,11 +1,25 @@
 package uk.ac.standrews.grasp.ide.model;
 
+/**
+ * Represents the Grasp requires inteface
+ * @author Dilyan Rusev
+ *
+ */
 public class RequiresModel extends InterfaceModel {
 	
+	/**
+	 * Create a copy of another requires
+	 * @param other Requires element to copy
+	 * @param parent Parent element
+	 */
 	public RequiresModel(RequiresModel other, FirstClassModel parent) {
 		super(other, parent);
 	}
 	
+	/**
+	 * Creates a new requires interface
+	 * @param parent Parent element
+	 */
 	public RequiresModel(FirstClassModel parent) {
 		super(ElementType.REQUIRES, parent);
 	}
