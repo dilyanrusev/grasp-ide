@@ -1,5 +1,10 @@
 syntax: glob
+
 bin/*
-*.dump.txt
+*.
+dump.txt
+
 libs/wsa_simulator.grasp
+
 libs/wsa_simulator.grasp.xml
+.settings\org.eclipse.jdt.core.prefs

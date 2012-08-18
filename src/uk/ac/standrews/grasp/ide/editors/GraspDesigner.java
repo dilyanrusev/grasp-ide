@@ -1,11 +1,19 @@
 package uk.ac.standrews.grasp.ide.editors;
 
+import java.util.EventObject;
+
 import org.eclipse.core.runtime.IProgressMonitor;
+import org.eclipse.gef.DefaultEditDomain;
 import org.eclipse.gef.GraphicalViewer;
+import org.eclipse.gef.dnd.TemplateTransferDragSourceListener;
+import org.eclipse.gef.dnd.TemplateTransferDropTargetListener;
 import org.eclipse.gef.editparts.ScalableFreeformRootEditPart;
 import org.eclipse.gef.palette.PaletteRoot;
+import org.eclipse.gef.ui.palette.PaletteViewer;
+import org.eclipse.gef.ui.palette.PaletteViewerProvider;
 import org.eclipse.gef.ui.parts.GraphicalEditorWithFlyoutPalette;
 import org.eclipse.ui.IEditorInput;
+import org.eclipse.ui.IEditorPart;
 import org.eclipse.ui.IEditorSite;
 import org.eclipse.ui.IFileEditorInput;
 import org.eclipse.ui.PartInitException;
@@ -22,14 +30,36 @@ public class GraspDesigner extends GraphicalEditorWithFlyoutPalette
 		implements IGraspFileChangedListener {	
 	private ArchitectureModel model;	
 	
+	public GraspDesigner() {
+		setEditDomain(new DefaultEditDomain(this));
+	}
+	
 	@Override
 	public void init(IEditorSite site, IEditorInput input)
-			throws PartInitException {		
-		setEditDomain(new GraspEditDomain(this));
-		getEditDomain().setPaletteRoot(getPaletteRoot());
-		GraspFile.addChangeListener(this);
+			throws PartInitException {
 		super.init(site, input);	
-		
+		getSite().setSelectionProvider(getGraphicalViewer());
+		GraspFile.addChangeListener(this);
+	}
+	
+	
+	
+	@Override
+	public void commandStackChanged(EventObject event) {
+		firePropertyChange(IEditorPart.PROP_DIRTY);
+		super.commandStackChanged(event);
+	}
+	
+	@Override
+	protected PaletteViewerProvider createPaletteViewerProvider() {
+		return new PaletteViewerProvider(getEditDomain()) {
+			@Override
+			protected void configurePaletteViewer(PaletteViewer viewer) {				
+				super.configurePaletteViewer(viewer);
+				viewer.addDragSourceListener(new TemplateTransferDragSourceListener(
+						viewer));
+			}
+		};
 	}
 	
 	private ArchitectureModel getModel() {
@@ -68,6 +98,8 @@ public class GraspDesigner extends GraphicalEditorWithFlyoutPalette
 	protected void initializeGraphicalViewer() {		
 		super.initializeGraphicalViewer();		
 		getGraphicalViewer().setContents(getModel());		
+		getGraphicalViewer().addDropTargetListener(
+				new TemplateTransferDropTargetListener(getGraphicalViewer()));
 	}	
 	
 	@Override
