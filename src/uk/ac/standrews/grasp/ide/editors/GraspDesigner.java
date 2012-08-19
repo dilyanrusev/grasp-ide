@@ -1,7 +1,10 @@
 package uk.ac.standrews.grasp.ide.editors;
 
+import java.nio.charset.Charset;
 import java.util.EventObject;
 
+import org.eclipse.core.resources.IFile;
+import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.gef.DefaultEditDomain;
 import org.eclipse.gef.GraphicalViewer;
@@ -20,12 +23,14 @@ import org.eclipse.ui.IFileEditorInput;
 import org.eclipse.ui.PartInitException;
 import org.eclipse.ui.actions.ActionFactory;
 
+import uk.ac.standrews.grasp.ide.Log;
 import uk.ac.standrews.grasp.ide.editParts.GraspEditPartFactory;
 import uk.ac.standrews.grasp.ide.model.ArchitectureModel;
 import uk.ac.standrews.grasp.ide.model.GraspFile;
 import uk.ac.standrews.grasp.ide.model.GraspFileChangedEvent;
 import uk.ac.standrews.grasp.ide.model.GraspModel;
 import uk.ac.standrews.grasp.ide.model.IGraspFileChangedListener;
+import uk.ac.standrews.grasp.ide.model.ModelToSourceSerializer;
 
 public class GraspDesigner extends GraphicalEditorWithFlyoutPalette 
 		implements IGraspFileChangedListener {	
@@ -81,10 +86,17 @@ public class GraspDesigner extends GraphicalEditorWithFlyoutPalette
 	protected PaletteRoot getPaletteRoot() {
 		return DesignerPalette.getDefault();
 	}
-
+	
 	@Override
 	public void doSave(IProgressMonitor monitor) {
-		// TODO Auto-generated method stub
+		IFile file = ((IFileEditorInput) getEditorInput()).getFile();
+		try {
+			String charsetName = file.getCharset(true);
+			ModelToSourceSerializer serializer = new ModelToSourceSerializer();
+			file.setContents(serializer.serializeToStream(getModel(), Charset.forName(charsetName)), true, true, monitor);
+		} catch (CoreException e) {
+			Log.error("Cannot save graphical designer", e);
+		}
 	}
 
 	@Override
