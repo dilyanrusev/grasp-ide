@@ -15,7 +15,8 @@ import java.util.TreeSet;
  *
  * @param <E> Type of the element managed by this collection
  */
-public class ObservableSet<E> extends AbstractSet<E> implements IObservableCollection<E>, SortedSet<E> {
+public class ObservableSet<E> extends AbstractSet<E> 
+		implements IObservableCollection<E>, SortedSet<E> {
 	private final List<ICollectionChangedListener<E>> changeListeners =
 			new ArrayList<ICollectionChangedListener<E>>();		
 	private SortedSet<E> store;
@@ -148,5 +149,5 @@ public class ObservableSet<E> extends AbstractSet<E> implements IObservableColle
 			hostIterator.remove();
 			fireCollectionChanged(CollectionChangedEvent.forItemRemoved(ObservableSet.this, lastExtractedValue));
 		}		
-	}
+	}	
 }

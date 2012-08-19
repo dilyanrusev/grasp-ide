@@ -8,6 +8,7 @@ import java.util.List;
 import java.util.Map;
 
 import org.eclipse.core.runtime.Assert;
+import org.eclipse.jface.util.Util;
 import org.eclipse.jface.viewers.ICellEditorValidator;
 import org.eclipse.ui.views.properties.IPropertyDescriptor;
 import org.eclipse.ui.views.properties.IPropertySource;
@@ -660,5 +661,82 @@ public abstract class ElementModel implements IObservable,
 			return null;
 		}
 		
+	}
+	
+	/**
+	 * Provides property source for collections of elements
+	 * @author Dilyan Rusev
+	 *
+	 * @param <E> Type of the collection element
+	 */
+	protected static class CollectionPropertySource<E> 
+			implements IPropertySource {
+		private IObservableCollection<E> collection;
+		private IPropertyDescriptor[] descriptors;
+		private String elementDisplayName;
+
+		/**
+		 * Construct a new property source
+		 * @param elementDisplayName Display name for property elements
+		 * @param collection Collection to wrap
+		 */
+		public CollectionPropertySource(String elementDisplayName,
+				IObservableCollection<E> collection) {
+			Assert.isNotNull(collection);
+			Assert.isLegal(!TextUtil.isNullOrWhitespace(elementDisplayName));
+			// TODO: figure out a way to observe without leaking memory
+			this.collection = collection;
+			this.elementDisplayName = elementDisplayName;
+		}
+		
+		@Override
+		public Object getEditableValue() {
+			return this;
+		}
+
+		@Override
+		public IPropertyDescriptor[] getPropertyDescriptors() {
+			if (descriptors == null) {
+				descriptors = createDescriptors();
+			}
+			return descriptors;
+		}
+		
+		private IPropertyDescriptor[] createDescriptors() {
+			Collection<IPropertyDescriptor> desc = new ArrayList<IPropertyDescriptor>();
+			for (E source: collection) {
+				desc.add(new PropertyDescriptor(source, elementDisplayName));				
+			}
+			return desc.toArray(new IPropertyDescriptor[desc.size()]);
+		}
+
+		@Override
+		public Object getPropertyValue(Object id) {
+			for (E val: collection) {
+				if (val == id) {
+					return val;
+				}
+			}
+			return null;
+		}
+
+		@Override
+		public boolean isPropertySet(Object id) {			
+			return false;
+		}
+
+		@Override
+		public void resetPropertyValue(Object id) {			
+			
+		}
+
+		@Override
+		public void setPropertyValue(Object id, Object value) {			
+		}
+		
+		@Override
+		public String toString() {
+			return Util.ZERO_LENGTH_STRING;
+		}
 	}
 }

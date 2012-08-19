@@ -5,6 +5,8 @@ import java.util.Collection;
 
 import org.eclipse.core.runtime.Assert;
 import org.eclipse.core.runtime.AssertionFailedException;
+import org.eclipse.ui.views.properties.IPropertyDescriptor;
+import org.eclipse.ui.views.properties.PropertyDescriptor;
 
 /**
  * Base class for elements that can appear as top-level elements and can have children on their own
@@ -12,6 +14,11 @@ import org.eclipse.core.runtime.AssertionFailedException;
  *
  */
 public abstract class FirstClassModel extends ElementModel {
+	/**
+	 * ID for the annotations property
+	 */
+	public static final String PROPERTY_ANNOTATIONS = "annotations";	
+	
 	private final ObservableSet<AnnotationModel> annotations = 
 			new ObservableSet<AnnotationModel>();
 	private final ObservableSet<FirstClassModel> body = 
@@ -130,6 +137,23 @@ public abstract class FirstClassModel extends ElementModel {
 		
 		return result;
 	}
+	
+	@Override
+	protected Collection<IPropertyDescriptor> createPropertyDescriptors() {		
+		Collection<IPropertyDescriptor> desc = super.createPropertyDescriptors();
+		
+		desc.add(new PropertyDescriptor(PROPERTY_ANNOTATIONS, "Annotations"));		
+		
+		return desc;
+	}
+	
+	@Override
+	public Object getPropertyValue(Object id) {
+		if (PROPERTY_ANNOTATIONS.equals(id)) {
+			return new CollectionPropertySource<AnnotationModel>("Annotation", getAnnotations());
+		}
+		return super.getPropertyValue(id);
+	}	
 	
 	/**
 	 * Helper method that constructs a copy via the copy constructor of another element
