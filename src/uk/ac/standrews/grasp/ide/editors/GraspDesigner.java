@@ -12,6 +12,7 @@ import org.eclipse.gef.palette.PaletteRoot;
 import org.eclipse.gef.ui.palette.PaletteViewer;
 import org.eclipse.gef.ui.palette.PaletteViewerProvider;
 import org.eclipse.gef.ui.parts.GraphicalEditorWithFlyoutPalette;
+import org.eclipse.swt.widgets.Display;
 import org.eclipse.ui.IEditorInput;
 import org.eclipse.ui.IEditorPart;
 import org.eclipse.ui.IEditorSite;
@@ -28,7 +29,7 @@ import uk.ac.standrews.grasp.ide.model.IGraspFileChangedListener;
 
 public class GraspDesigner extends GraphicalEditorWithFlyoutPalette 
 		implements IGraspFileChangedListener {	
-	private ArchitectureModel model;	
+	private ArchitectureModel model;
 	
 	public GraspDesigner() {
 		setEditDomain(new DefaultEditDomain(this));
@@ -106,9 +107,18 @@ public class GraspDesigner extends GraphicalEditorWithFlyoutPalette
 	public void fileChanged(GraspFileChangedEvent event) {
 		if (event.getKind().contains(GraspFileChangedEvent.Kind.ArchiectureRefreshed)
 				&& event.getSource().getFile().equals(((IFileEditorInput) getEditorInput()).getFile())) {		
-			model = event.getSource().getArchitecture();
-			getGraphicalViewer().setContents(model);
+			model = event.getSource().getArchitecture();			
+			bindViewer(model);
 		}
+	}
+	
+	private void bindViewer(final ArchitectureModel theModel) {		
+		Display.getDefault().asyncExec(new Runnable() {			
+			@Override
+			public void run() {
+				getGraphicalViewer().setContents(theModel);				
+			}
+		});
 	}
 
 	/**

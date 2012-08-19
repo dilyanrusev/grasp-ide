@@ -7,39 +7,64 @@ package uk.ac.standrews.grasp.ide.model;
  */
 public enum ElementType {
 	/** Grasp annotation element */
-	ANNOTATION
+	ANNOTATION("@", false)
 	/** Grasp architecture element */
-	, ARCHITECTURE
+	, ARCHITECTURE("architecture", false)
 	/** Grasp check statement */
-	, CHECK
+	, CHECK("check", true)
 	/** Grasp component element */
-	, COMPONENT
+	, COMPONENT("component", true)
 	/** Grasp connector element */
-	, CONNECTOR
+	, CONNECTOR("connector", true)
 	/** Grasp expression statement */
-	, EXPRESSION
+	, EXPRESSION(null, false)
 	/** Grasp layer element */
-	, LAYER
+	, LAYER("layer", false)
 	/** Grasp link statement */
-	, LINK
+	, LINK("link", true)
 	/** Grasp named value element */
-	, NAMEDVALUE
+	, NAMEDVALUE(null, false)
 	/** Grasp property element */
-	, PROPERTY
+	, PROPERTY("property", true)
 	/** Grasp provides element */
-	, PROVIDES
+	, PROVIDES("provides", true)
 	/** Grasp quality_attribute element */
-	, QUALITY_ATTRIBUTE
+	, QUALITY_ATTRIBUTE("quality_attribute", true)
 	/** Grasp rationale element */
-	, RATIONALE
+	, RATIONALE("rationale", false)
 	/** Grasp reason element */
-	, REASON
+	, REASON("reason", true)
 	/** Grasp requirement element */
-	, REQUIREMENT
+	, REQUIREMENT("requirement", true)
 	/** Grasp requires element */
-	, REQUIRES
+	, REQUIRES("requires", true)
 	/** Grasp system element */
-	, SYSTEM
+	, SYSTEM("system", false)
 	/** Grasp template element */
-	, TEMPLATE
+	, TEMPLATE("template", false)
+	;
+	
+	private String keyword;
+	private boolean endsWithSemicolon;
+	
+	/** Define new element type 
+	 *
+	 * @param keyword Grasp language keyword for this particular type
+	 */
+	ElementType(String keyword, boolean endsWithSemicolon) {
+		this.keyword = keyword;
+		this.endsWithSemicolon = endsWithSemicolon;
+	}
+	
+	/**
+	 * Returns the Grasp language keyword for this element
+	 * @return Grasp keyword for this element
+	 */
+	public String getKeyword() {
+		return keyword;
+	}
+
+	public boolean endsWithSemicolon() {
+		return endsWithSemicolon;
+	}
 }

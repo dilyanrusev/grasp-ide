@@ -10,6 +10,10 @@ import java.util.Map;
 import org.eclipse.core.runtime.Assert;
 import org.eclipse.jface.util.Util;
 import org.eclipse.jface.viewers.ICellEditorValidator;
+import org.eclipse.jface.viewers.ILabelProvider;
+import org.eclipse.jface.viewers.ILabelProviderListener;
+import org.eclipse.jface.viewers.LabelProvider;
+import org.eclipse.swt.graphics.Image;
 import org.eclipse.ui.views.properties.IPropertyDescriptor;
 import org.eclipse.ui.views.properties.IPropertySource;
 import org.eclipse.ui.views.properties.PropertyDescriptor;
@@ -704,8 +708,16 @@ public abstract class ElementModel implements IObservable,
 		
 		private IPropertyDescriptor[] createDescriptors() {
 			Collection<IPropertyDescriptor> desc = new ArrayList<IPropertyDescriptor>();
+			ILabelProvider labelProvider = new LabelProvider() {
+				@Override
+				public String getText(Object element) {
+					return Util.ZERO_LENGTH_STRING;
+				}
+			};
 			for (E source: collection) {
-				desc.add(new PropertyDescriptor(source, elementDisplayName));				
+				PropertyDescriptor pd = new PropertyDescriptor(source, elementDisplayName);
+				pd.setLabelProvider(labelProvider);
+				desc.add(pd);				
 			}
 			return desc.toArray(new IPropertyDescriptor[desc.size()]);
 		}
