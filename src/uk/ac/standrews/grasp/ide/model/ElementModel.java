@@ -8,19 +8,8 @@ import java.util.List;
 import java.util.Map;
 
 import org.eclipse.core.runtime.Assert;
-import org.eclipse.jface.util.Util;
-import org.eclipse.jface.viewers.ICellEditorValidator;
-import org.eclipse.jface.viewers.ILabelProvider;
-import org.eclipse.jface.viewers.ILabelProviderListener;
-import org.eclipse.jface.viewers.LabelProvider;
-import org.eclipse.swt.graphics.Image;
-import org.eclipse.ui.views.properties.IPropertyDescriptor;
-import org.eclipse.ui.views.properties.IPropertySource;
-import org.eclipse.ui.views.properties.PropertyDescriptor;
-import org.eclipse.ui.views.properties.TextPropertyDescriptor;
 
 import uk.ac.standrews.grasp.ide.Log;
-import uk.ac.standrews.grasp.ide.editors.TextUtil;
 
 /**
  * Base class for all Grasp elements
@@ -28,7 +17,7 @@ import uk.ac.standrews.grasp.ide.editors.TextUtil;
  *
  */
 public abstract class ElementModel implements IObservable, 
-		Comparable<ElementModel>, IPropertySource {
+		Comparable<ElementModel> {
 	/** Element Type */
 	public static final String PROPERTY_TYPE = "type";
 	/** Parent of the element */
@@ -54,8 +43,7 @@ public abstract class ElementModel implements IObservable,
 	private String alias;
 	private String referencingName;
 	private String qualifiedName;
-	private ArchitectureModel architecture;
-	private IPropertyDescriptor[] propertyDescriptors;
+	private ArchitectureModel architecture;	
 	
 	/**
 	 * Create a new element model
@@ -513,242 +501,5 @@ public abstract class ElementModel implements IObservable,
 			Assert.isTrue(false, "Unknown ElmentType: " + type);
 			return null;
 		}
-	}
-
-	@Override
-	public Object getEditableValue() {
-		return this;
-	}
-
-	@Override
-	public IPropertyDescriptor[] getPropertyDescriptors() {
-		if (propertyDescriptors == null) {
-			Collection<IPropertyDescriptor> desc = createPropertyDescriptors();
-			propertyDescriptors = desc.toArray(new IPropertyDescriptor[desc.size()]);
-		}
-		return propertyDescriptors;
-	}
-	
-	/**
-	 * Override to add type-specific property descriptors
-	 * @return
-	 */
-	protected Collection<IPropertyDescriptor> createPropertyDescriptors() {
-		Collection<IPropertyDescriptor> props = new ArrayList<IPropertyDescriptor>(10);
-		
-		{
-			PropertyDescriptor refNameProp = 
-					new PropertyDescriptor(PROPERTY_TYPE, "Type");
-			refNameProp.setCategory(CATEGORY_ELEMENT);
-			refNameProp.setAlwaysIncompatible(true);
-			refNameProp.setDescription(
-					"Type of this element");
-			props.add(refNameProp);
-		}
-		
-		{
-			TextPropertyDescriptor nameProp = 
-					new TextPropertyDescriptor(PROPERTY_NAME, "Name");
-			nameProp.setCategory(CATEGORY_ELEMENT);
-			nameProp.setAlwaysIncompatible(true);
-			nameProp.setDescription("Name for this element");
-			nameProp.setValidator(new ElementNameValidator());
-			props.add(nameProp);
-		}
-		
-		{
-			TextPropertyDescriptor aliasProp = 
-					new TextPropertyDescriptor(PROPERTY_ALIAS, "Alias");
-			aliasProp.setCategory(CATEGORY_ELEMENT);
-			aliasProp.setAlwaysIncompatible(true);
-			aliasProp.setDescription("Alternative name for this element");
-			aliasProp.setValidator(new ElementNameValidator());		
-			props.add(aliasProp);
-		}
-		
-		{
-			PropertyDescriptor refNameProp = 
-					new PropertyDescriptor(PROPERTY_REFERENCING_NAME, "Referencing name");
-			refNameProp.setCategory(CATEGORY_ELEMENT);
-			refNameProp.setAlwaysIncompatible(true);
-			refNameProp.setDescription("Alias, name, or Type@Address - in that order. Forms qualified name");
-			props.add(refNameProp);
-		}
-		
-		{
-			PropertyDescriptor refNameProp = 
-					new PropertyDescriptor(PROPERTY_QUALIFIED_NAME, "Fully qualified name");
-			refNameProp.setCategory(CATEGORY_ELEMENT);
-			refNameProp.setAlwaysIncompatible(true);
-			refNameProp.setDescription(
-					"Name formed by the referencing names of this element's parents and its own referencing name");
-			props.add(refNameProp);
-		}
-		
-				
-		return props;
-	}
-
-	@Override
-	public Object getPropertyValue(Object id) {
-		if (PROPERTY_ALIAS.equals(id)) {
-			return getAlias();
-		} else if (PROPERTY_NAME.equals(id)) {
-			return getName();
-		} else if (PROPERTY_QUALIFIED_NAME.equals(id)) {
-			return getQualifiedName();			
-		} else if (PROPERTY_REFERENCING_NAME.equals(id)) {
-			return getReferencingName();
-		} else if (PROPERTY_TYPE.equals(id)) {
-			return getType().name();
-		}
-		return null;
-	}
-
-	@Override
-	public boolean isPropertySet(Object id) {		
-		return false;
-	}
-
-	@Override
-	public void resetPropertyValue(Object id) {
-	}
-
-	@Override
-	public void setPropertyValue(Object id, Object value) {
-		if (PROPERTY_ALIAS.equals(id)) {
-			setAlias((String) value);
-		} else if (PROPERTY_NAME.equals(id)) {
-			setName((String) value);
-		} 	
-	}
-	
-	/**
-	 * Cell validator that makes certain the input value is a valid Grasp identifier
-	 * @author Dilyan Rusev
-	 *
-	 */
-	protected static class IsIdentifierValidator implements ICellEditorValidator {
-		/** Singleton instance - for convenience */
-		public static IsIdentifierValidator INSTANCE =
-				new IsIdentifierValidator();
-		
-		@Override
-		public String isValid(Object value) {
-			if (!TextUtil.isIdentifier((String) value)) {
-				return "Not a valid Grasp identifier";
-			} else {
-				return null;
-			}
-		}		
-	}
-	
-	protected class ElementNameValidator implements ICellEditorValidator {
-
-		@Override
-		public String isValid(Object value) {
-			if (!(value instanceof String)) {
-				return "Must be text";
-			}
-			String text = (String) value;
-			if (!TextUtil.isIdentifier(text)) {
-				return "Not a valid Grasp identifier";
-			}
-			if (getArchitecture() != null) {
-				String myQualifiedName = getQualifiedName();
-				String nextQName = myQualifiedName.substring(myQualifiedName.lastIndexOf('.') + 1);
-				nextQName = nextQName + "." + text;
-				if (getArchitecture().findByQualifiedName(nextQName) != null) {
-					return "There is already an element with name " + nextQName;
-				}
-			}
-			return null;
-		}
-		
-	}
-	
-	/**
-	 * Provides property source for collections of elements
-	 * @author Dilyan Rusev
-	 *
-	 * @param <E> Type of the collection element
-	 */
-	protected static class CollectionPropertySource<E> 
-			implements IPropertySource {
-		private IObservableCollection<E> collection;
-		private IPropertyDescriptor[] descriptors;
-		private String elementDisplayName;
-
-		/**
-		 * Construct a new property source
-		 * @param elementDisplayName Display name for property elements
-		 * @param collection Collection to wrap
-		 */
-		public CollectionPropertySource(String elementDisplayName,
-				IObservableCollection<E> collection) {
-			Assert.isNotNull(collection);
-			Assert.isLegal(!TextUtil.isNullOrWhitespace(elementDisplayName));
-			// TODO: figure out a way to observe without leaking memory
-			this.collection = collection;
-			this.elementDisplayName = elementDisplayName;
-		}
-		
-		@Override
-		public Object getEditableValue() {
-			return this;
-		}
-
-		@Override
-		public IPropertyDescriptor[] getPropertyDescriptors() {
-			if (descriptors == null) {
-				descriptors = createDescriptors();
-			}
-			return descriptors;
-		}
-		
-		private IPropertyDescriptor[] createDescriptors() {
-			Collection<IPropertyDescriptor> desc = new ArrayList<IPropertyDescriptor>();
-			ILabelProvider labelProvider = new LabelProvider() {
-				@Override
-				public String getText(Object element) {
-					return Util.ZERO_LENGTH_STRING;
-				}
-			};
-			for (E source: collection) {
-				PropertyDescriptor pd = new PropertyDescriptor(source, elementDisplayName);
-				pd.setLabelProvider(labelProvider);
-				desc.add(pd);				
-			}
-			return desc.toArray(new IPropertyDescriptor[desc.size()]);
-		}
-
-		@Override
-		public Object getPropertyValue(Object id) {
-			for (E val: collection) {
-				if (val == id) {
-					return val;
-				}
-			}
-			return null;
-		}
-
-		@Override
-		public boolean isPropertySet(Object id) {			
-			return false;
-		}
-
-		@Override
-		public void resetPropertyValue(Object id) {			
-			
-		}
-
-		@Override
-		public void setPropertyValue(Object id, Object value) {			
-		}
-		
-		@Override
-		public String toString() {
-			return Util.ZERO_LENGTH_STRING;
-		}
-	}
+	}	
 }

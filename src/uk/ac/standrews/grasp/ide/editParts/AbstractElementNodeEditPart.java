@@ -1,9 +1,6 @@
 package uk.ac.standrews.grasp.ide.editParts;
 
-import java.util.Iterator;
-
 import org.eclipse.gef.EditPolicy;
-import org.eclipse.jface.viewers.ISelection;
 import org.eclipse.jface.viewers.ISelectionChangedListener;
 import org.eclipse.jface.viewers.IStructuredSelection;
 import org.eclipse.jface.viewers.SelectionChangedEvent;
@@ -55,10 +52,18 @@ public abstract class AbstractElementNodeEditPart<TModel extends FirstClassModel
 		super.deactivate();
 	}
 	
+	/**
+	 * Receives notification when this part is selected or unselected
+	 * @param isSelected True if selected
+	 */
 	protected void selectedChanged(boolean isSelected) {
 		refreshVisuals();
 	}
 	
+	/**
+	 * Returns whether this part is selected
+	 * @return True if selected
+	 */
 	protected boolean isSelected() {
 		return selected;
 	}

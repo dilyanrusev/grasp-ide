@@ -63,7 +63,7 @@ public class GraspPlugin extends AbstractUIPlugin {
 		plugin = this;		
 		colours = new HashMap<RGB, Color>();
 		pluginCloseTasks = new ArrayList<Runnable>();
-		GraspModel.INSTANCE.init();
+		GraspModel.INSTANCE.init();		
 	}
 
 	/*

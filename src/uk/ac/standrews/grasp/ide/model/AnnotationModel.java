@@ -1,14 +1,5 @@
 package uk.ac.standrews.grasp.ide.model;
 
-import java.util.ArrayList;
-import java.util.Collection;
-
-import org.eclipse.jface.viewers.ICellEditorValidator;
-import org.eclipse.ui.views.properties.IPropertyDescriptor;
-import org.eclipse.ui.views.properties.PropertyDescriptor;
-import org.eclipse.ui.views.properties.TextPropertyDescriptor;
-
-import uk.ac.standrews.grasp.ide.editors.TextUtil;
 
 /**
  * Represents Grasp annotations
@@ -86,51 +77,5 @@ public class AnnotationModel extends ElementModel {
 			return getNamedValues().add((NamedValueModel) child);
 		}
 		return false;
-	}
-	
-	@Override
-	protected Collection<IPropertyDescriptor> createPropertyDescriptors() {
-		Collection<IPropertyDescriptor> desc = new ArrayList<IPropertyDescriptor>();
-		
-		{
-			TextPropertyDescriptor handler =
-					new TextPropertyDescriptor(PROPERTY_NAME, "handler");
-			handler.setAlwaysIncompatible(true);
-			handler.setCategory(CATEGORY_ANNOTATION);
-			handler.setDescription("Name of the annotation");
-			handler.setValidator(new ICellEditorValidator() {				
-				@Override
-				public String isValid(Object value) {
-					String text = (String) value;
-					if (text != null) {
-						if (!TextUtil.isIdentifier(text)) {
-							return "Not a valid Grasp identifier";
-						}
-					}
-					return null;
-				}
-			});
-			desc.add(handler);
-		}
-		
-		{
-			PropertyDescriptor namedValues = 
-					new PropertyDescriptor(PROPERTY_NAMED_VALUES, "Named values");
-			namedValues.setAlwaysIncompatible(true);
-			namedValues.setCategory(CATEGORY_ANNOTATION);
-			desc.add(namedValues);
-		}
-		
-		return desc;
-	}
-	
-	@Override
-	public Object getPropertyValue(Object id) {
-		if (PROPERTY_NAME.equals(id)) {
-			return getName();
-		} else if (PROPERTY_NAMED_VALUES.equals(id)) {
-			return new CollectionPropertySource<NamedValueModel>("Named value", getNamedValues());
-		}
-		return null;
 	}
 }
