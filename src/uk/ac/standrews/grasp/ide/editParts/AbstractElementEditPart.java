@@ -36,7 +36,7 @@ public abstract class AbstractElementEditPart<TModel extends FirstClassModel>
 		super();
 		supportedChildren = new ArrayList<FirstClassModel>();
 		setModel(model);		
-		updateSupportedChildren();
+		updateSupportedChildren();		
 	}
 
 	@Override

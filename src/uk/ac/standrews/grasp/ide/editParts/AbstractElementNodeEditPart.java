@@ -1,6 +1,12 @@
 package uk.ac.standrews.grasp.ide.editParts;
 
+import java.util.Iterator;
+
 import org.eclipse.gef.EditPolicy;
+import org.eclipse.jface.viewers.ISelection;
+import org.eclipse.jface.viewers.ISelectionChangedListener;
+import org.eclipse.jface.viewers.IStructuredSelection;
+import org.eclipse.jface.viewers.SelectionChangedEvent;
 
 import uk.ac.standrews.grasp.ide.figures.IFirstClassFigure;
 import uk.ac.standrews.grasp.ide.model.FirstClassModel;
@@ -13,6 +19,8 @@ import uk.ac.standrews.grasp.ide.model.FirstClassModel;
  */
 public abstract class AbstractElementNodeEditPart<TModel extends FirstClassModel> 
 		extends AbstractElementEditPart<TModel> {
+	private ISelectionChangedListener selectionListener;	
+	private boolean selected;
 	
 	/**
 	 * Construct a new part and set its model
@@ -23,12 +31,46 @@ public abstract class AbstractElementNodeEditPart<TModel extends FirstClassModel
 	}	
 	
 	@Override
+	public void activate() {		
+		super.activate();
+		selected = getViewer().getSelectedEditParts().contains(this);
+		selectionListener = new ISelectionChangedListener() {			
+			@Override
+			public void selectionChanged(SelectionChangedEvent event) {
+				IStructuredSelection sel = (IStructuredSelection) event.getSelection();				
+				boolean wasSelected = selected;
+				selected = sel.getFirstElement() == AbstractElementNodeEditPart.this;
+				if (wasSelected != selected) {
+					selectedChanged(selected);
+				}
+			}
+		};
+		getViewer().addSelectionChangedListener(selectionListener);
+	}
+	
+	@Override
+	public void deactivate() {
+		getViewer().removeSelectionChangedListener(selectionListener);
+		selectionListener = null;
+		super.deactivate();
+	}
+	
+	protected void selectedChanged(boolean isSelected) {
+		refreshVisuals();
+	}
+	
+	protected boolean isSelected() {
+		return selected;
+	}
+	
+	@Override
 	protected void refreshVisuals() {		
 		super.refreshVisuals();
-		if (getFigure() instanceof IFirstClassFigure) {
+		if (getFigure() instanceof IFirstClassFigure) {						
 			IFirstClassFigure figure = (IFirstClassFigure) getFigure();
 			figure.setHeaderText(getHeaderText());
-			figure.setTooltipText(getTooltipText());
+			figure.setTooltipText(getTooltipText());	
+			figure.setSelected(isSelected());
 		}
 	}
 	

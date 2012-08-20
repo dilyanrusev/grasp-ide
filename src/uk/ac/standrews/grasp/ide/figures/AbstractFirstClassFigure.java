@@ -18,6 +18,7 @@ import uk.ac.standrews.grasp.ide.GraspPlugin;
 abstract class AbstractFirstClassFigure extends Figure implements IFirstClassFigure {
 	private BodyFigure body;
 	private Label header;
+	private SelectionBorder selectionBorder;
 	
 	/**
 	 * Create a new figure. Override {@link #createBorder()} and {@link #createHeadLabel()} 
@@ -26,8 +27,9 @@ abstract class AbstractFirstClassFigure extends Figure implements IFirstClassFig
 	public AbstractFirstClassFigure() {		
 		body = new BodyFigure();		
 		ToolbarLayout layout = new ToolbarLayout();				
-		setLayoutManager(layout);		
-		setBorder(createBorder());
+		setLayoutManager(layout);
+		selectionBorder = new SelectionBorder(createBorder());
+		setBorder(selectionBorder);
 		setBackgroundColor(createBackgroundColour());
 		setOpaque(true);		
 		setToolTip(new Label());
@@ -79,5 +81,11 @@ abstract class AbstractFirstClassFigure extends Figure implements IFirstClassFig
 			Label tooltip = (Label) getToolTip();
 			tooltip.setText(text);
 		}
+	}
+	
+	@Override
+	public void setSelected(boolean selected) {
+		selectionBorder.setDrawAdditionalBorder(selected);
+		repaint();
 	}
 }

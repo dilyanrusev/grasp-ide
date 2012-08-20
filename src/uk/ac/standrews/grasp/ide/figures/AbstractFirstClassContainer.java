@@ -15,6 +15,7 @@ import org.eclipse.swt.graphics.Image;
  */
 abstract class AbstractFirstClassContainer extends Figure implements IFirstClassFigure {
 	private IHeaderBorder header;
+	private SelectionBorder selectionBorder;
 	private Image icon;
 
 	/**
@@ -23,7 +24,8 @@ abstract class AbstractFirstClassContainer extends Figure implements IFirstClass
 	public AbstractFirstClassContainer() {		
 		setLayoutManager(createLayout());
 		header = createBorder();
-		setBorder(header);
+		selectionBorder = new SelectionBorder(header);
+		setBorder(selectionBorder);
 		setToolTip(createTooltip());
 	}
 	
@@ -88,6 +90,12 @@ abstract class AbstractFirstClassContainer extends Figure implements IFirstClass
 			Label tooltip = (Label) getToolTip();
 			tooltip.setText(text);
 		}
+	}
+	
+	@Override
+	public void setSelected(boolean selected) {
+		selectionBorder.setDrawAdditionalBorder(selected);		
+		repaint();
 	}
 
 }

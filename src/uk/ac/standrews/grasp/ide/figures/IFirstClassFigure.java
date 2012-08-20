@@ -19,4 +19,10 @@ public interface IFirstClassFigure {
 	 * @param text Tooltip text
 	 */
 	void setTooltipText(String text);
+
+	/**
+	 * Turn selection on or off
+	 * @param selected
+	 */
+	void setSelected(boolean selected);
 }

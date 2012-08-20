@@ -4,7 +4,6 @@ import org.eclipse.draw2d.IFigure;
 
 import uk.ac.standrews.grasp.ide.editors.TextUtil;
 import uk.ac.standrews.grasp.ide.figures.LinkFigure;
-import uk.ac.standrews.grasp.ide.model.ElementModel;
 import uk.ac.standrews.grasp.ide.model.ElementType;
 import uk.ac.standrews.grasp.ide.model.FirstClassModel;
 import uk.ac.standrews.grasp.ide.model.InterfaceModel;
@@ -66,8 +65,8 @@ public class LinkEditPart extends AbstractElementNodeEditPart<LinkModel> {
 	}
 	
 	/**
-	 * Produce a shorter name than qualified names
-	 * @param iface
+	 * Produce a shorter name than qualified name
+	 * @param iface Interface
 	 * @return
 	 */
 	protected String buildInterfaceName(InterfaceModel iface) {
