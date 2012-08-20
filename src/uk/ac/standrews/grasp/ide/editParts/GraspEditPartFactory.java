@@ -9,6 +9,7 @@ import uk.ac.standrews.grasp.ide.model.ConnectionModel;
 import uk.ac.standrews.grasp.ide.model.ConnectorModel;
 import uk.ac.standrews.grasp.ide.model.ElementType;
 import uk.ac.standrews.grasp.ide.model.LayerModel;
+import uk.ac.standrews.grasp.ide.model.LinkModel;
 import uk.ac.standrews.grasp.ide.model.SystemModel;
 
 public class GraspEditPartFactory implements EditPartFactory {
@@ -28,6 +29,8 @@ public class GraspEditPartFactory implements EditPartFactory {
 			return new LayerEditPart((LayerModel) model);		
 		if (model instanceof SystemModel)
 			return new SystemEditPart((SystemModel) model);
+		if (model instanceof LinkModel) 
+			return new LinkEditPart((LinkModel) model);
 		if (model instanceof ConnectionModel) {
 			ConnectionModel con = (ConnectionModel) model;
 			if (con.getEndpointType() == ElementType.LAYER) {

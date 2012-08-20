@@ -27,9 +27,25 @@ public abstract class AbstractElementNodeEditPart<TModel extends FirstClassModel
 		super.refreshVisuals();
 		if (getFigure() instanceof IFirstClassFigure) {
 			IFirstClassFigure figure = (IFirstClassFigure) getFigure();
-			figure.setHeaderText(getDisplayName(getElement()));
-			figure.setTooltipText(getElement().getClass().getSimpleName());
+			figure.setHeaderText(getHeaderText());
+			figure.setTooltipText(getTooltipText());
 		}
+	}
+	
+	/**
+	 * Invoked in {@link #refreshVisuals()} to set the figure's header text
+	 * @return
+	 */
+	protected String getHeaderText() {
+		return getDisplayName(getElement());
+	}
+	
+	/**
+	 * Invoked in {@link #refreshVisuals()} to set the figure's tooltip text
+	 * @return
+	 */
+	protected String getTooltipText() {
+		return getElement().getClass().getSimpleName();
 	}
 	
 	@Override

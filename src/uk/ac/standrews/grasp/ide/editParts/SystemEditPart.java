@@ -23,13 +23,18 @@ public class SystemEditPart extends AbstractElementNodeEditPart<SystemModel> {
 		SystemFigure figure = new SystemFigure();		
 		return figure;
 	}
+	
+	@Override
+	protected String getHeaderText() {
+		return getElement().getArchitecture().getName() + " :: " + getElement().getName();
+	}
 
 	@Override
 	protected boolean isModelChildSupported(FirstClassModel child) {
 		return child.getType() == ElementType.LAYER
 				|| child.getType() == ElementType.COMPONENT
 				|| child.getType() == ElementType.CONNECTOR
-				//|| child.getType() == ElementType.LINK
+				|| child.getType() == ElementType.LINK
 				;
 	}
 

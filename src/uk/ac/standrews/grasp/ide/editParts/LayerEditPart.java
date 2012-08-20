@@ -62,7 +62,7 @@ public class LayerEditPart extends AbstractElementNodeEditPart<LayerModel>
 	protected boolean isModelChildSupported(FirstClassModel child) {
 		return child.getType() == ElementType.COMPONENT 
 				|| child.getType() == ElementType.CONNECTOR
-				//|| child.getType() == ElementType.LINK
+				|| child.getType() == ElementType.LINK
 				;
 	}
 
