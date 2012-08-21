@@ -3,8 +3,10 @@ package uk.ac.standrews.grasp.ide.model.properties;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.eclipse.jface.viewers.ICellEditorValidator;
 import org.eclipse.ui.views.properties.IPropertyDescriptor;
 
+import uk.ac.standrews.grasp.ide.editors.TextUtil;
 import uk.ac.standrews.grasp.ide.model.ElementModel;
 import uk.ac.standrews.grasp.ide.model.Refactor;
 
@@ -32,6 +34,27 @@ public class ElementPropertySource<T extends ElementModel>
 				text(ElementModel.PROPERTY_NAME, "Name")
 				.description("Type of this Grasp element")
 				.category(getModel().getType().getDisplayName())
+				.validator(new ICellEditorValidator() {					
+					@Override
+					public String isValid(Object value) {
+						if (!(value instanceof String)) {
+							return "Must be text";
+						}
+						String text = (String) value;
+						if (!TextUtil.isIdentifier(text)) {
+							return "Not a valid Grasp identifier";
+						}
+						if (getModel().getArchitecture() != null) {
+							String myQualifiedName = getModel().getQualifiedName();
+							String nextQName = myQualifiedName.substring(myQualifiedName.lastIndexOf('.') + 1);
+							nextQName = nextQName + "." + text;
+							if (getModel().getArchitecture().findByQualifiedName(nextQName) != null) {
+								return "There is already an element with name " + nextQName;
+							}
+						}
+						return null;
+					}
+				})
 				.build());
 		
 		return allProps;

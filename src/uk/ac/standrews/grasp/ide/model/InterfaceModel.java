@@ -141,6 +141,14 @@ public abstract class InterfaceModel extends BecauseModel {
     }
     
     @Override
+    public int hashCode() {
+    	int result = super.hashCode();
+    	result = 31 * result + getMaxdeg();
+    	// don't compare connections to avoid stack overflow 
+    	return result;
+    }
+    
+    @Override
     public void elementRefactored(ElementModel element, String operation,
 			Object oldName,	Object newName) {
 		super.elementRefactored(element, operation, oldName, newName);
@@ -152,9 +160,6 @@ public abstract class InterfaceModel extends BecauseModel {
     			
     			if (operation == Refactor.OPERATION_RENAME) {
     				other.setName((String) newName);
-    				modified = true;
-    			} else if (operation == Refactor.OPERATION_ALIAS_RENAME) {
-    				other.setAlias((String) newName);
     				modified = true;
     			} else {
     				modified = false;
@@ -168,14 +173,5 @@ public abstract class InterfaceModel extends BecauseModel {
     			}
     		}
     	}
-    }
-    
-    
-    @Override
-    public int hashCode() {
-    	int result = super.hashCode();
-    	result = 31 * result + getMaxdeg();
-    	// don't compare connections to avoid stack overflow 
-    	return result;
     }
 }
