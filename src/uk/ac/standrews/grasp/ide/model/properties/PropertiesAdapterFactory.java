@@ -4,9 +4,8 @@ import org.eclipse.core.runtime.IAdapterFactory;
 import org.eclipse.ui.views.properties.IPropertySource;
 
 import uk.ac.standrews.grasp.ide.model.AnnotationModel;
-import uk.ac.standrews.grasp.ide.model.ArchitectureModel;
 import uk.ac.standrews.grasp.ide.model.ElementModel;
-import uk.ac.standrews.grasp.ide.model.FirstClassModel;
+import uk.ac.standrews.grasp.ide.model.InterfaceModel;
 import uk.ac.standrews.grasp.ide.model.NamedValueModel;
 
 /**
@@ -22,18 +21,16 @@ public class PropertiesAdapterFactory implements IAdapterFactory {
 	public Object getAdapter(Object adaptableObject, 
 			@SuppressWarnings("rawtypes") Class adapterType) {
 		if (IPropertySource.class.equals(adapterType)) {
-			if (AnnotationModel.class.isInstance(adaptableObject)) {
+			if (adaptableObject instanceof AnnotationModel) {
 				return new AnnotationPropertySource((AnnotationModel) adaptableObject);
-			}
-			if (ArchitectureModel.class.isInstance(adaptableObject)) {
-				return new ElementPropertySource<ArchitectureModel>((ArchitectureModel) adaptableObject);
-			}
-			if (NamedValueModel.class.isInstance(adaptableObject)) {
+			}			
+			if (adaptableObject instanceof NamedValueModel) {
 				return new NamedValuePropertySource((NamedValueModel) adaptableObject);
 			}
-			if (FirstClassModel.class.isInstance(adaptableObject)) {
-				return new FirstClassPropertySource((FirstClassModel) adaptableObject);
+			if (adaptableObject instanceof InterfaceModel) {
+				return new InterfacePropertySource((InterfaceModel) adaptableObject);
 			}
+			
 			return new ElementPropertySource<ElementModel>((ElementModel) adaptableObject);
 		}
 		

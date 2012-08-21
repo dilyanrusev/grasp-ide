@@ -1,7 +1,7 @@
 package uk.ac.standrews.grasp.ide.figures;
 
-import org.eclipse.draw2d.Label;
 import org.eclipse.swt.graphics.Color;
+import org.eclipse.swt.graphics.Image;
 
 import uk.ac.standrews.grasp.ide.GraspPlugin;
 import uk.ac.standrews.grasp.ide.editParts.IconsCache;
@@ -11,11 +11,11 @@ import uk.ac.standrews.grasp.ide.editParts.IconsCache;
  * @author Dilyan Rusev
  *
  */
-public class ConnectorFigure extends AbstractInstantiableFigure {
+public class ConnectorFigure extends AbstractNodeFigure {
 	
 	@Override
-	protected Label createHeadLabel() {
-		return new Label(IconsCache.getDefault().getConnectorIcon());
+	protected Image createIcon() {
+		return IconsCache.getDefault().getConnectorIcon();
 	}
 	
 	@Override

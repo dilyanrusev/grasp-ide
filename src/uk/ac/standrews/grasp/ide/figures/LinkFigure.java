@@ -1,7 +1,10 @@
 package uk.ac.standrews.grasp.ide.figures;
 
 import org.eclipse.draw2d.Label;
+import org.eclipse.swt.graphics.Color;
+import org.eclipse.swt.graphics.Image;
 
+import uk.ac.standrews.grasp.ide.GraspPlugin;
 import uk.ac.standrews.grasp.ide.editParts.IconsCache;
 
 /**
@@ -9,7 +12,7 @@ import uk.ac.standrews.grasp.ide.editParts.IconsCache;
  * @author Dilyan Rusev
  *
  */
-public class LinkFigure extends AbstractFirstClassFigure {
+public class LinkFigure extends AbstractNodeFigure {
 	private Label provider;
 	private Label consumer;
 	
@@ -19,13 +22,18 @@ public class LinkFigure extends AbstractFirstClassFigure {
 	public LinkFigure() {
 		provider = new Label(IconsCache.getDefault().getProvidesIcon());
 		consumer = new Label(IconsCache.getDefault().getRequiresIcon());		
-		getBody().add(consumer);		
-		getBody().add(provider);
+		add(consumer);		
+		add(provider);
 	}
 
 	@Override
-	protected Label createHeadLabel() {
-		return new Label(IconsCache.getDefault().getLinkIcon());
+	protected Image createIcon() {
+		return IconsCache.getDefault().getLinkIcon();
+	}
+	
+	@Override
+	protected Color createBackgroundColour() {
+		return GraspPlugin.getDefault().getColour(255, 255, 206);
 	}
 	
 	/**
@@ -43,4 +51,6 @@ public class LinkFigure extends AbstractFirstClassFigure {
 	public void setConsumer(String name) {
 		consumer.setText(name);
 	}
+	
+	
 }

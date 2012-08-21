@@ -92,7 +92,7 @@ public abstract class AbstractElementNodeEditPart<TModel extends FirstClassModel
 	 * @return
 	 */
 	protected String getTooltipText() {
-		return getElement().getClass().getSimpleName();
+		return getElement().getType().getDisplayName();
 	}
 	
 	@Override

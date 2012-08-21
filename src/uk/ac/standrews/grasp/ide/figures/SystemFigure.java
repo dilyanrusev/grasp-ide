@@ -10,7 +10,7 @@ import uk.ac.standrews.grasp.ide.editParts.IconsCache;
  * @author Dilyan Rusev
  *
  */
-public class SystemFigure extends AbstractFirstClassContainer {
+public class SystemFigure extends AbstractElementFigure {
 	
 	@Override
 	protected Image createIcon() {

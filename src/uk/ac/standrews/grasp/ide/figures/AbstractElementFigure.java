@@ -6,27 +6,33 @@ import org.eclipse.draw2d.IFigure;
 import org.eclipse.draw2d.Label;
 import org.eclipse.draw2d.LayoutManager;
 import org.eclipse.draw2d.OrderedLayout;
+import org.eclipse.swt.graphics.Color;
 import org.eclipse.swt.graphics.Image;
 
 /**
- * Base class for figures whose main duty is to contain other figures (e.g. layers & system)
+ * Base class for Grasp figures
  * @author Dilyan Rusev
  *
  */
-abstract class AbstractFirstClassContainer extends Figure implements IFirstClassFigure {
+abstract class AbstractElementFigure extends Figure implements IFirstClassFigure {
 	private IHeaderBorder header;
 	private SelectionBorder selectionBorder;
 	private Image icon;
 
 	/**
-	 * Create a new container figure
+	 * Create a new figure
 	 */
-	public AbstractFirstClassContainer() {		
+	public AbstractElementFigure() {		
 		setLayoutManager(createLayout());
 		header = createBorder();
 		selectionBorder = new SelectionBorder(header);
 		setBorder(selectionBorder);
 		setToolTip(createTooltip());
+		Color bg = createBackgroundColour();
+		if (bg != null) {
+			setBackgroundColor(bg);
+			setOpaque(true);
+		}
 	}
 	
 	/**
@@ -41,6 +47,16 @@ abstract class AbstractFirstClassContainer extends Figure implements IFirstClass
 		layout.setMinorAlignment(OrderedLayout.ALIGN_CENTER);
 		return layout;
 	}
+	
+	/**
+	 * Create the background colour. If != null, will be opaque 
+	 * and background color will be the color returned
+	 * @return
+	 */
+	protected Color createBackgroundColour() {
+		return null;
+	}
+
 	
 	/**
 	 * Create a border. By default, creates a HeaderBorder

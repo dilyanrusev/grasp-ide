@@ -4,7 +4,7 @@ import org.eclipse.swt.graphics.Image;
 
 import uk.ac.standrews.grasp.ide.editParts.IconsCache;
 
-public class LayerFigure extends AbstractFirstClassContainer {
+public class LayerFigure extends AbstractElementFigure {
 
 	@Override
 	protected Image createIcon() {
