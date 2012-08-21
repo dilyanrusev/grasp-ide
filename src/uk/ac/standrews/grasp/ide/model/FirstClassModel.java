@@ -3,7 +3,6 @@ package uk.ac.standrews.grasp.ide.model;
 import java.util.ArrayList;
 import java.util.Collection;
 
-import org.eclipse.core.runtime.Assert;
 import org.eclipse.core.runtime.AssertionFailedException;
 
 /**

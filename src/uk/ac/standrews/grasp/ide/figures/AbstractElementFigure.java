@@ -41,7 +41,6 @@ abstract class AbstractElementFigure extends Figure implements IFirstClassFigure
 	 */
 	protected LayoutManager createLayout() {
 		FlowLayout layout = new FlowLayout(false);		
-		layout.setMajorSpacing(10);
 		layout.setMinorSpacing(10);
 		layout.setMajorAlignment(OrderedLayout.ALIGN_CENTER);
 		layout.setMinorAlignment(OrderedLayout.ALIGN_CENTER);

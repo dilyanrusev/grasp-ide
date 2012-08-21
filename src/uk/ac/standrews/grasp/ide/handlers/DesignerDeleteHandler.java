@@ -18,6 +18,7 @@ public class DesignerDeleteHandler extends AbstractHandler implements IHandler {
 
 	@Override
 	public Object execute(ExecutionEvent event) throws ExecutionException {
+		System.out.println("DesignerDeleteHandler");
 		IEditorPart editor = HandlerUtil.getActiveEditor(event);
 		if (editor instanceof GraspDesigner) {
 			GraspDesigner designer = (GraspDesigner) editor;
