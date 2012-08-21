@@ -1,5 +1,6 @@
 package uk.ac.standrews.grasp.ide.editors;
 
+import java.io.InputStream;
 import java.nio.charset.Charset;
 import java.util.EventObject;
 
@@ -93,7 +94,9 @@ public class GraspDesigner extends GraphicalEditorWithFlyoutPalette
 		try {
 			String charsetName = file.getCharset(true);
 			ModelToSourceSerializer serializer = new ModelToSourceSerializer();
-			file.setContents(serializer.serializeToStream(getModel(), Charset.forName(charsetName)), true, true, monitor);
+			InputStream data = serializer.serializeToStream(getModel(), Charset.forName(charsetName));
+			file.setContents(data, true, true, monitor);
+			getCommandStack().markSaveLocation();
 		} catch (CoreException e) {
 			Log.error("Cannot save graphical designer", e);
 		}

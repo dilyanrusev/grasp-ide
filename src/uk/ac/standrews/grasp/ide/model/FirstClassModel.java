@@ -57,9 +57,7 @@ public abstract class FirstClassModel extends ElementModel {
 	 * Use this instead of manually adding children to {@link #getBody()}. 
 	 * @param child Element to add as a child
 	 */
-	public void addChild(FirstClassModel child) {
-		Assert.isTrue(child.getParent() == this
-				&& child.getReferencingName() != null);
+	public void addChild(FirstClassModel child) {		
 		symPut(child.getReferencingName(), child);
 		body.add(child);
 	}	

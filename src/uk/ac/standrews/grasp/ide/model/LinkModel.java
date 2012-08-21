@@ -56,6 +56,24 @@ public class LinkModel extends BecauseModel {
 		fireElementChanged(PROPERTY_PROVIDER);
 	}
 	
+	public String getProviderLocalName() {
+		return getLocalName(getProvider());
+	}
+	
+	public String getConsumerLocalName() {
+		return getLocalName(getConsumer());
+	}
+	
+	private String getLocalName(InterfaceModel iface) {
+		if (getParent().getType() == ElementType.SYSTEM) {
+			String systemQName = getParent().getQualifiedName();
+			return iface.getQualifiedName().substring(systemQName.length() + 1);			
+		} else {
+			String layerQName = iface.getParent().getParent().getQualifiedName();
+			return iface.getQualifiedName().substring(layerQName.length() + 1);
+		}
+	}
+	
 	@Override
 	public boolean equals(Object obj) {
 		if (!super.equals(obj)) return false;

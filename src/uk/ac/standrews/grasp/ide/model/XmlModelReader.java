@@ -4,6 +4,7 @@ import grasp.lang.ISerializable.XmlSchema;
 
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.HashMap;
@@ -55,7 +56,7 @@ public class XmlModelReader {
 		documentLoadedTasks = new ArrayList<Runnable>();
 		for (ElementType type: ElementType.values()) {
 			elementNameToType.put(type.name().toUpperCase(), type);
-		}
+		}		
 	}
 	
 	/**
@@ -90,6 +91,7 @@ public class XmlModelReader {
 				for (Runnable task: documentLoadedTasks) {
 					task.run();
 				}
+				fixTemplates(arch);
 				
 			} catch (AssertionFailedException e) {
 				Log.error(e);
@@ -100,6 +102,46 @@ public class XmlModelReader {
 		return arch;
 	}
 	
+	private void fixTemplates(ArchitectureModel arch) {
+		for (FirstClassModel fc: arch.getBodyByType(ElementType.TEMPLATE)) {
+			TemplateModel template = (TemplateModel) fc;
+			fixTemplate(arch, template);
+		}
+	}
+	
+	private void fixTemplate(ArchitectureModel arch, TemplateModel template) {
+		InstantiableModel instantiation = findTemplateInstantiation(arch, template);
+		if (instantiation != null) {
+			for (FirstClassModel child: instantiation.getBody()) {
+				if (!template.getBody().contains(child)) {
+					template.addChild(child);
+				}
+			}
+		}
+	}
+	
+	private InstantiableModel findTemplateInstantiation(ArchitectureModel arch, TemplateModel template) {
+		Collection<FirstClassModel> res = arch.getBodyByType(ElementType.SYSTEM);
+		if (!res.isEmpty()) {
+			SystemModel sys = (SystemModel) res.iterator().next();
+			for (FirstClassModel child: sys.getBody()) {
+				if (child instanceof InstantiableModel
+						&& ((InstantiableModel) child).getBase() == template) {
+					return (InstantiableModel) child;
+				}
+			}
+			for (FirstClassModel layer: sys.getBodyByType(ElementType.LAYER)) {
+				for (FirstClassModel child: layer.getBody()) {
+					if (child instanceof InstantiableModel
+							&& ((InstantiableModel) child).getBase() == template) {
+						return (InstantiableModel) child;
+					}
+				}
+			}
+		}
+		return null;
+	}
+
 	/**
 	 * Obtain a handle to the file containig the grasp source code from a handle to the file that contains the XML
 	 * @param xmlFile Handle to the XML file
@@ -176,7 +218,7 @@ public class XmlModelReader {
 			}
 			FirstClassModel childModel = readElementByType((Element) node, type, parent);
 			if (childModel != null) {
-				parent.getBody().add(childModel);
+				parent.addChild(childModel);
 			}
 		}
 	}

@@ -14,13 +14,14 @@ class StatementBuilder {
 	private int indentLevel;
 	private String indent;
 	private StringBuilder currentIndent;
-	private boolean pendingSpace;		
+	private Operations lastOperation;
 	
 	/**
 	 * Create a new formatter
 	 */
-	public StatementBuilder() {
+	public StatementBuilder() {		
 		sb = new StringBuilder();
+		lastOperation = Operations.NULL;
 		indentLevel = 0;
 		indent = "  ";			
 		currentIndent = new StringBuilder();
@@ -31,8 +32,12 @@ class StatementBuilder {
 	 * @param forModel Model whose keyword to append to the buffer
 	 * @return This
 	 */
-	public StatementBuilder openStatement(ElementModel forModel) {			
+	public StatementBuilder openStatement(ElementModel forModel) {		
+		if (lastOperation == Operations.END_BODY || lastOperation == Operations.START_BODY) {
+			newLine();
+		}
 		sb.append(currentIndent);
+		lastOperation = Operations.OPEN_STATEMENT;
 		return keyword(forModel);
 	}
 	
@@ -41,11 +46,12 @@ class StatementBuilder {
 	 * @param forModel Type of element to close. Determines whether to put semicolon
 	 * @return This
 	 */
-	public StatementBuilder closeStatement(ElementModel forModel) {
+	public StatementBuilder closeStatement(ElementModel forModel) {		
 		if (forModel.getType().endsWithSemicolon()) {
 			sb.append(';');
 		}
-		return newLine();
+		lastOperation = Operations.CLOSE_STATEMENT;
+		return newLine();		
 	}
 	
 	/**
@@ -80,13 +86,29 @@ class StatementBuilder {
 	 * @return This
 	 */
 	public StatementBuilder expression(ExpressionModel model) {
+		if (lastOperation == Operations.KEYWORD ||
+				lastOperation == Operations.IDENTIFIER) {
+			sb.append(' ');
+		}
 		if (model.getExpressionType() == ExpressionType.STRING) {
 			sb.append("\"");
 			sb.append(model.getText());
 			sb.append("\"");
+		} else if (model.getExpressionType() == ExpressionType.BOOLEAN) {
+			boolean isTrue = "true".equals(model.getText());
+			boolean isFalse = "false".equals(model.getText());
+			if (!isTrue && !isFalse) {
+				// declarative
+				sb.append("#\"");
+				sb.append(model.getText());
+				sb.append("\"");
+			} else {
+				sb.append(model.getText());
+			}
 		} else {
 			sb.append(model.getText());
 		}
+		lastOperation = Operations.EXPRESSION;
 		return this;
 	}
 	
@@ -95,12 +117,14 @@ class StatementBuilder {
 	 * @param identifier Valid Grasp identifier. Does not perform checks
 	 * @return This
 	 */
-	public StatementBuilder identifier(String identifier) {
-		if (pendingSpace) {
+	public StatementBuilder identifier(String identifier) {		
+		if (lastOperation == Operations.IDENTIFIER 
+				|| lastOperation == Operations.KEYWORD
+				|| lastOperation == Operations.EXPRESSION) {
 			sb.append(' ');
-			pendingSpace = false;
 		}
 		sb.append(identifier);
+		lastOperation = Operations.IDENTIFIER;
 		return this;
 	}
 	
@@ -110,6 +134,7 @@ class StatementBuilder {
 	 */
 	public StatementBuilder openBracket() {			
 		sb.append('(');
+		lastOperation = Operations.OPEN_BRACKET;
 		return this;
 	}
 	
@@ -119,6 +144,7 @@ class StatementBuilder {
 	 */
 	public StatementBuilder closeBracket() {			
 		sb.append(')');
+		lastOperation = Operations.CLOSE_BRACKET;
 		return this;
 	}
 	
@@ -129,6 +155,7 @@ class StatementBuilder {
 	public StatementBuilder startBody() {
 		sb.append(" {");
 		increaseIndent();
+		lastOperation = Operations.START_BODY;
 		return this;
 	}
 	
@@ -138,8 +165,11 @@ class StatementBuilder {
 	 */
 	public StatementBuilder endBody() {		
 		decreaseIndent();
+		sb.append(currentIndent);
 		sb.append('}');		
-		return newLine();
+		newLine();
+		lastOperation = Operations.END_BODY;
+		return this;
 	}
 	
 	/**
@@ -148,6 +178,7 @@ class StatementBuilder {
 	 */
 	public StatementBuilder comma() {
 		sb.append(", ");
+		lastOperation = Operations.COMMA;
 		return this;
 	}	
 	
@@ -157,6 +188,7 @@ class StatementBuilder {
 	 */
 	public StatementBuilder equals() {
 		sb.append(" = ");
+		lastOperation = Operations.EQUALS;
 		return this;
 	}
 	
@@ -169,6 +201,7 @@ class StatementBuilder {
 		sb.append('\"');
 		sb.append(literal);
 		sb.append('\"');
+		lastOperation = Operations.STRING;
 		return this;
 	}
 	
@@ -178,8 +211,11 @@ class StatementBuilder {
 	 * @return This
 	 */
 	public StatementBuilder keyword(ElementModel forModel) {
-		sb.append(forModel.getType().getKeyword());
-		this.pendingSpace = true;
+		if (lastOperation == Operations.IDENTIFIER || lastOperation == Operations.EXPRESSION) {
+			sb.append(' ');
+		}
+		sb.append(forModel.getType().getKeyword());		
+		lastOperation = forModel.getType() != ElementType.ANNOTATION ? Operations.KEYWORD : Operations.KEYWORD_ANNOTATION;
 		return this;
 	}
 	
@@ -189,8 +225,11 @@ class StatementBuilder {
 	 * @return
 	 */
 	public StatementBuilder keyword(String kw) {
-		sb.append(kw);
-		this.pendingSpace = true;
+		if (lastOperation == Operations.IDENTIFIER || lastOperation == Operations.EXPRESSION) {
+			sb.append(' ');
+		}
+		sb.append(kw);		
+		lastOperation = Operations.KEYWORD;
 		return this;
 	}
 	
@@ -218,5 +257,25 @@ class StatementBuilder {
 	 */
 	public InputStream toStream(Charset charset) {
 		return new ByteArrayInputStream(toByteArray(charset));
+	}
+	
+	private enum Operations {
+		NULL,
+		OPEN_STATEMENT,
+		CLOSE_STATEMENT,
+		EXPRESSION,
+		IDENTIFIER,
+		OPEN_BRACKET,
+		CLOSE_BRACKET,
+		START_BODY,
+		STRING,
+		END_BODY,
+		COMMA,
+		EQUALS,
+		KEYWORD,
+		KEYWORD_ANNOTATION
+		;
+		
+		
 	}
 }

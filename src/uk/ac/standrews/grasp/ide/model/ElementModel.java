@@ -344,7 +344,20 @@ public abstract class ElementModel implements IObservable,
 	
 	@Override
 	public void elementRefactored(ElementModel element, String operation, Object oldValue, Object newName) {
-		// ignore by default
+		if ((operation == Refactor.OPERATION_RENAME 
+				|| operation == Refactor.OPERATION_RENAME)
+				&& element != this) {
+			boolean update = isParent(this, element);
+			if (update) {
+				rebuildNames();
+			}
+		}
+	}
+	
+	private static boolean isParent(ElementModel element, ElementModel parent) {
+		if (element == null) return false;
+		if (element.getParent() == parent) return true;
+		return isParent(element.getParent(), parent);
 	}
 	
 	/**

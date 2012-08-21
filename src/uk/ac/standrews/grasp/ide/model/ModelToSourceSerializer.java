@@ -4,6 +4,8 @@ import java.io.InputStream;
 import java.nio.charset.Charset;
 import java.util.Collection;
 
+import uk.ac.standrews.grasp.ide.editors.TextUtil;
+
 /**
  * Serialises Grasp graph to grasp source code
  * @author Dilyan Rusev
@@ -86,6 +88,7 @@ public class ModelToSourceSerializer {
 			break;
 		case PROVIDES:
 			writeProvides(builder, (ProvidesModel) child);
+			break;
 		case LINK:
 			writeLink(builder, (LinkModel) child);
 			break;
@@ -108,16 +111,17 @@ public class ModelToSourceSerializer {
 		writeBecause(builder, model);
 		builder.closeStatement(model);		
 	}
+	
 	private void writeLink(StatementBuilder builder, LinkModel model) {
 		writeAnnotations(builder, model);
 		builder.openStatement(model);
-		if (model.getName() != null) {
+		if (!TextUtil.isNullOrEmpty(model.getName())) {
 			builder.identifier(model.getName());
 		}
 		builder
-			.identifier(model.getConsumer().getQualifiedName())
+			.identifier(model.getConsumerLocalName())
 			.keyword("to")
-			.identifier(model.getProvider().getQualifiedName());
+			.identifier(model.getProviderLocalName());
 		if (model.getBody().size() > 0) {
 			builder.startBody();
 			for (FirstClassModel child: model.getBody()) {
