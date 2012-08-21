@@ -38,4 +38,9 @@ public class RequiresModel extends InterfaceModel {
 	protected void setLinkEndpoint(LinkModel link, InterfaceModel endpoint) {
 		link.setConsumer((RequiresModel) endpoint);
 	}
+
+	@Override
+	protected InterfaceModel getOtherLinkEndpoint(LinkModel link) {
+		return link.getProvider();
+	}
 }

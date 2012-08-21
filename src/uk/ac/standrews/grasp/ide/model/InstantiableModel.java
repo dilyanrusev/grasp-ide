@@ -1,5 +1,6 @@
 package uk.ac.standrews.grasp.ide.model;
 
+
 /**
  * Base class for Grasp elements that can be instantiated from a template
  * @author Dilyan Rusev
@@ -89,5 +90,14 @@ public abstract class InstantiableModel extends BecauseModel {
 		
 		return result;
 	}
-
+	
+	@Override
+	public void elementRefactored(ElementModel element, String operation,
+			Object oldName,	Object newName) {
+		super.elementRefactored(element, operation, oldName, newName);
+		
+		if (getBody().contains(element)) {
+			fireElementChanged(PROPERTY_BODY);
+		}		
+	}
 }

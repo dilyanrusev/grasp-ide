@@ -1,5 +1,6 @@
 package uk.ac.standrews.grasp.ide.model;
 
+
 /**
  * Provides an interface for elements that export functionality
  * @author Dilyan Rusev
@@ -32,5 +33,10 @@ public class ProvidesModel extends InterfaceModel {
 	@Override
 	protected void setLinkEndpoint(LinkModel link, InterfaceModel endpoint) {
 		link.setProvider((ProvidesModel) endpoint);
+	}
+
+	@Override
+	protected InterfaceModel getOtherLinkEndpoint(LinkModel link) {
+		return link.getConsumer();
 	}
 }

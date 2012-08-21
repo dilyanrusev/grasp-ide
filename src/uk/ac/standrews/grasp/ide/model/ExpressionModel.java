@@ -127,5 +127,4 @@ public class ExpressionModel extends ElementModel {
 		Log.warn("Expression.addChildElement called");
 		return false;
 	}
-
 }

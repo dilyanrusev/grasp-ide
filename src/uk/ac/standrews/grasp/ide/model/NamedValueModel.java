@@ -109,5 +109,4 @@ public class NamedValueModel extends ElementModel {
 		}
 		return false;
 	}
-
 }

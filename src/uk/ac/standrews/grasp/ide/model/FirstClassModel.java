@@ -15,7 +15,11 @@ public abstract class FirstClassModel extends ElementModel {
 	/**
 	 * ID for the annotations property
 	 */
-	public static final String PROPERTY_ANNOTATIONS = "annotations";	
+	public static final String PROPERTY_ANNOTATIONS = "annotations";
+	/**
+	 * ID of the body property
+	 */
+	public static final String PROPERTY_BODY = "body";
 	
 	private final ObservableSet<AnnotationModel> annotations = 
 			new ObservableSet<AnnotationModel>();

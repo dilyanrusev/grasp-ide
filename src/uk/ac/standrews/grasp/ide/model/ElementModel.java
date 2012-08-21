@@ -17,7 +17,7 @@ import uk.ac.standrews.grasp.ide.Log;
  *
  */
 public abstract class ElementModel implements IObservable, 
-		Comparable<ElementModel> {
+		Comparable<ElementModel>, IRefactorable {
 	/** Element Type */
 	public static final String PROPERTY_TYPE = "type";
 	/** Parent of the element */
@@ -340,6 +340,11 @@ public abstract class ElementModel implements IObservable,
 		result = 31 * result + getQualifiedName().hashCode();
 		
 		return result;
+	}
+	
+	@Override
+	public void elementRefactored(ElementModel element, String operation, Object oldValue, Object newName) {
+		// ignore by default
 	}
 	
 	/**

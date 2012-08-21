@@ -1,5 +1,6 @@
 package uk.ac.standrews.grasp.ide.model;
 
+
 /**
  * Base class for elements that provide the component and connector interface
  * @author Dilyan Rusev
@@ -112,6 +113,13 @@ public abstract class InterfaceModel extends BecauseModel {
 	 * @return This or null
 	 */
 	protected abstract InterfaceModel getLinkEndpoint(LinkModel link);
+	
+	/**
+	 * Return the other end of the connection, or null if not attached to the connection
+	 * @param link Connection to test
+	 * @return Other end of connection or null
+	 */
+	protected abstract InterfaceModel getOtherLinkEndpoint(LinkModel link);
 
 	/**
 	 * Set or unset self as an endpoint to the connection
@@ -131,6 +139,37 @@ public abstract class InterfaceModel extends BecauseModel {
     	
     	return true;
     }
+    
+    @Override
+    public void elementRefactored(ElementModel element, String operation,
+			Object oldName,	Object newName) {
+		super.elementRefactored(element, operation, oldName, newName);
+    	
+		if (element == this) {
+			boolean modified;
+    		for (LinkModel con: getConnections()) {
+    			InterfaceModel other = getOtherLinkEndpoint(con);
+    			
+    			if (operation == Refactor.OPERATION_RENAME) {
+    				other.setName((String) newName);
+    				modified = true;
+    			} else if (operation == Refactor.OPERATION_ALIAS_RENAME) {
+    				other.setAlias((String) newName);
+    				modified = true;
+    			} else {
+    				modified = false;
+    			}
+    			
+    			if (modified) {
+	    			con.fireElementChanged(
+	    					other.getType() == ElementType.PROVIDES
+	    					? LinkModel.PROPERTY_PROVIDER
+	    					: LinkModel.PROPERTY_CONSUMER);
+    			}
+    		}
+    	}
+    }
+    
     
     @Override
     public int hashCode() {

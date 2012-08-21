@@ -1,6 +1,7 @@
 package uk.ac.standrews.grasp.ide.model;
 
 
+
 /**
  * Represents Grasp annotations
  * @author Dilyan Rusev
@@ -77,5 +78,13 @@ public class AnnotationModel extends ElementModel {
 			return getNamedValues().add((NamedValueModel) child);
 		}
 		return false;
+	}
+
+	@Override
+	public void elementRefactored(ElementModel element, String operation, 
+			Object oldValue, Object newName) {		
+		if (element != this && getNamedValues().contains(element)) {
+			fireElementChanged(PROPERTY_NAMED_VALUES);
+		}		
 	}
 }

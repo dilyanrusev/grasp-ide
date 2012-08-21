@@ -76,5 +76,22 @@ public class LinkModel extends BecauseModel {
 		
 		return result;
 	}
+	
+	@Override
+	public void elementRefactored(ElementModel element, String operation,
+			Object oldName,	Object newName) {
+		super.elementRefactored(element, operation, oldName, newName);
+		
+		if (element == getProvider()) {
+			fireElementChanged(PROPERTY_PROVIDER);
+		} else if (element == getConsumer()) {
+			fireElementChanged(PROPERTY_CONSUMER);
+		} else if (element instanceof InstantiableModel) {
+			InstantiableModel in = (InstantiableModel) element;
+			if (in.getBody().contains(getConsumer()) || in.getBody().contains(getProvider())) {
+				fireElementChanged(PROPERTY_PROVIDER, PROPERTY_CONSUMER);
+			}
+		}		
+	}
 
 }

@@ -95,7 +95,8 @@ public abstract class AbstractElementEditPart<TModel extends FirstClassModel>
 	 * No need to call {@link #refreshVisuals()}
 	 * @param propertyName Name of the changed property
 	 */
-	protected void elementPropertyChanged(String propertyName) {		
+	protected void elementPropertyChanged(String propertyName) {
+		System.out.printf("%s changed in %s%n", propertyName, getElement().getQualifiedName());
 	}
 
 	/**

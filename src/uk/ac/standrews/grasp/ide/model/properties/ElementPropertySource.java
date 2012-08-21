@@ -6,6 +6,7 @@ import java.util.List;
 import org.eclipse.ui.views.properties.IPropertyDescriptor;
 
 import uk.ac.standrews.grasp.ide.model.ElementModel;
+import uk.ac.standrews.grasp.ide.model.Refactor;
 
 /**
  * Property source for {@link uk.ac.standrews.grasp.ide.model.ElementModel}
@@ -48,7 +49,7 @@ public class ElementPropertySource<T extends ElementModel>
 	public void setPropertyValue(Object id, Object value) {
 		super.setPropertyValue(id, value);
 		if (ElementModel.PROPERTY_NAME == id) {
-			getModel().setName((String) value);
+			Refactor.rename(getModel(), (String) value);
 		}
 	}
 }
