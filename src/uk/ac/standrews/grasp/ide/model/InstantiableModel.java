@@ -1,5 +1,7 @@
 package uk.ac.standrews.grasp.ide.model;
 
+import uk.ac.standrews.grasp.ide.commands.ModelHelper;
+
 
 /**
  * Base class for Grasp elements that can be instantiated from a template
@@ -99,5 +101,20 @@ public abstract class InstantiableModel extends BecauseModel {
 		if (getBody().contains(element)) {
 			fireElementChanged(PROPERTY_BODY);
 		}		
+	}
+	
+	@Override
+	public boolean addChildElement(ElementModel child) {
+		if (child instanceof InterfaceModel) {
+			InterfaceModel iface = (InterfaceModel) child;
+			ModelHelper.ensureTempalteIsDesigned(this);
+			InterfaceModel templateIface = (InterfaceModel) getBase().symGet(iface.getReferencingName());
+			if (templateIface != null) {
+				getBase().removeChild(templateIface);
+			}
+			templateIface = iface.createCopy(getBase());
+			getBase().addChild(templateIface);
+		}
+		return super.addChildElement(child);
 	}
 }

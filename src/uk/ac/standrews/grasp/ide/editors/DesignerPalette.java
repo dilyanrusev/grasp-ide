@@ -6,15 +6,10 @@ import org.eclipse.gef.palette.PaletteDrawer;
 import org.eclipse.gef.palette.PaletteGroup;
 import org.eclipse.gef.palette.PaletteRoot;
 import org.eclipse.gef.palette.PanningSelectionToolEntry;
-import org.eclipse.gef.requests.SimpleFactory;
+import org.eclipse.gef.requests.CreationFactory;
 
 import uk.ac.standrews.grasp.ide.editParts.IconsCache;
-import uk.ac.standrews.grasp.ide.model.ComponentModel;
-import uk.ac.standrews.grasp.ide.model.ConnectorModel;
-import uk.ac.standrews.grasp.ide.model.LayerModel;
-import uk.ac.standrews.grasp.ide.model.LinkModel;
-import uk.ac.standrews.grasp.ide.model.ProvidesModel;
-import uk.ac.standrews.grasp.ide.model.RequiresModel;
+import uk.ac.standrews.grasp.ide.model.ElementType;
 
 /**
  * Implements the default palette for {@link GraspDesigner}
@@ -61,8 +56,8 @@ public class DesignerPalette extends PaletteRoot {
 		entry = new CombinedTemplateCreationEntry(
 				"Layer" // label 
 				, "Groups components, connectors and links" // description
-				, LayerModel.class // template
-				, new SimpleFactory(LayerModel.class) // creation factory
+				, ElementType.LAYER // template
+				, new Factory(ElementType.LAYER) // creation factory
 				, IconsCache.getDefault().getLayerDescriptor() // small pic
 				, IconsCache.getDefault().getBigLayerDescriptor()); // big pic
 		elementsDrawer.add(entry);
@@ -70,8 +65,8 @@ public class DesignerPalette extends PaletteRoot {
 		entry = new CombinedTemplateCreationEntry(
 				"Component" // label 
 				, "Encapsulates functionality" // description
-				, ComponentModel.class
-				, new SimpleFactory(ComponentModel.class) // creation factory
+				, ElementType.COMPONENT
+				, new Factory(ElementType.COMPONENT) // creation factory
 				, IconsCache.getDefault().getComponentDescriptor() // small pic
 				, IconsCache.getDefault().getBigComponentDescriptor()); // big pic
 		elementsDrawer.add(entry);
@@ -79,8 +74,8 @@ public class DesignerPalette extends PaletteRoot {
 		entry = new CombinedTemplateCreationEntry(
 				"Connector" // label 
 				, "Functional connection between components" // description
-				, ConnectorModel.class
-				, new SimpleFactory(ConnectorModel.class) // creation factory
+				, ElementType.CONNECTOR
+				, new Factory(ElementType.CONNECTOR) // creation factory
 				, IconsCache.getDefault().getConnectorDescriptor() // small pic
 				, IconsCache.getDefault().getBigConnectorDescriptor()); // big pic
 		elementsDrawer.add(entry);
@@ -88,8 +83,8 @@ public class DesignerPalette extends PaletteRoot {
 		entry = new CombinedTemplateCreationEntry(
 				"Link" // label 
 				, "Connects provides/requires interfaces of components and connectors" // description
-				, LinkModel.class
-				, new SimpleFactory(LinkModel.class) // creation factory
+				, ElementType.LINK
+				, new Factory(ElementType.LINK) // creation factory
 				, IconsCache.getDefault().getLinkDescriptor() // small pic
 				, IconsCache.getDefault().getBigLinkDescriptor()); // big pic
 		elementsDrawer.add(entry);
@@ -107,8 +102,8 @@ public class DesignerPalette extends PaletteRoot {
 		entry = new CombinedTemplateCreationEntry(
 				"Provides" // label 
 				, "Exposes functionality to other components/connectors" // description
-				, ProvidesModel.class // template
-				, new SimpleFactory(ProvidesModel.class) // creation factory
+				, ElementType.PROVIDES // template
+				, new Factory(ElementType.PROVIDES) // creation factory
 				, IconsCache.getDefault().getProvidesDescriptor() // small pic
 				, IconsCache.getDefault().getBigProvidesDescriptor()); // big pic
 		elementsDrawer.add(entry);
@@ -116,12 +111,31 @@ public class DesignerPalette extends PaletteRoot {
 		entry = new CombinedTemplateCreationEntry(
 				"Requires" // label 
 				, "Imports functionality from other components/connectors" // description
-				, RequiresModel.class
-				, new SimpleFactory(RequiresModel.class) // creation factory
+				, ElementType.REQUIRES
+				, new Factory(ElementType.REQUIRES) // creation factory
 				, IconsCache.getDefault().getRequiresDescriptor() // small pic
 				, IconsCache.getDefault().getBigRequiresDescriptor()); // big pic
 		elementsDrawer.add(entry);
 		
 		return elementsDrawer;
+	}
+	
+	public static class Factory implements CreationFactory {
+		private final ElementType type;
+		
+		public Factory(ElementType type) {
+			this.type = type;
+		}
+
+		@Override
+		public Object getNewObject() {
+			return null;
+		}
+
+		@Override
+		public Object getObjectType() {
+			return type;
+		}
+		
 	}
 }

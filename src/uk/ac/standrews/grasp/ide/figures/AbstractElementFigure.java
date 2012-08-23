@@ -3,9 +3,11 @@ package uk.ac.standrews.grasp.ide.figures;
 import org.eclipse.draw2d.Figure;
 import org.eclipse.draw2d.FlowLayout;
 import org.eclipse.draw2d.IFigure;
+import org.eclipse.draw2d.KeyEvent;
 import org.eclipse.draw2d.Label;
 import org.eclipse.draw2d.LayoutManager;
 import org.eclipse.draw2d.OrderedLayout;
+import org.eclipse.swt.SWT;
 import org.eclipse.swt.graphics.Color;
 import org.eclipse.swt.graphics.Image;
 
@@ -111,6 +113,16 @@ abstract class AbstractElementFigure extends Figure implements IFirstClassFigure
 	public void setSelected(boolean selected) {
 		selectionBorder.setDrawAdditionalBorder(selected);		
 		repaint();
+	}
+	
+	@Override
+	public void handleKeyPressed(KeyEvent event) {
+		if (event.character == SWT.DEL) {
+			System.out.printf("%s => DELETE%n", this);
+		} else {
+			System.out.println("" + this + " => " + event.character);
+		}
+		super.handleKeyPressed(event);
 	}
 
 }

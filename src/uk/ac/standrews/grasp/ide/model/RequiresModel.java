@@ -25,6 +25,11 @@ public class RequiresModel extends InterfaceModel {
 	}
 	
 	@Override
+	public InterfaceModel createCopy(FirstClassModel parent) {
+		return new RequiresModel(this, parent);
+	}
+	
+	@Override
 	public void setMaxdeg(int i) {
 		// ignore -> no limit on requirements (i.e. always -1)
 	}

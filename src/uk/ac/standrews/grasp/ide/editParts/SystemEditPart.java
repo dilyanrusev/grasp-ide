@@ -1,6 +1,8 @@
 package uk.ac.standrews.grasp.ide.editParts;
 
 import org.eclipse.draw2d.IFigure;
+import org.eclipse.gef.EditPolicy;
+import org.eclipse.gef.editpolicies.RootComponentEditPolicy;
 
 import uk.ac.standrews.grasp.ide.figures.SystemFigure;
 import uk.ac.standrews.grasp.ide.model.ElementType;
@@ -14,14 +16,14 @@ public class SystemEditPart extends AbstractElementNodeEditPart<SystemModel> {
 	}
 	
 	@Override
-	protected void createEditPolicies() {
-				
-	}
-	
-	@Override
 	protected IFigure createFigure() {
 		SystemFigure figure = new SystemFigure();		
 		return figure;
+	}
+	
+	@Override
+	protected void createEditPolicies() {
+		installEditPolicy(EditPolicy.COMPONENT_ROLE, new RootComponentEditPolicy());
 	}
 	
 	@Override

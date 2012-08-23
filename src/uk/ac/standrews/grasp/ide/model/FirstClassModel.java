@@ -20,6 +20,8 @@ public abstract class FirstClassModel extends ElementModel {
 	 */
 	public static final String PROPERTY_BODY = "body";
 	
+	protected static final String DESIGNER_ANNOTATION_NAME = "GraspIDE";
+	
 	private final ObservableSet<AnnotationModel> annotations = 
 			new ObservableSet<AnnotationModel>();
 	private final ObservableSet<FirstClassModel> body = 
@@ -60,6 +62,15 @@ public abstract class FirstClassModel extends ElementModel {
 		symPut(child.getReferencingName(), child);
 		body.add(child);
 	}	
+	
+	/**
+	 * Removes a child both as a child and from the symbol table
+	 * @param child Child to remove
+	 */
+	public void removeChild(FirstClassModel child) {
+		symRemove(child.getReferencingName());
+		body.remove(child);
+	}
 
 	/**
 	 * Get this element's annotations
@@ -67,6 +78,59 @@ public abstract class FirstClassModel extends ElementModel {
 	 */
 	public ObservableSet<AnnotationModel> getAnnotations() {
 		return annotations;
+	}
+	
+	protected String getDesignerValue(String key) {
+		NamedValueModel nv = getDesignerNamedValue(key, false);
+		if (nv != null && nv.isInitialized() 
+				&& nv.getExpression().getExpressionType() == ExpressionType.STRING) {
+			return (String) nv.getExpression().getValue();
+		}
+		return null;
+	}
+	
+	protected void setDesignerValue(String key, String value) {
+		NamedValueModel nv = getDesignerNamedValue(key, true);
+		ExpressionModel expr = new ExpressionModel(nv);
+		expr.setExpressionType(ExpressionType.STRING);
+		expr.setValue(value);
+		nv.setExpression(expr);		
+	}
+	
+	private NamedValueModel getDesignerNamedValue(String key, boolean create) {
+		AnnotationModel annot = getDesignerAnnotation(create);		
+		if (annot != null) {
+			NamedValueModel namedValue = null;
+			for (NamedValueModel nv: annot.getNamedValues()) {
+				if (key.equals(nv.getName())) {
+					namedValue = nv;
+				}
+			}
+			if (namedValue == null && create) {
+				namedValue = new NamedValueModel(annot);
+				namedValue.setName(key);
+				annot.getNamedValues().add(namedValue);
+			}
+			return namedValue;
+		}
+		return null;
+	}
+	
+	private AnnotationModel getDesignerAnnotation(boolean create) {
+		for (AnnotationModel annot: getAnnotations()) {
+			if (DESIGNER_ANNOTATION_NAME.equals(annot.getName())) {
+				return annot;
+			}
+		}
+		if (create) {
+			AnnotationModel annot = new AnnotationModel(this);
+			annot.setName(DESIGNER_ANNOTATION_NAME);
+			getAnnotations().add(annot);
+			return annot;
+		} else {
+			return null;
+		}
+		
 	}
 	
 	/**
@@ -97,7 +161,8 @@ public abstract class FirstClassModel extends ElementModel {
 	public ElementModel removeFromParent() {
 		if (getParent() instanceof FirstClassModel) {
 			FirstClassModel theParent = (FirstClassModel) getParent();
-			if (theParent.getBody().remove(this)) {
+			if (theParent.symLookup(this.getReferencingName())) {
+				theParent.removeChild(this);
 				return theParent;
 			}
 		}
@@ -106,8 +171,9 @@ public abstract class FirstClassModel extends ElementModel {
 	
 	@Override
 	public boolean addChildElement(ElementModel child) {
-		if (child instanceof FirstClassModel && this != child) {
-			return getBody().add((FirstClassModel) child);
+		if (child instanceof FirstClassModel && this != child && !symLookup(child.getReferencingName())) {
+			addChild((FirstClassModel) child);
+			return true;
 		}
 		return false;
 	}

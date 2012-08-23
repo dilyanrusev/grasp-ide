@@ -179,14 +179,6 @@
       <handler
             class="uk.ac.standrews.grasp.ide.handlers.DesignerDeleteHandler"
             commandId="org.eclipse.ui.edit.delete">
-         <activeWhen>
-            <with
-                  variable="activeEditorId">
-               <equals
-                     value="uk.ac.standrews.grasp.ide.editors.GraspDesigner">
-               </equals>
-            </with>
-         </activeWhen>
       </handler>
    </extension>
    <extension

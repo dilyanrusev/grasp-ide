@@ -2,7 +2,6 @@ package uk.ac.standrews.grasp.ide.editors;
 
 
 import org.eclipse.core.resources.IFile;
-import org.eclipse.core.resources.IMarker;
 import org.eclipse.core.resources.IResource;
 import org.eclipse.core.resources.IResourceChangeEvent;
 import org.eclipse.core.resources.IResourceChangeListener;
@@ -19,7 +18,6 @@ import org.eclipse.ui.IEditorSite;
 import org.eclipse.ui.IFileEditorInput;
 import org.eclipse.ui.IWorkbenchPage;
 import org.eclipse.ui.PartInitException;
-import org.eclipse.ui.ide.IDE;
 import org.eclipse.ui.part.EditorPart;
 import org.eclipse.ui.part.FileEditorInput;
 import org.eclipse.ui.part.MultiPageEditorPart;
@@ -139,8 +137,9 @@ public class GraspEditor extends MultiPageEditorPart implements IResourceChangeL
 		int active = getActivePage();
 		if (active != -1) {
 			getEditor(active).doSave(monitor);
+		} else {
+			Log.warn("GraspEditor.doSave -> no active editor");
 		}
-		Log.warn("GraspEditor.doSave -> no active editor");
 	}
 	/**
 	 * Saves the multi-page editor's document as another file.
@@ -155,16 +154,17 @@ public class GraspEditor extends MultiPageEditorPart implements IResourceChangeL
 			editor.doSaveAs();
 			setPageText(active, editor.getTitle());
 			setInput(editor.getEditorInput());
-		}		
+		} else {
+			Log.warn("GraspEditor.doSaveAs -> no active editor");
+		}
 	}
 	
-	public void gotoMarker(IMarker marker) {
-		setActivePage(0);
-		IDE.gotoMarker(getEditor(0), marker);
+	// protected -> public
+	@Override
+	public IEditorPart getActiveEditor() {		
+		return super.getActiveEditor();
 	}
-	
-	
-	
+		
 	/* (non-Javadoc)
 	 * Method declared on IEditorPart.
 	 */

@@ -1,5 +1,7 @@
 package uk.ac.standrews.grasp.ide.model;
 
+import uk.ac.standrews.grasp.ide.commands.ModelHelper;
+
 
 /**
  * Base class for elements that provide the component and connector interface
@@ -36,6 +38,13 @@ public abstract class InterfaceModel extends BecauseModel {
 		maxdeg = -1;
 	}
 
+	/**
+	 * Convenience method that uses the copy constructor to create a copy of this instance
+	 * @param Parent of the copy
+	 * @return Copy of this instance
+	 */
+	public abstract InterfaceModel createCopy(FirstClassModel parent);
+	
 	/**
 	 * Add this as an endpoint of a connection and add the connection to the list of connections using this interface
 	 * @param link Connection that contains the two endpoints
@@ -173,5 +182,18 @@ public abstract class InterfaceModel extends BecauseModel {
     			}
     		}
     	}
+    }
+    
+    @Override
+    public ElementModel removeFromParent() {
+    	InstantiableModel parent = (InstantiableModel) getParent();
+    	ModelHelper.ensureTempalteIsDesigned(parent);
+		InterfaceModel copyInTemplate = (InterfaceModel) parent.getBase().symGet(getReferencingName());
+		if (copyInTemplate != null) {
+			parent.getBase().removeChild(copyInTemplate);
+			return super.removeFromParent();
+		} else {
+			return null;
+		}
     }
 }

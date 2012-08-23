@@ -52,11 +52,6 @@ public class LayerEditPart extends AbstractElementNodeEditPart<LayerModel>
 		overListener = null;
 		super.deactivate();
 	}
-	
-	@Override
-	protected void createEditPolicies() {
-				
-	}
 
 	@Override
 	protected boolean isModelChildSupported(FirstClassModel child) {

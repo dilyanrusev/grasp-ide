@@ -16,7 +16,7 @@ import uk.ac.standrews.grasp.ide.model.FirstClassModel;
 public class GraspComponentPolicy extends ComponentEditPolicy {
 	
 	@Override
-	protected Command createDeleteCommand(GroupRequest deleteRequest) {
+	protected Command createDeleteCommand(GroupRequest deleteRequest) {		
 		CompoundCommand compound = new CompoundCommand();
 		for (Object part: deleteRequest.getEditParts()) {
 			if (part instanceof AbstractElementEditPart<?>) {

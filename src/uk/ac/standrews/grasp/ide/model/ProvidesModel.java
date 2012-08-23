@@ -24,6 +24,11 @@ public class ProvidesModel extends InterfaceModel {
 	public ProvidesModel(FirstClassModel parent) {
 		super(ElementType.PROVIDES, parent);
 	}
+	
+	@Override
+	public InterfaceModel createCopy(FirstClassModel parent) {
+		return new ProvidesModel(this, parent);
+	}
 
 	@Override
 	protected InterfaceModel getLinkEndpoint(LinkModel link) {

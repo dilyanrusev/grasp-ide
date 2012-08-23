@@ -240,11 +240,21 @@ public abstract class ElementModel implements IObservable,
 	}
 	
 	/**
+	 * Remove an element from the symbol table. Does not raise events
+	 * @param s Name of the elment 
+	 */
+	protected void symRemove(String s) {
+		if (symLookup(s)) {
+			symbolTable.remove(s);
+		}
+	}
+	
+	/**
 	 * Retrieve a child by name
 	 * @param s Name of the child
 	 * @return Instance of the child element, if contained within the symbol table
 	 */
-	protected ElementModel symGet(String s) {
+	public ElementModel symGet(String s) {
 		return symbolTable.get(s);
 	}
 	
@@ -253,18 +263,18 @@ public abstract class ElementModel implements IObservable,
 	 * @param s Name of the child
 	 * @return True if contained within the symbol table
 	 */
-	protected boolean symLookup(String s) {
+	public boolean symLookup(String s) {
 		return symbolTable.containsKey(s);
 	}
 	
 	/**
-	 * Attempt to remove from parent
+	 * Attempt to remove from parent. Invoked by the designer.
 	 * @return Element that used to be parent, or null
 	 */
 	public abstract ElementModel removeFromParent();
 	
 	/**
-	 * Add element as a child
+	 * Add element as a child. Invoked by the designer.
 	 * @param child Element to add. Query type to determine how to add this
 	 * @return true if successful
 	 */

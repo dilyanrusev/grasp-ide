@@ -30,6 +30,16 @@ public class DeleteModelCommand extends Command {
 	}
 	
 	@Override
+	public boolean canUndo() {
+		return parent != null;
+	}
+	
+	@Override
+	public boolean canExecute() {
+		return model != null;
+	}
+	
+	@Override
 	public String getLabel() {
 		return "Delete " + model.getQualifiedName();
 	}

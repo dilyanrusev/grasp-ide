@@ -6,7 +6,9 @@ import org.eclipse.draw2d.FreeformLayer;
 import org.eclipse.draw2d.IFigure;
 import org.eclipse.draw2d.ShortestPathConnectionRouter;
 import org.eclipse.draw2d.ToolbarLayout;
+import org.eclipse.gef.EditPolicy;
 import org.eclipse.gef.LayerConstants;
+import org.eclipse.gef.editpolicies.RootComponentEditPolicy;
 import org.eclipse.swt.SWT;
 
 import uk.ac.standrews.grasp.ide.model.ArchitectureModel;
@@ -36,6 +38,7 @@ public class ArchitectureEditPart extends AbstractElementEditPart<ArchitectureMo
 
 	@Override
 	protected void createEditPolicies() {
+		installEditPolicy(EditPolicy.COMPONENT_ROLE, new RootComponentEditPolicy());
 	}
 
 	@Override
