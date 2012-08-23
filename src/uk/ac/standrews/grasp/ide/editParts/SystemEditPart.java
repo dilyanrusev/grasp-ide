@@ -1,7 +1,6 @@
 package uk.ac.standrews.grasp.ide.editParts;
 
 import org.eclipse.draw2d.IFigure;
-import org.eclipse.gef.EditPart;
 import org.eclipse.gef.EditPolicy;
 import org.eclipse.gef.commands.Command;
 import org.eclipse.gef.commands.UnexecutableCommand;
@@ -66,7 +65,5 @@ class SystemLayoutPolicy extends GraspLayoutPolicy {
 		}
 		return UnexecutableCommand.INSTANCE;
 	}
-
-	
 	
 }
