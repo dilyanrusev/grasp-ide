@@ -3,11 +3,13 @@ package uk.ac.standrews.grasp.ide.model.properties;
 import java.util.List;
 
 import org.eclipse.core.runtime.Assert;
+import org.eclipse.jface.viewers.ICellEditorValidator;
 import org.eclipse.ui.views.properties.IPropertyDescriptor;
 import org.eclipse.ui.views.properties.IPropertySource;
 import org.eclipse.ui.views.properties.PropertyDescriptor;
 import org.eclipse.ui.views.properties.TextPropertyDescriptor;
 
+import uk.ac.standrews.grasp.ide.editors.TextUtil;
 import uk.ac.standrews.grasp.ide.model.ElementModel;
 import uk.ac.standrews.grasp.ide.model.properties.PropertyBuilderImpl.ReadOnlyBuilder;
 import uk.ac.standrews.grasp.ide.model.properties.PropertyBuilderImpl.TextBuilder;
@@ -54,15 +56,12 @@ public abstract class AbstractElementPropertySource<T extends ElementModel>
 	}
 	
 	@Override
-	public boolean isPropertySet(Object id) {
-		// TODO Auto-generated method stub
+	public boolean isPropertySet(Object id) {		
 		return false;
 	}
 
 	@Override
 	public void resetPropertyValue(Object id) {
-		// TODO Auto-generated method stub
-	
 	}
 
 	@Override
@@ -84,6 +83,38 @@ public abstract class AbstractElementPropertySource<T extends ElementModel>
 		return new TextBuilder(new TextPropertyDescriptor(id, displayName));
 	}
 
+	/**
+	 * Same as {@link #text(Object, String)}, but also adds a validator to make sure
+	 * that the name is unique within the architecture graph
+	 * @param id ID of the property
+	 * @param displayName Name to be displayed in the property editor
+	 * @return
+	 */
+	public TextBuilder identifier(Object id, String displayName) {
+		return text(id, displayName)
+				.validator(new ICellEditorValidator() {					
+					@Override
+					public String isValid(Object value) {
+						if (!(value instanceof String)) {
+							return "Must be text";
+						}
+						String text = (String) value;
+						if (!TextUtil.isIdentifier(text)) {
+							return "Not a valid Grasp identifier";
+						}
+						if (getModel().getArchitecture() != null) {
+							String myQualifiedName = getModel().getQualifiedName();
+							String nextQName = myQualifiedName.substring(myQualifiedName.lastIndexOf('.') + 1);
+							nextQName = nextQName + "." + text;
+							if (getModel().getArchitecture().findByQualifiedName(nextQName) != null) {
+								return "There is already an element with name " + nextQName;
+							}
+						}
+						return null;
+					}
+				});
+	}
+	
 	/**
 	 * Construct a read-only property
 	 * @param id ID of the property

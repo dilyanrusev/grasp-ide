@@ -2,24 +2,24 @@ package uk.ac.standrews.grasp.ide.model.properties;
 
 import java.util.List;
 
-import org.eclipse.jface.util.Util;
 import org.eclipse.ui.views.properties.IPropertyDescriptor;
 
-import uk.ac.standrews.grasp.ide.model.InterfaceModel;
+import uk.ac.standrews.grasp.ide.model.InstantiableModel;
 import uk.ac.standrews.grasp.ide.model.Refactor;
 
 /**
- * Common property source for interfaces (provides and requires)
+ * Property source for instantiable model objects (components and connectors)
  * @author Dilyan Rusev
  *
  */
-public class InterfacePropertySource extends ElementPropertySource<InterfaceModel> {
+public class InstantiablePropertySource extends ElementPropertySource<InstantiableModel> {
+	private static final String PROPERTY_TEMPLATE_NAME = "templateName";
 
 	/**
-	 * Construct a new property source
+	 * Create a new property source
 	 * @param model Model to bind to
 	 */
-	public InterfacePropertySource(InterfaceModel model) {
+	public InstantiablePropertySource(InstantiableModel model) {
 		super(model);		
 	}
 	
@@ -28,7 +28,7 @@ public class InterfacePropertySource extends ElementPropertySource<InterfaceMode
 		List<IPropertyDescriptor> allProps = super.createDescriptors();
 		
 		allProps.add(
-				identifier(InterfaceModel.PROPERTY_ALIAS, "Alias")
+				identifier(PROPERTY_TEMPLATE_NAME, "Template name")
 				.category(getModel().getType().getDisplayName())				
 				.build());
 		
@@ -37,18 +37,18 @@ public class InterfacePropertySource extends ElementPropertySource<InterfaceMode
 	
 	@Override
 	public Object getPropertyValue(Object id) {
-		if (InterfaceModel.PROPERTY_ALIAS == id) {
-			return getModel().getAlias() != null ? getModel().getAlias() : Util.ZERO_LENGTH_STRING;
+		if (PROPERTY_TEMPLATE_NAME == id) {
+			return getModel().getBase().getName();
 		}
 		return super.getPropertyValue(id);
 	}
 	
 	@Override
 	public void setPropertyValue(Object id, Object value) {
-		if (InterfaceModel.PROPERTY_ALIAS == id) {			
-			Refactor.changeAlias(getModel(), (String) value);
-		}
 		super.setPropertyValue(id, value);
+		if (PROPERTY_TEMPLATE_NAME == id) {
+			Refactor.rename(getModel().getBase(), (String) value);
+		}
 	}
-	
+
 }

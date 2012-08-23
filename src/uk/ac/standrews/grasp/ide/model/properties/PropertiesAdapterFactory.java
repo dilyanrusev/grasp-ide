@@ -5,6 +5,7 @@ import org.eclipse.ui.views.properties.IPropertySource;
 
 import uk.ac.standrews.grasp.ide.model.AnnotationModel;
 import uk.ac.standrews.grasp.ide.model.ElementModel;
+import uk.ac.standrews.grasp.ide.model.InstantiableModel;
 import uk.ac.standrews.grasp.ide.model.InterfaceModel;
 import uk.ac.standrews.grasp.ide.model.LinkModel;
 import uk.ac.standrews.grasp.ide.model.NamedValueModel;
@@ -37,6 +38,9 @@ public class PropertiesAdapterFactory implements IAdapterFactory {
 			}
 			if (adaptableObject instanceof SystemModel) {
 				return new SystemPropertySource((SystemModel) adaptableObject);
+			}
+			if (adaptableObject instanceof InstantiableModel) {
+				return new InstantiablePropertySource((InstantiableModel) adaptableObject);
 			}
 			return new ElementPropertySource<ElementModel>((ElementModel) adaptableObject);
 		}
