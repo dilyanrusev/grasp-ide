@@ -1,9 +1,15 @@
 package uk.ac.standrews.grasp.ide.editParts;
 
 import org.eclipse.draw2d.IFigure;
+import org.eclipse.gef.EditPart;
 import org.eclipse.gef.EditPolicy;
-import org.eclipse.gef.editpolicies.RootComponentEditPolicy;
+import org.eclipse.gef.commands.Command;
+import org.eclipse.gef.commands.UnexecutableCommand;
+import org.eclipse.gef.requests.CreateRequest;
 
+import uk.ac.standrews.grasp.ide.commands.AddInstantiableCommand;
+import uk.ac.standrews.grasp.ide.commands.AddLayerCommand;
+import uk.ac.standrews.grasp.ide.commands.AddLinkCommand;
 import uk.ac.standrews.grasp.ide.figures.SystemFigure;
 import uk.ac.standrews.grasp.ide.model.ElementType;
 import uk.ac.standrews.grasp.ide.model.FirstClassModel;
@@ -23,7 +29,8 @@ public class SystemEditPart extends AbstractElementNodeEditPart<SystemModel> {
 	
 	@Override
 	protected void createEditPolicies() {
-		installEditPolicy(EditPolicy.COMPONENT_ROLE, new RootComponentEditPolicy());
+		super.createEditPolicies();
+		installEditPolicy(EditPolicy.LAYOUT_ROLE, new SystemLayoutPolicy());
 	}
 	
 	@Override
@@ -40,4 +47,26 @@ public class SystemEditPart extends AbstractElementNodeEditPart<SystemModel> {
 				;
 	}
 
+}
+
+class SystemLayoutPolicy extends GraspLayoutPolicy {
+
+	@Override
+	protected Command getCreateCommand(CreateRequest request) {
+		if (request.getNewObjectType() instanceof ElementType) {
+			ElementType type = (ElementType) request.getNewObjectType();
+			SystemModel system = (SystemModel) getHost().getModel();
+			if (type == ElementType.COMPONENT || type == ElementType.CONNECTOR) {
+				return new AddInstantiableCommand(system, type);
+			} else if (type == ElementType.LINK) {
+				return new AddLinkCommand(system);
+			} else if (type == ElementType.LAYER) {
+				return new AddLayerCommand(system);
+			}
+		}
+		return UnexecutableCommand.INSTANCE;
+	}
+
+	
+	
 }

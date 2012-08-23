@@ -2,7 +2,9 @@ package uk.ac.standrews.grasp.ide.compiler;
 
 import java.io.BufferedReader;
 import java.io.File;
+import java.io.FileInputStream;
 import java.io.IOException;
+import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.util.ArrayList;
 import java.util.List;
@@ -41,9 +43,10 @@ class ExternalCompiler implements ICompiler {
 			GraspModel.INSTANCE.ensureFileStats(file).compiled(result);
 			if (options.getXmlFile() != null) {
 				try {
-					file.getProject().refreshLocal(0, null);
+					IFile xmlFile = options.getXmlFile();					
+					xmlFile.refreshLocal(1, null);										
 					result.setXmlBuilt(true);
-					GraspModel.INSTANCE.ensureFileStats(file).refreshFromXml(options.getXmlFile());
+					GraspModel.INSTANCE.ensureFileStats(file).refreshFromXml(xmlFile);
 				} catch (CoreException e) {	
 					Log.error(e);
 				}

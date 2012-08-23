@@ -55,7 +55,7 @@ public final class Msg {
 	/*
 	 * Get a proper parent shell for the dialog
 	 */
-	private static Shell getShell() {
+	public static Shell getShell() {
 		Shell shell = PlatformUI.getWorkbench().getActiveWorkbenchWindow().getShell();
 		if (shell != null) {
 			return shell;

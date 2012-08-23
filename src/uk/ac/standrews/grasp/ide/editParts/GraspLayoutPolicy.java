@@ -5,17 +5,22 @@ import org.eclipse.gef.EditPolicy;
 import org.eclipse.gef.Request;
 import org.eclipse.gef.commands.Command;
 import org.eclipse.gef.commands.UnexecutableCommand;
-import org.eclipse.gef.editpolicies.LayoutEditPolicy;
+import org.eclipse.gef.editpolicies.FlowLayoutEditPolicy;
 
-public abstract class GraspLayoutPolicy extends LayoutEditPolicy {
-
-	@Override
-	protected EditPolicy createChildEditPolicy(EditPart child) {
-		return new UnmodifiableFlowLayoutEditPolicy();
-	}	
+public abstract class GraspLayoutPolicy extends FlowLayoutEditPolicy  {
 
 	@Override
 	protected Command getMoveChildrenCommand(Request request) {
+		return UnexecutableCommand.INSTANCE;
+	}
+	
+	@Override
+	protected Command createAddCommand(EditPart child, EditPart after) {
+		return UnexecutableCommand.INSTANCE;
+	}
+
+	@Override
+	protected Command createMoveChildCommand(EditPart child, EditPart after) {
 		return UnexecutableCommand.INSTANCE;
 	}
 

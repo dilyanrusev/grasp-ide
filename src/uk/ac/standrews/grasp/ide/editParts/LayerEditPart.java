@@ -4,9 +4,15 @@ import org.eclipse.draw2d.ChopboxAnchor;
 import org.eclipse.draw2d.ConnectionAnchor;
 import org.eclipse.draw2d.IFigure;
 import org.eclipse.gef.ConnectionEditPart;
+import org.eclipse.gef.EditPolicy;
 import org.eclipse.gef.NodeEditPart;
 import org.eclipse.gef.Request;
+import org.eclipse.gef.commands.Command;
+import org.eclipse.gef.commands.UnexecutableCommand;
+import org.eclipse.gef.requests.CreateRequest;
 
+import uk.ac.standrews.grasp.ide.commands.AddInstantiableCommand;
+import uk.ac.standrews.grasp.ide.commands.AddLinkCommand;
 import uk.ac.standrews.grasp.ide.figures.LayerFigure;
 import uk.ac.standrews.grasp.ide.model.CollectionChangedEvent;
 import uk.ac.standrews.grasp.ide.model.ConnectionModel;
@@ -53,6 +59,12 @@ public class LayerEditPart extends AbstractElementNodeEditPart<LayerModel>
 		super.deactivate();
 	}
 
+	@Override
+	protected void createEditPolicies() {		
+		super.createEditPolicies();
+		installEditPolicy(EditPolicy.LAYOUT_ROLE, new LayerEditPolicy());
+	}
+	
 	@Override
 	protected boolean isModelChildSupported(FirstClassModel child) {
 		return child.getType() == ElementType.COMPONENT 
@@ -103,4 +115,25 @@ public class LayerEditPart extends AbstractElementNodeEditPart<LayerModel>
 		return new ChopboxAnchor(getFigure());
 	}	
 	
+}
+
+/**
+ * Policy for creating layer child elements via the palette
+ * @author Dilyan Rusev
+ *
+ */
+class LayerEditPolicy extends GraspLayoutPolicy {
+	@Override
+	protected Command getCreateCommand(CreateRequest request) {
+		if (request.getNewObjectType() instanceof ElementType) {
+			ElementType type = (ElementType) request.getNewObjectType();
+			LayerModel layer = (LayerModel) getHost().getModel();
+			if (type == ElementType.COMPONENT || type == ElementType.CONNECTOR) {
+				return new AddInstantiableCommand(layer, type);
+			} else if (type == ElementType.LINK) {
+				return new AddLinkCommand(layer);
+			}
+		}		
+		return UnexecutableCommand.INSTANCE;
+	}
 }
