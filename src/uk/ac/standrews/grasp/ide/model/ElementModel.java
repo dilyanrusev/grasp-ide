@@ -64,9 +64,13 @@ public abstract class ElementModel implements IObservable,
 		this.type = other.getType();
 		this.parent = parent;
 		this.name = other.getName();
-		this.alias = other.getAlias();	
-		this.referencingName = other.getReferencingName();
-		this.qualifiedName = other.getQualifiedName();
+		this.alias = other.getAlias();
+		if (this.name == null && this.alias == null) {
+			this.referencingName = other.getReferencingName();
+			this.qualifiedName = other.getQualifiedName();
+		} else {
+			rebuildNames();
+		}		
 	}
 	
 	private void rebuildNames() {

@@ -114,7 +114,12 @@ public class XmlModelReader {
 		if (instantiation != null) {
 			for (FirstClassModel child: instantiation.getBody()) {
 				if (!template.getBody().contains(child)) {
-					template.addChild(child);
+					FirstClassModel copy = FirstClassModel.createCopyOf(child, template);					
+					if (copy instanceof InterfaceModel) {
+						InterfaceModel iface = (InterfaceModel) copy;
+						iface.getConnections().clear();
+					}
+					template.addChild(copy);
 				}
 			}
 		}

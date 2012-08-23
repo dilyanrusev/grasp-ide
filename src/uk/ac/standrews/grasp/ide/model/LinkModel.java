@@ -111,5 +111,14 @@ public class LinkModel extends BecauseModel {
 			}
 		}		
 	}
+	
+	@Override
+	public ElementModel removeFromParent() {
+		getProvider().getConnections().remove(this);
+		getProvider().getDeletedConnections().add(this);
+		getConsumer().getConnections().remove(this);
+		getConsumer().getDeletedConnections().add(this);
+		return super.removeFromParent();
+	}
 
 }

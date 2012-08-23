@@ -2,6 +2,8 @@ package uk.ac.standrews.grasp.ide.model;
 
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.HashSet;
+import java.util.Set;
 
 import org.eclipse.core.runtime.AssertionFailedException;
 
@@ -26,6 +28,8 @@ public abstract class FirstClassModel extends ElementModel {
 			new ObservableSet<AnnotationModel>();
 	private final ObservableSet<FirstClassModel> body = 
 			new ObservableSet<FirstClassModel>();
+	private final Set<FirstClassModel> removedChildren =
+			new HashSet<FirstClassModel>();
 	
 	/**
 	 * Construct a copy of another element
@@ -142,6 +146,14 @@ public abstract class FirstClassModel extends ElementModel {
 	}
 	
 	/**
+	 * Return a list of children removed by the designer, to be restored when re-added. Provides support for undo and redo
+	 * @return
+	 */
+	Set<FirstClassModel> getRemovedChildren() {
+		return removedChildren;
+	}
+	
+	/**
 	 * Get direct children of this element by type
 	 * @param elementtype Type of children to look for
 	 * @return
@@ -160,19 +172,41 @@ public abstract class FirstClassModel extends ElementModel {
 	@Override
 	public ElementModel removeFromParent() {
 		if (getParent() instanceof FirstClassModel) {
-			FirstClassModel theParent = (FirstClassModel) getParent();
+			FirstClassModel theParent = (FirstClassModel) getParent();			
 			if (theParent.symLookup(this.getReferencingName())) {
+				for (FirstClassModel child: getBody()) {
+					removedChildren.add(child);
+					child.removeFromParent();
+				}
 				theParent.removeChild(this);
 				return theParent;
 			}
+			
 		}
 		return null;
 	}
 	
 	@Override
 	public boolean addChildElement(ElementModel child) {
+		if (child instanceof InstantiableModel) {
+			InstantiableModel inst = (InstantiableModel) child;
+			FirstClassModel templateParent = (FirstClassModel) inst.getBase().getParent();
+			if (!templateParent.symLookup(inst.getBase().getReferencingName())) {
+				templateParent.addChild(inst.getBase());
+			}
+		}
+		if (child instanceof LinkModel) {
+			LinkModel link = (LinkModel) child;
+			link.getProvider().getConnections().add(link);
+			link.getConsumer().getConnections().add(link);
+		}
 		if (child instanceof FirstClassModel && this != child && !symLookup(child.getReferencingName())) {
-			addChild((FirstClassModel) child);
+			FirstClassModel fcChild = (FirstClassModel) child;
+			addChild(fcChild);
+			for (FirstClassModel removed: fcChild.getRemovedChildren()) {
+				fcChild.addChildElement(removed);
+			}
+			fcChild.getRemovedChildren().clear();
 			return true;
 		}
 		return false;

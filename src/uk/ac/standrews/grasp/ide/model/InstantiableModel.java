@@ -107,6 +107,10 @@ public abstract class InstantiableModel extends BecauseModel {
 	public boolean addChildElement(ElementModel child) {
 		if (child instanceof InterfaceModel) {
 			InterfaceModel iface = (InterfaceModel) child;
+			for (LinkModel deleted: iface.getDeletedConnections()) {
+				deleted.getParent().addChildElement(deleted);
+			}
+			iface.getDeletedConnections().clear();
 			ModelHelper.ensureTempalteIsDesigned(this);
 			InterfaceModel templateIface = (InterfaceModel) getBase().symGet(iface.getReferencingName());
 			if (templateIface != null) {
@@ -116,5 +120,13 @@ public abstract class InstantiableModel extends BecauseModel {
 			getBase().addChild(templateIface);
 		}
 		return super.addChildElement(child);
+	}
+	
+	@Override
+	public ElementModel removeFromParent() {
+		if (getBase().isCreatedByDesigner()) {
+			getBase().removeFromParent();			
+		}
+		return super.removeFromParent();
 	}
 }

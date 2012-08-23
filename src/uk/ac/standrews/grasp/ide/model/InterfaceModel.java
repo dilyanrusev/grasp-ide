@@ -1,5 +1,8 @@
 package uk.ac.standrews.grasp.ide.model;
 
+import java.util.HashSet;
+import java.util.Set;
+
 import uk.ac.standrews.grasp.ide.commands.ModelHelper;
 
 
@@ -15,6 +18,7 @@ public abstract class InterfaceModel extends BecauseModel {
 	public static final String PROPERTY_HAS_CAPACITY = "hasCapacity";
 	
 	private ObservableSet<LinkModel> connections = new ObservableSet<LinkModel>();
+	private Set<LinkModel> deletedConnections = new HashSet<LinkModel>();
 	private int maxdeg;
 	
 	/**
@@ -81,6 +85,14 @@ public abstract class InterfaceModel extends BecauseModel {
 	 */
 	public ObservableSet<LinkModel> getConnections() {
 		return connections;
+	}
+	
+	/**
+	 * Stores connections deleted by the designer. Maintaining this list allows for undo/redo
+	 * @return
+	 */
+	Set<LinkModel> getDeletedConnections() {
+		return deletedConnections;
 	}
 
 	/**
@@ -185,15 +197,23 @@ public abstract class InterfaceModel extends BecauseModel {
     }
     
     @Override
-    public ElementModel removeFromParent() {
-    	InstantiableModel parent = (InstantiableModel) getParent();
-    	ModelHelper.ensureTempalteIsDesigned(parent);
-		InterfaceModel copyInTemplate = (InterfaceModel) parent.getBase().symGet(getReferencingName());
-		if (copyInTemplate != null) {
-			parent.getBase().removeChild(copyInTemplate);
-			return super.removeFromParent();
-		} else {
-			return null;
-		}
+    public ElementModel removeFromParent() {    	
+    	if (getParent() instanceof InstantiableModel) {
+    		LinkModel[] links = getConnections().toArray(new LinkModel[getConnections().size()]);
+        	for (LinkModel link: links) {
+        		link.removeFromParent();    		
+        	}
+	    	InstantiableModel parent = (InstantiableModel) getParent();
+	    	ModelHelper.ensureTempalteIsDesigned(parent);
+			InterfaceModel copyInTemplate = (InterfaceModel) parent.getBase().symGet(getReferencingName());
+			if (copyInTemplate != null) {
+				parent.getBase().removeChild(copyInTemplate);
+				return super.removeFromParent();
+			} else {
+				return null;
+			}
+    	} else {
+    		return super.removeFromParent();
+    	}    	
     }
 }

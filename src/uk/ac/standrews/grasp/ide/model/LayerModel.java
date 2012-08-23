@@ -97,6 +97,4 @@ public class LayerModel extends BecauseModel
 		}
 		return null;
 	}
-
-	
 }
