@@ -104,7 +104,7 @@ public abstract class InstantiableModel extends BecauseModel {
 	}
 	
 	@Override
-	public boolean addChildElement(ElementModel child) {
+	public synchronized boolean addChildElement(ElementModel child) {
 		if (child instanceof InterfaceModel) {
 			InterfaceModel iface = (InterfaceModel) child;
 			for (LinkModel deleted: iface.getDeletedConnections()) {
@@ -123,7 +123,7 @@ public abstract class InstantiableModel extends BecauseModel {
 	}
 	
 	@Override
-	public ElementModel removeFromParent() {
+	public synchronized ElementModel removeFromParent() {
 		if (getBase().isCreatedByDesigner()) {
 			getBase().removeFromParent();			
 		}

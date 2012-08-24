@@ -180,14 +180,15 @@ public abstract class FirstClassModel extends ElementModel {
 	}	
 	
 	@Override
-	public ElementModel removeFromParent() {
+	public synchronized ElementModel removeFromParent() {
 		if (getParent() instanceof FirstClassModel) {
 			FirstClassModel theParent = (FirstClassModel) getParent();			
 			if (theParent.symLookup(this.getReferencingName())) {
-				for (FirstClassModel child: getBody()) {
+				Set<FirstClassModel> copyOfChildren = new HashSet<FirstClassModel>(getBody());
+				for (FirstClassModel child: copyOfChildren) {
 					removedChildren.add(child);
 					child.removeFromParent();
-				}
+				}				
 				theParent.removeChild(this);
 				return theParent;
 			}
@@ -197,7 +198,7 @@ public abstract class FirstClassModel extends ElementModel {
 	}
 	
 	@Override
-	public boolean addChildElement(ElementModel child) {
+	public synchronized boolean addChildElement(ElementModel child) {
 		if (child instanceof InstantiableModel) {
 			InstantiableModel inst = (InstantiableModel) child;
 			FirstClassModel templateParent = (FirstClassModel) inst.getBase().getParent();

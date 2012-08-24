@@ -28,7 +28,7 @@ public class SystemEditPart extends AbstractElementNodeEditPart<SystemModel> {
 	
 	@Override
 	protected void createEditPolicies() {
-		super.createEditPolicies();
+		// super.createEditPolicies(); // -> no delete		
 		installEditPolicy(EditPolicy.LAYOUT_ROLE, new SystemLayoutPolicy());
 	}
 	
