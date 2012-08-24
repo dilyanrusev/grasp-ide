@@ -28,7 +28,7 @@ public class TemplateModel extends ParameterizedModel {
 	
 	/**
 	 * Returns true if created by the designer, and therefore should only be u
-	 * @return
+	 * @return True if managed soley by the designer
 	 */
 	public boolean isCreatedByDesigner() {
 		return Boolean.valueOf(getDesignerValue(KEY_CREATED_BY_DESIGNER)).booleanValue();
@@ -36,7 +36,7 @@ public class TemplateModel extends ParameterizedModel {
 	
 	/**
 	 * Set to true if created by the designer => only one component is using it
-	 * @param isCreatedByDesigner
+	 * @param isCreatedByDesigner new value
 	 */
 	public void setDesignerCreated(boolean isCreatedByDesigner) {
 		setDesignerValue(KEY_CREATED_BY_DESIGNER, Boolean.toString(isCreatedByDesigner));

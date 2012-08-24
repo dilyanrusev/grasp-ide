@@ -30,7 +30,7 @@ public abstract class BecauseModel extends FirstClassModel {
 
 	/**
 	 * Return a list of rationale supporting the use of this element
-	 * @return
+	 * @return Rationales
 	 */
 	public ObservableSet<RationaleModel> getRationales() {
 		return rationales;

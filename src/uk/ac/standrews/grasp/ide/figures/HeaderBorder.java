@@ -46,44 +46,29 @@ public class HeaderBorder extends AbstractBorder implements IHeaderBorder {
 		this("<<header>>", icon);
 	}
 	
-	/**
-	 * Get margin between header contents (icon + text) and figure contents
-	 * @param newMargin
-	 */
+	@Override
 	public void setMargin(Insets newMargin) {
 		margin = newMargin;
 		invalidate();
 	}
 	
-	/**
-	 * Set header margin
-	 * @return a copy
-	 */
+	@Override
 	public Insets getMargin() {
 		return new Insets(margin);
 	}
 	
-	/**
-	 * Set the horizontal spacing between icon and text
-	 * @param w Horizontal spacing
-	 */
+	@Override
 	public void setSpacing(int w) {
 		spacing = w;
 		invalidate();
 	}
 	
-	/**
-	 * Get the horizontal spacing between icon and text
-	 * @return
-	 */
+	@Override
 	public int getSpacing() {
 		return spacing;
 	}
 	
-	/**
-	 * Set the font. Uses figure's font by default
-	 * @param newFont Font to use
-	 */
+	@Override
 	public void setFont(Font newFont) {
 		font = newFont;
 		invalidate();

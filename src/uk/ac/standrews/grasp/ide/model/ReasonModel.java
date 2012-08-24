@@ -41,7 +41,7 @@ public class ReasonModel extends FirstClassModel {
 
 	/**
 	 * Get the raw expression that explains this reason. 
-	 * @return
+	 * @return Raw expression
 	 */
 	public ExpressionModel getExpression() {
 		return expression;
@@ -49,7 +49,7 @@ public class ReasonModel extends FirstClassModel {
 
 	/**
 	 * Result of the evaluated expression
-	 * @return
+	 * @return Evaluated expression
 	 */
 	public Object getValue() {
 		return isInitialized() ? expression.getValue() : null;
@@ -57,7 +57,7 @@ public class ReasonModel extends FirstClassModel {
 
 	/**
 	 * Returns whether or not the expressions has been set
-	 * @return
+	 * @return Raw expression != null
 	 */
 	public boolean isInitialized() {
 		return expression != null;
@@ -74,7 +74,7 @@ public class ReasonModel extends FirstClassModel {
 
 	/**
 	 * Get a list of references to elements supporting this reason
-	 * @return
+	 * @return Supporters
 	 */
 	public ObservableSet<FirstClassModel> getSupports() {
 		return supports;
@@ -82,7 +82,7 @@ public class ReasonModel extends FirstClassModel {
 
 	/**
 	 * Get a list of references to elements inhibiting this reason
-	 * @return
+	 * @return Inhibitors
 	 */
 	public ObservableSet<FirstClassModel> getInhibits() {
 		return inhibits;

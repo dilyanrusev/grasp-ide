@@ -90,7 +90,7 @@ public class CollectionChangedEvent<E> {
 	 * @param collection Source of the event
 	 * @param oldItem Item that was removed. Can be null.
 	 * @param newItem Item that was added. Can be null.
-	 * @return
+	 * @return Event
 	 */
 	public static <E> CollectionChangedEvent<E> forReplace(
 			IObservableCollection<E> collection, E oldItem, E newItem) {
@@ -107,7 +107,7 @@ public class CollectionChangedEvent<E> {
 	
 	/**
 	 * Get the elements that were added to the source collection
-	 * @return
+	 * @return Added items
 	 */
 	public Collection<E> getAdded() {
 		return added;
@@ -115,7 +115,7 @@ public class CollectionChangedEvent<E> {
 	
 	/**
 	 * Get the elements that were removed from the source collection
-	 * @return
+	 * @return Removed items
 	 */
 	public Collection<E> getRemoved() {
 		return removed;
@@ -123,7 +123,7 @@ public class CollectionChangedEvent<E> {
 	
 	/**
 	 * Get the collection that was modified
-	 * @return
+	 * @return Modified collection
 	 */
 	public IObservableCollection<E> getSource() {
 		return collection;

@@ -15,11 +15,22 @@ import org.eclipse.ui.actions.WorkspaceModifyOperation;
 
 import uk.ac.standrews.grasp.ide.Log;
 
+/**
+ * Workspace operation for creating a new Grasp architecture
+ * @author Dilyan Rusev
+ *
+ */
 public class CreateArchitectureOperation extends WorkspaceModifyOperation {
 	private IGraspExample example;
 	private IFile file;
 	private String name;
 	
+	/**
+	 * Construct the operation
+	 * @param example Example to use as initial file contents
+	 * @param file File to create
+	 * @param name Name of the architecture
+	 */
 	public CreateArchitectureOperation(IGraspExample example, IFile file, String name) {
 		this.example = example;
 		this.file = file;

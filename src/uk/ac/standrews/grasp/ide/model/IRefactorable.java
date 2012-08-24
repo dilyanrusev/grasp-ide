@@ -12,8 +12,8 @@ public interface IRefactorable {
 	 * {@link Refactor}
 	 * @param operation Defines the kind of operation performed on the element
 	 * @param element Element that has been renamed. Do not change it.
-	 * @param oldName Previous name
-	 * @param newName New name	 
+	 * @param oldValue Previous value
+	 * @param newValue New value	 
 	 */
-	void elementRefactored(ElementModel element, String operation, Object oldValue, Object newName);
+	void elementRefactored(ElementModel element, String operation, Object oldValue, Object newValue);
 }

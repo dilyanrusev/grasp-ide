@@ -44,7 +44,7 @@ public class ChooseNameDialog extends Dialog {
 	/**
 	 * Retrieve the stored element name. Value will be valid only after {@link #open()} returns 
 	 * {@link Window#OK}.
-	 * @return
+	 * @return Picked element name
 	 */
 	public String getElementName() {
 		return elementName;

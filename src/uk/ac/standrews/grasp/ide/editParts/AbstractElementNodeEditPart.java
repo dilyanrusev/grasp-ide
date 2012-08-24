@@ -81,7 +81,7 @@ public abstract class AbstractElementNodeEditPart<TModel extends FirstClassModel
 	
 	/**
 	 * Invoked in {@link #refreshVisuals()} to set the figure's header text
-	 * @return
+	 * @return Header text
 	 */
 	protected String getHeaderText() {
 		return getDisplayName(getElement());
@@ -89,7 +89,7 @@ public abstract class AbstractElementNodeEditPart<TModel extends FirstClassModel
 	
 	/**
 	 * Invoked in {@link #refreshVisuals()} to set the figure's tooltip text
-	 * @return
+	 * @return Tooltip text
 	 */
 	protected String getTooltipText() {
 		return getElement().getType().getDisplayName();

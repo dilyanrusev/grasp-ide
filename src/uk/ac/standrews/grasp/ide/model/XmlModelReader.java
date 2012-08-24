@@ -44,7 +44,7 @@ public class XmlModelReader {
 	
 	/**
 	 * Returns the singleton instance of this reader
-	 * @return
+	 * @return Singleton
 	 */
 	public static XmlModelReader getDefault() {
 		return INSTANCE;

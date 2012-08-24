@@ -122,7 +122,7 @@ public abstract class ElementModel implements IObservable,
 	
 	/**
 	 * Return the Java reference of this object
-	 * @return
+	 * @return Address in memory
 	 */
 	public int getInstanceId() {
 		return super.hashCode();
@@ -130,7 +130,7 @@ public abstract class ElementModel implements IObservable,
 
 	/**
 	 * Return the element type
-	 * @return
+	 * @return Type of the element
 	 */
 	public ElementType getType() {
 		return type;
@@ -138,7 +138,7 @@ public abstract class ElementModel implements IObservable,
 	
 	/**
 	 * Return the parent. Architectures have no parent
-	 * @return
+	 * @return Parent element or null
 	 */
 	public ElementModel getParent() {
 		return parent;
@@ -146,7 +146,7 @@ public abstract class ElementModel implements IObservable,
 	
 	/**
 	 * Return the name of the element
-	 * @return
+	 * @return Name (may be null for links and annotations)
 	 */
 	public String getName() {
 		return name;
@@ -154,7 +154,7 @@ public abstract class ElementModel implements IObservable,
 	
 	/**
 	 * Return the name of the element
-	 * @return
+	 * @return Alias (applicable to interfaces)
 	 */
 	public String getAlias() {
 		return alias;
@@ -162,7 +162,7 @@ public abstract class ElementModel implements IObservable,
 	
 	/**
 	 * Return the referencing name. Unlike name and alias, this cannot be null
-	 * @return
+	 * @return Referencing name
 	 */
 	public String getReferencingName() {
 		return referencingName;
@@ -170,7 +170,7 @@ public abstract class ElementModel implements IObservable,
 	
 	/**
 	 * Return the qualified name - in the form of List.Of.Parents.MyReferenceingName
-	 * @return
+	 * @return Qualified name
 	 */
 	public String getQualifiedName() {
 		return qualifiedName;
@@ -178,7 +178,7 @@ public abstract class ElementModel implements IObservable,
 	
 	/**
 	 * Set the element parent
-	 * @param parent
+	 * @param parent Parent element
 	 */
 	public void setParent(ElementModel parent) {		
 		this.parent = parent;
@@ -188,7 +188,7 @@ public abstract class ElementModel implements IObservable,
 	
 	/**
 	 * Set the element name
-	 * @param name
+	 * @param name New name
 	 */
 	public void setName(String name) {
 		this.name = name;
@@ -198,7 +198,7 @@ public abstract class ElementModel implements IObservable,
 	
 	/**
 	 * Set the referencing name
-	 * @param name
+	 * @param name New name
 	 */
 	public void setReferencingName(String name) {
 		this.referencingName = name;
@@ -208,7 +208,7 @@ public abstract class ElementModel implements IObservable,
 	
 	/**
 	 * Set the element alias
-	 * @param alias
+	 * @param alias New alias
 	 */
 	public void setAlias(String alias) {
 		this.alias = alias;
@@ -216,6 +216,10 @@ public abstract class ElementModel implements IObservable,
 		fireElementChanged(PROPERTY_ALIAS, PROPERTY_REFERENCING_NAME);
 	}
 	
+	/**
+	 * Combines {@link #getName()} and {@link #alias}
+	 * @return Name [alias] or referencing name
+	 */
 	public String getDisplayName() {
 		rebuildNames();
 		StringBuilder sb = new StringBuilder();

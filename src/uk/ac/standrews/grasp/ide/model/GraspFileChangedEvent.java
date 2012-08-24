@@ -39,7 +39,7 @@ public class GraspFileChangedEvent {
 	
 	/**
 	 * Get the file-model mapping that has changed
-	 * @return
+	 * @return Changed file
 	 */
 	public GraspFile getSource() {
 		return source;
@@ -47,7 +47,7 @@ public class GraspFileChangedEvent {
 	
 	/**
 	 * Get the description of what exactly has changed. Query {@link #getSource()} for the new data.
-	 * @return
+	 * @return Chande kind
 	 */
 	public EnumSet<Kind> getKind() {
 		return kind;

@@ -70,7 +70,7 @@ public enum ElementType {
 
 	/**
 	 * Return true if the element is allowed to end in semicolon
-	 * @return
+	 * @return True if the element is allowed to end in semicolon
 	 */
 	public boolean endsWithSemicolon() {
 		return endsWithSemicolon;
@@ -78,7 +78,7 @@ public enum ElementType {
 	
 	/**
 	 * Return user-friendly string for this type
-	 * @return
+	 * @return user-friendly string for this type
 	 */
 	public String getDisplayName() {
 		return displayName;

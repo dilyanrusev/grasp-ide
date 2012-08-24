@@ -52,8 +52,8 @@ public final class Msg {
 		return new Status(IStatus.ERROR, GraspPlugin.PLUGIN_ID, message, reason);
 	}
 	
-	/*
-	 * Get a proper parent shell for the dialog
+	/**
+	 * Get a proper parent shell for dialogs
 	 */
 	public static Shell getShell() {
 		Shell shell = PlatformUI.getWorkbench().getActiveWorkbenchWindow().getShell();

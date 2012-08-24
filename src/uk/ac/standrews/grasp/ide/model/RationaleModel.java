@@ -28,7 +28,7 @@ public class RationaleModel extends ParameterizedModel {
 
 	/**
 	 * Return a list of reasons supporting this rationale
-	 * @return
+	 * @return Reasons
 	 */
 	public ObservableSet<ReasonModel> getReasons() {
 		return reasons;

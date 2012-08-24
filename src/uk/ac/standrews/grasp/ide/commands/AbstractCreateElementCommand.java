@@ -36,7 +36,7 @@ public abstract class AbstractCreateElementCommand extends Command {
 	
 	/**
 	 * Return the type of element to create. By default, returns the value passed at the constructor
-	 * @return
+	 * @return Element type
 	 */
 	protected final ElementType getElementType() {
 		return elementType;
@@ -44,7 +44,7 @@ public abstract class AbstractCreateElementCommand extends Command {
 	
 	/**
 	 * Return the cached value of {@link #createElement(String)}
-	 * @return
+	 * @return Cached element
 	 */
 	protected final FirstClassModel getElement() {
 		return element;
@@ -52,7 +52,7 @@ public abstract class AbstractCreateElementCommand extends Command {
 	
 	/**
 	 * Return the parent element. By default, returns the value passed at the constructor
-	 * @return
+	 * @return Parent element
 	 */
 	protected FirstClassModel getParent() {
 		return parent;
@@ -98,7 +98,7 @@ public abstract class AbstractCreateElementCommand extends Command {
 	/**
 	 * Returns true to use {@link ChooseNameDialog}. Use {@link #setNeedsNameDialog(boolean)} in constructor. 
 	 * Default value is true.
-	 * @return
+	 * @return True of the dialog will be used
 	 */
 	protected final boolean getNeedsNameDialog() {
 		return needsNameDialog;
@@ -118,7 +118,7 @@ public abstract class AbstractCreateElementCommand extends Command {
 	/**
 	 * Return the name that initialises {@link ChooseNameDialog} or is passed to {@link #createElement(String)},
 	 * depending on {@link #getNeedsNameDialog()}. By default, returns the display name of {@link #getElementType()}
-	 * @return
+	 * @return Preferred name
 	 */
 	protected String getPreferredElementName() {
 		return elementType.getDisplayName();
@@ -134,7 +134,7 @@ public abstract class AbstractCreateElementCommand extends Command {
 	
 	/**
 	 * Makes certain that the command can be undone. By default, checks that the created element is not null.
-	 * @return
+	 * @return True of element != null
 	 */
 	protected boolean verify() {
 		return element != null;
@@ -149,7 +149,7 @@ public abstract class AbstractCreateElementCommand extends Command {
 	}
 	
 	/**
-	 * @see #doUndo(ElementModel)
+	 * @see #doUndo(FirstClassModel)
 	 */
 	@Override
 	public final void undo() {

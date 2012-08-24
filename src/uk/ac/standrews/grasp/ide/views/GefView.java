@@ -22,6 +22,14 @@ import uk.ac.standrews.grasp.ide.model.GraspFileChangedEvent.Kind;
 import uk.ac.standrews.grasp.ide.model.GraspModel;
 import uk.ac.standrews.grasp.ide.model.IGraspFileChangedListener;
 
+/**
+ * Architecture preview.
+ * 
+ * Displays a read-only model for the Grasp architecture. Listens for changes to the currently selected editor
+ * and to the current selection provider.
+ * @author Dilyan Rusev
+ *
+ */
 public class GefView 
 	extends ViewPart 
 	implements IActiveEditorChangedListener 
@@ -37,6 +45,9 @@ public class GefView
 	private ActiveEditorChangeWatcher activeEditorChangeWatcher;
 	private IFile lastActiveFile;
 
+	/**
+	 * Construct the Architecture Preview
+	 */
 	public GefView() {		
 	}
 	

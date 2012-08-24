@@ -39,7 +39,7 @@ abstract class AbstractElementFigure extends Figure implements IFirstClassFigure
 	
 	/**
 	 * Create the child layout. By default, creates a FlowLayout.
-	 * @return
+	 * @return Figure layout
 	 */
 	protected LayoutManager createLayout() {
 		FlowLayout layout = new FlowLayout(false);		
@@ -52,7 +52,7 @@ abstract class AbstractElementFigure extends Figure implements IFirstClassFigure
 	/**
 	 * Create the background colour. If != null, will be opaque 
 	 * and background color will be the color returned
-	 * @return
+	 * @return Background color
 	 */
 	protected Color createBackgroundColour() {
 		return null;
@@ -61,7 +61,7 @@ abstract class AbstractElementFigure extends Figure implements IFirstClassFigure
 	
 	/**
 	 * Create a border. By default, creates a HeaderBorder
-	 * @return
+	 * @return Figure border
 	 */
 	protected IHeaderBorder createBorder() {
 		IHeaderBorder border = 
@@ -72,7 +72,7 @@ abstract class AbstractElementFigure extends Figure implements IFirstClassFigure
 	/**
 	 * Create a tooltip. By default, creates a {@link org.eclipse.draw2d.Label}. If you change to other figure type,
 	 * override {@link #setTooltipText(String)} as well
-	 * @return
+	 * @return Figure tooltip
 	 */
 	protected IFigure createTooltip() {
 		Label tooltip = new Label(getIcon());
@@ -81,13 +81,13 @@ abstract class AbstractElementFigure extends Figure implements IFirstClassFigure
 	
 	/**
 	 * Create an icon for this figure. Cached value can be accessed via {@link #getIcon()}
-	 * @return
+	 * @return Figure icon
 	 */
 	protected abstract Image createIcon();
 	
 	/**
 	 * Return the cached image returned by {@link #createIcon()}
-	 * @return
+	 * @return Cached icon
 	 */
 	protected Image getIcon() {
 		if (icon == null) {

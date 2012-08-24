@@ -12,8 +12,13 @@ public final class Compilers {
 	private static final ICompiler EXTERNAL = new ExternalCompiler();
 	
 	/**
+	 * No instantiation
+	 */
+	private Compilers() {}
+	
+	/**
 	 * Get the currently configured compiler
-	 * @return
+	 * @return Currently configured compiler
 	 */
 	public static ICompiler getCurrent() {
 		return Preferences.isIntegratedCompilerEnabled() ? INTEGRATED : EXTERNAL;

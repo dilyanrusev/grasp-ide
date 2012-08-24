@@ -35,7 +35,7 @@ public class RequirementModel extends FirstClassModel {
 
 	/**
 	 * Get the raw expression
-	 * @return
+	 * @return Raw expression
 	 */
 	public ExpressionModel getExpression() {
 		return expression;
@@ -43,7 +43,7 @@ public class RequirementModel extends FirstClassModel {
 
 	/**
 	 * Get the evaluated expression value
-	 * @return
+	 * @return Evaluated expression
 	 */
 	public Object getValue() {
 		return isInitialized() ? expression.getValue() : null;
@@ -51,7 +51,7 @@ public class RequirementModel extends FirstClassModel {
 
 	/**
 	 * Return true if the raw expression is set
-	 * @return
+	 * @return Raw expression != null
 	 */
 	public boolean isInitialized() {
 		return expression != null;

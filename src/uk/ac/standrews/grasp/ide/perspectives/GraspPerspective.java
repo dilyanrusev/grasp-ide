@@ -12,22 +12,28 @@ import uk.ac.standrews.grasp.ide.wizards.NewProjectWizard;
 
 
 /**
- *  This class is meant to serve as an example for how various contributions 
- *  are made to a perspective. Note that some of the extension point id's are
- *  referred to as API constants while others are hardcoded and may be subject 
- *  to change. 
+ * Defines the Grasp perspective
+ * @author Dilyan Rusev
+ *
  */
 public class GraspPerspective implements IPerspectiveFactory {	
+	/**
+	 * ID of the perspective, as defined in plugin.xml
+	 */
 	public static final String ID = "uk.ac.standrews.grasp.ide.perspectives.GraspPerspective";
 	
 	private static final String ID_ERROR_LOG_VIEW = "org.eclipse.pde.runtime.LogView";
 
 	private IPageLayout factory;
 
+	/**
+	 * Constructs the perspective
+	 */
 	public GraspPerspective() {
 		super();
 	}
 
+	@Override
 	public void createInitialLayout(IPageLayout factory) {
 		this.factory = factory;
 		addViews();

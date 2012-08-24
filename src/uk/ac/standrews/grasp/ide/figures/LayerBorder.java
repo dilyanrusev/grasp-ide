@@ -5,9 +5,18 @@ import org.eclipse.draw2d.IFigure;
 import org.eclipse.draw2d.geometry.Insets;
 import org.eclipse.swt.graphics.Image;
 
+/**
+ * Border that is specialized to draw around layers
+ * @author Dilyan Rusev
+ *
+ */
 public class LayerBorder extends HeaderBorder {	 
 	private Insets childrenMargin;
 
+	/**
+	 * Construct a new border and associated it with an icon
+	 * @param icon Initial icon
+	 */
 	public LayerBorder(Image icon) {
 		super(icon);		
 		Insets theMargin = getMargin();		
@@ -18,7 +27,7 @@ public class LayerBorder extends HeaderBorder {
 	
 	/**
 	 * Set the spacing between the border and the figure's children
-	 * @param newVertSpace
+	 * @param newInsets New insets
 	 */
 	public void setChildrenMargin(Insets newInsets) {
 		childrenMargin = newInsets;
@@ -26,7 +35,7 @@ public class LayerBorder extends HeaderBorder {
 	
 	/**
 	 * Return a copy of the margin between the border and the figure's children
-	 * @return
+	 * @return Margin between the border and the figure's children
 	 */
 	public Insets getChildrenMargin() {
 		return new Insets(childrenMargin);

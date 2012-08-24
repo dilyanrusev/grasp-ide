@@ -100,15 +100,15 @@ public class GraspFile {
 	
 	/**
 	 * Get the file for this mapping
-	 * @return
+	 * @return file for this mapping
 	 */
 	public IFile getFile() {
 		return file;
 	}
 	
 	/**
-	 * Get the result of the last compilation for this file
-	 * @return
+	 * Get the result of the last compilation
+	 * @return last compilation result
 	 */
 	public CompilationResult getCompilationResult() {
 		return compilationResult;
@@ -116,7 +116,7 @@ public class GraspFile {
 	
 	/**
 	 * Return the last successfully compiled model for this file
-	 * @return
+	 * @return last successfully compiled model for this file
 	 */
 	public ArchitectureModel getLastArchitectureThatCompiled() {
 		if (lastArchitectureThatCompiled == null) {
@@ -127,7 +127,7 @@ public class GraspFile {
 	
 	/**
 	 * Get the model associated with this file
-	 * @return
+	 * @return model associated with this file
 	 */
 	public ArchitectureModel getArchitecture() {
 		if (architecture == null) {
@@ -147,7 +147,7 @@ public class GraspFile {
 	
 	/**
 	 * Get the document that displays the textual contents of this file
-	 * @return  
+	 * @return Document
 	 */
 	public IDocument getDocument() {
 		return sourceViewer != null ? sourceViewer.getDocument() : null;
@@ -155,7 +155,7 @@ public class GraspFile {
 
 	/**
 	 * Get the token scanner for this file
-	 * @return
+	 * @return Scanner
 	 */
 	public GraspScanner getScanner() {
 		return scanner;
@@ -163,7 +163,7 @@ public class GraspFile {
 
 	/**
 	 * Set the token scanner for this document
-	 * @param scanner
+	 * @param scanner New scanner
 	 */
 	public void setScanner(GraspScanner scanner) {
 		this.scanner = scanner;

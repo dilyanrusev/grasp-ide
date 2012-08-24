@@ -35,8 +35,8 @@ public class ExpressionModel extends ElementModel {
 	
 	/**
 	 * Construct a copy of another expression
-	 * @param other
-	 * @param parent
+	 * @param other Source
+	 * @param parent Parent of the copy
 	 */
 	public ExpressionModel(ExpressionModel other, ElementModel parent) {
 		super(other, parent);
@@ -47,7 +47,7 @@ public class ExpressionModel extends ElementModel {
 
 	/**
 	 * Return the evaluated expression
-	 * @return
+	 * @return evaluated expression
 	 */
 	public Object getValue() {
 		return value;
@@ -55,7 +55,7 @@ public class ExpressionModel extends ElementModel {
 	
 	/**
 	 * Return the expression type
-	 * @return
+	 * @return Type of the expression
 	 */
 	public ExpressionType getExpressionType() {
 		return expressionType;
@@ -63,7 +63,7 @@ public class ExpressionModel extends ElementModel {
 	
 	/**
 	 * Retrieve the text which produced this expression
-	 * @return
+	 * @return text which produced this expression
 	 */
 	public String getText() {
 		return text;
@@ -89,7 +89,7 @@ public class ExpressionModel extends ElementModel {
 	
 	/**
 	 * Set the text from which this expression originates
-	 * @param text
+	 * @param text text from which this expression originates
 	 */
 	public void setText(String text) {
 		this.text = text;

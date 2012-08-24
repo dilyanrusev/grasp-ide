@@ -44,7 +44,7 @@ public abstract class InterfaceModel extends BecauseModel {
 
 	/**
 	 * Convenience method that uses the copy constructor to create a copy of this instance
-	 * @param Parent of the copy
+	 * @param parent Parent of the copy
 	 * @return Copy of this instance
 	 */
 	public abstract InterfaceModel createCopy(FirstClassModel parent);
@@ -81,7 +81,7 @@ public abstract class InterfaceModel extends BecauseModel {
 
 	/**
 	 * Return a list of connections using this interface
-	 * @return
+	 * @return Connections
 	 */
 	public ObservableSet<LinkModel> getConnections() {
 		return connections;
@@ -89,7 +89,7 @@ public abstract class InterfaceModel extends BecauseModel {
 	
 	/**
 	 * Stores connections deleted by the designer. Maintaining this list allows for undo/redo
-	 * @return
+	 * @return Deleted connections
 	 */
 	Set<LinkModel> getDeletedConnections() {
 		return deletedConnections;
@@ -97,7 +97,7 @@ public abstract class InterfaceModel extends BecauseModel {
 
 	/**
 	 * Get the maximum number of connections to this interface
-	 * @return
+	 * @return Max number of connections
 	 */
 	public int getMaxdeg() {
 		return maxdeg;
@@ -105,7 +105,7 @@ public abstract class InterfaceModel extends BecauseModel {
 
 	/**
 	 * Return true if further connections can be made to this interface
-	 * @return
+	 * @return If other interfaces can connect
 	 */
 	public boolean hasCapacity() {
 		return maxdeg >= 0 ? maxdeg > connections.size() : true;
@@ -113,7 +113,7 @@ public abstract class InterfaceModel extends BecauseModel {
 
 	/**
 	 * Return true if there are any connections attached to this interface
-	 * @return
+	 * @return True If there are connections
 	 */
 	public boolean hasConnections() {
 		return !connections.isEmpty();

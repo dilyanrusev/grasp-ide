@@ -37,7 +37,7 @@ public class CompilationError {
 	
 	/**
 	 * Line number, starts from 1
-	 * @return
+	 * @return Line number, starts from 1
 	 */
 	public int getLine() {
 		return line;
@@ -45,7 +45,7 @@ public class CompilationError {
 	
 	/**
 	 * Error message, as reported by the compiler
-	 * @return
+	 * @return Error message, as reported by the compiler
 	 */
 	public String getMessage() {
 		return message;
@@ -53,7 +53,7 @@ public class CompilationError {
 	
 	/**
 	 * Column where the error starts
-	 * @return
+	 * @return Column where the error starts
 	 */
 	public int getColumn() {
 		return column;
@@ -61,7 +61,7 @@ public class CompilationError {
 	
 	/**
 	 * Column where the error ends
-	 * @return
+	 * @return Column where the error ends
 	 */
 	public int getColumnEnd() {
 		return columnEnd;

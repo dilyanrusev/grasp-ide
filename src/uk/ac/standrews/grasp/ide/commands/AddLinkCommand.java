@@ -33,6 +33,11 @@ import uk.ac.standrews.grasp.ide.model.LinkModel;
 import uk.ac.standrews.grasp.ide.model.ProvidesModel;
 import uk.ac.standrews.grasp.ide.model.RequiresModel;
 
+/**
+ * Command for adding links to system or layer elements
+ * @author Dilyan Rusev
+ *
+ */
 public class AddLinkCommand extends Command {
 	private final FirstClassModel parent;	
 	private LinkModel link;
@@ -41,6 +46,10 @@ public class AddLinkCommand extends Command {
 	private List<InterfaceModel> parentInterfaces;
 	private boolean fakeUndo; // if cancel is selected we need to simulate a successful undo
 	
+	/**
+	 * Create a new command
+	 * @param parent Parent element - layer or system
+	 */
 	public AddLinkCommand(FirstClassModel parent) {
 		Assert.isNotNull(parent);		
 		Assert.isLegal(parent.getType() == ElementType.LAYER || parent.getType() == ElementType.SYSTEM);

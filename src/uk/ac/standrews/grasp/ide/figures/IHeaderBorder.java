@@ -21,7 +21,7 @@ public interface IHeaderBorder extends Border {
 
 	/**
 	 * Get the header text
-	 * @return
+	 * @return Header text
 	 */
 	String getText();
 
@@ -33,7 +33,7 @@ public interface IHeaderBorder extends Border {
 
 	/**
 	 * Gets the icon to be displayed before the text
-	 * @return
+	 * @return Icon to be displayed before the text
 	 */
 	Image getIcon();
 	
@@ -57,7 +57,7 @@ public interface IHeaderBorder extends Border {
 	
 	/**
 	 * Get the horizontal spacing between icon and text
-	 * @return
+	 * @return Horizontal spacing
 	 */
 	int getSpacing();
 	

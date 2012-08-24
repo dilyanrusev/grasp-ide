@@ -19,6 +19,11 @@ import org.eclipse.swt.graphics.Color;
 import uk.ac.standrews.grasp.ide.GraspPlugin;
 import uk.ac.standrews.grasp.ide.preferences.Preferences;
 
+/**
+ * Various utility methods helpful for editors or dealing with text & Grasp
+ * @author Dilyan Rusev
+ *
+ */
 public final class TextUtil {
 	/** Lists all keywords in Grasp */
 	public static final Set<String> KEYWORDS = 
@@ -42,78 +47,158 @@ public final class TextUtil {
 	private TextUtil() {		
 	}
 	
-	public static boolean isSyntaxColouringEnabled() {
-		return true;
-	}
-	
+	/**
+	 * Queries preferences for keyword colour
+	 * @return Syntax highlighting for keywords
+	 */
 	public static Color getKeywordColour() {
 		return GraspPlugin.getDefault().getColour(Preferences.getKeywordRgb());
 	}
 	
+	/**
+	 * Queries preferences for inline comments colour
+	 * @return Syntax highlighting for inline comments
+	 */
 	public static Color getInlineCommentColour() {
 		return GraspPlugin.getDefault().getColour(Preferences.getInlineCommentRgb());
 	}
 	
+	/**
+	 * Queries preferences for block comments colour
+	 * @return Syntax highlighting for block comments
+	 */
 	public static Color getBlockCommentColour() {
 		return GraspPlugin.getDefault().getColour(Preferences.getBlockCommentRgb());
 	}
 	
+	/**
+	 * Queries preferences for string colour
+	 * @return Syntax highlighting for string literals
+	 */
 	public static Color getStringLiteralColour() {
 		return GraspPlugin.getDefault().getColour(Preferences.getStringLiteralRgb());
 	}
 	
+	/**
+	 * Queries preferences for declarative literals colour
+	 * @return Syntax highlighting for declarative literals
+	 */
 	public static Color getDeclarativeLiteralColour() {
 		return GraspPlugin.getDefault().getColour(Preferences.getDeclarativeLiteralRgb());
 	}	
 	
+	/**
+	 * Create a rule for inline comments
+	 * @param token Token to return when rule is applied
+	 * @return Rule
+	 */
 	public static IPredicateRule createInlineCommentsRule(IToken token) {
 		return new EndOfLineRule("//", token);
 	}
 	
+	/**
+	 * Create a rule for block comments
+	 * @param token Token to return when rule is applied
+	 * @return Rule
+	 */
 	public static IPredicateRule createBlockCommentRule(IToken token) {
 		return new MultiLineRule("/*", "*/", token, (char) 0, true);
 	}
 	
+	/**
+	 * Create a rule for single-quote string literals
+	 * @param token Token to return when rule is applied
+	 * @return Rule
+	 */
 	public static IPredicateRule createSingleQuoteStringLiteralRule(IToken token) {
 		return new SingleLineRule("'", "'", token, '\\');
 	}
 	
+	/**
+	 * Create a rule for double-quotation string literals
+	 * @param token Token to return when rule is applied
+	 * @return Rule
+	 */
 	public static IPredicateRule createDoubleQuoteStringLiteralRule(IToken token) {
 		return new SingleLineRule("\"", "\"", token, '\\');
 	}
 	
+	/**
+	 * Create a rule for single-quote delcarative literals
+	 * @param token Token to return when rule is applied
+	 * @return Rule
+	 */
 	public static IPredicateRule createSingleQuoteDeclarativeLiteralRule(IToken token) {
 		return new SingleLineRule("#'", "'", token, '\\');
 	}
 	
+	/**
+	 * Create a rule for double-quotation declarative literals
+	 * @param token Token to return when rule is applied
+	 * @return Rule
+	 */
 	public static IPredicateRule createDoubleQuoteDeclarativeLiteralRule(IToken token) {
 		return new SingleLineRule("#\"", "\"", token, '\\');
 	}	
 	
+	/**
+	 * Create a rule that detects whitespace 
+	 * @return Rule
+	 */
 	public static IRule createWhitespaceRule() {
 		return new WhitespaceRule(new WhitespaceDetector());
 	}
 	
+	/**
+	 * Create a rule for Grasp keywords
+	 * @param token Token to return when rule is applied
+	 * @return Rule
+	 */
 	public static IRule createKeywordsRule(IToken token) {
 		return new KeywordRule(token);
 	}
 	
+	/**
+	 * Detect if a single character is whitespace according to Grasp grammar
+	 * @param c Character to test
+	 * @return True if valid Grasp whitespace
+	 */
 	public static boolean isWhitespace(char c) {
 		return WHITESPACE_DETECTOR.isWhitespace(c);
 	}
 	
+	/**
+	 * Detect if a single character can be part of a valid Grasp identifier
+	 * @param c Character to test
+	 * @return True of character can be within a valid Grasp identifier
+	 */
 	public static boolean isIdentifier(char c) {
 		return IDENTIFIER_CHAR.indexOf(c) != -1;
 	}
 	
+	/**
+	 * Test if a string is a valid Grasp identifier
+	 * @param expression Expression to test
+	 * @return True if valid
+	 */
 	public static boolean isIdentifier(String expression) {
 		return expression != null && IDENTIFIER_PATTERN.matcher(expression).matches();
 	}
 	
+	/**
+	 * Test if a string is null or of zero length
+	 * @param expression String to test
+	 * @return True if test passed
+	 */
 	public static boolean isNullOrEmpty(String expression) {
 		return expression == null || expression.length() == 0;
 	}
 	
+	/**
+	 * Test if a string is null, of zero length, or consists only of whitespace
+	 * @param expression String to test
+	 * @return True if the test passed
+	 */
 	public static boolean isNullOrWhitespace(String expression) {
 		return isNullOrEmpty(expression) || expression.trim().length() == 0;
 	}	

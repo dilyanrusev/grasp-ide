@@ -33,6 +33,11 @@ import org.eclipse.ui.dialogs.ContainerSelectionDialog;
 
 import uk.ac.standrews.grasp.ide.editors.TextUtil;
 
+/**
+ * Defines the UI for the {@link NewArchitectureWizard}
+ * @author Dilyan Rusev
+ *
+ */
 public class NewArchitectureWizardPage extends WizardPage {
 	private IGraspExample selectedExample;
 	private Label labelDescription;
@@ -42,6 +47,10 @@ public class NewArchitectureWizardPage extends WizardPage {
 	private IFile architectureFile;	
 	private String architectureName;
 	
+	/**
+	 * Construct the page
+	 * @param fileContainer Initial folder/project in which to create the file
+	 */
 	public NewArchitectureWizardPage(IContainer fileContainer) {
 		super("new-architecture");
 		setTitle("Create a new architecture");
@@ -204,18 +213,34 @@ public class NewArchitectureWizardPage extends WizardPage {
 		return file;
 	}	
 	
+	/**
+	 * Return the selected example
+	 * @return Example to use as the initial file contents
+	 */
 	public IGraspExample getSelectedExample() {
 		return selectedExample;
 	}
 
+	/**
+	 * Return the Project/Folder in which to create the file
+	 * @return Project/Folder
+	 */
 	public IContainer getFileContainer() {
 		return fileContainer;
 	}
 
+	/**
+	 * Return the file in which to create the architecture
+	 * @return File
+	 */
 	public IFile getArchitectureFile() {
 		return architectureFile;
 	}
 	
+	/**
+	 * Return the name of the architecture
+	 * @return Name of the architecture to create
+	 */
 	public String getArchitectureName() {
 		return architectureName;
 	}

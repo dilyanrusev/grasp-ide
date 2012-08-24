@@ -6,6 +6,11 @@ import org.eclipse.swt.graphics.Image;
 
 import uk.ac.standrews.grasp.ide.editParts.IconsCache;
 
+/**
+ * Figure that is specialized in drawing layers
+ * @author Dilyan Rusev
+ *
+ */
 public class LayerFigure extends AbstractElementFigure {
 
 	@Override

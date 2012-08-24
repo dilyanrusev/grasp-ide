@@ -2,13 +2,29 @@ package uk.ac.standrews.grasp.ide.model;
 
 import org.eclipse.core.runtime.Assert;
 
+/**
+ * Model class for the Grasp link statement
+ * @author Dilyan Rusev
+ *
+ */
 public class LinkModel extends BecauseModel {	
+	/**
+	 * ID of the consumer property
+	 */
 	public static final String PROPERTY_CONSUMER = "consumer";
+	/**
+	 * ID of the provider property
+	 */
 	public static final String PROPERTY_PROVIDER = "provider";
 	
 	private ProvidesModel provider;
     private RequiresModel consumer;
 
+    /**
+     * Construct a copy of another link
+     * @param other Link to copy
+     * @param parent Parent of the copy
+     */
     public LinkModel(LinkModel other, FirstClassModel parent) {
     	super(other, parent);
     	
@@ -34,32 +50,60 @@ public class LinkModel extends BecauseModel {
     	}    	
     }    
         
+    /**
+     * Construct a new link
+     * @param parent Parent of the link
+     */
     public LinkModel(FirstClassModel parent) {
     	super(ElementType.LINK, parent);
     }
     
+    /**
+     * Get a reference to the consumer
+     * @return Consumer
+     */
 	public RequiresModel getConsumer() {
 		return consumer;
 	}
 
+	/**
+	 * Get a references to the provider
+	 * @return Provider
+	 */
 	public ProvidesModel getProvider() {
 		return provider;
 	}
 
+	/**
+	 * Set the consumer of this link
+	 * @param consumer New consumer
+	 */
 	public void setConsumer(RequiresModel consumer) {
 		this.consumer = consumer;
 		fireElementChanged(PROPERTY_CONSUMER);
 	}
 
+	/**
+	 * Set the provider of this link
+	 * @param provider New provider
+	 */
 	public void setProvider(ProvidesModel provider) {
 		this.provider = provider;
 		fireElementChanged(PROPERTY_PROVIDER);
 	}
 	
+	/**
+	 * Get a local name for the link provider
+	 * @return Qualified name relative to the parent of the component/connector containing the provider
+	 */
 	public String getProviderLocalName() {
 		return getLocalName(getProvider());
 	}
 	
+	/**
+	 * Get a local name for the link consumer
+	 * @return Qualified name relative to the parent of the component/connector containing the provider
+	 */
 	public String getConsumerLocalName() {
 		return getLocalName(getConsumer());
 	}

@@ -10,10 +10,14 @@ import org.eclipse.jface.text.rules.RuleBasedScanner;
 import org.eclipse.jface.text.rules.Token;
 
 /**
+ * Rule-based scanner for syntax highlighting
  * @author Dilyan Rusev
  *
  */
 public class GraspTokenScanner extends RuleBasedScanner {
+	/**
+	 * Construct the scanner and create the rules
+	 */
 	public GraspTokenScanner() {	
 		IToken stringLiteral = new Token(new TextAttribute(TextUtil.getStringLiteralColour()));
 		IToken declarativeLiteral = new Token(new TextAttribute(TextUtil.getDeclarativeLiteralColour()));

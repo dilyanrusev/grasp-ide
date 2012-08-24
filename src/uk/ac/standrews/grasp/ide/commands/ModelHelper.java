@@ -13,7 +13,7 @@ import uk.ac.standrews.grasp.ide.model.TemplateModel;
 public class ModelHelper {	
 	
 	/**
-	 * Create a unique name starting with {@link name}
+	 * Create a unique name starting with name
 	 * @param name Starting name
 	 * @param parent Element to use for calculating qualified name and => uniqueness
 	 * @return Name that is not used by any other element in the architecture graph
@@ -53,7 +53,7 @@ public class ModelHelper {
 	/**
 	 * Determine whether the base of an instantiable is managed solely by the designer
 	 * @param instantiable
-	 * @return
+	 * @return True if a new template was created
 	 */
 	public static boolean ensureTempalteIsDesigned(InstantiableModel instantiable) {
 		if (instantiable.getBase().isCreatedByDesigner()) {
@@ -65,6 +65,12 @@ public class ModelHelper {
 		}
 	}
 	
+	/**
+	 * Create a template that is managed solely by the designer
+	 * @param original Template to copy
+	 * @param forParent Component or connector for which this template is used
+	 * @return Designed template
+	 */
 	public static TemplateModel createDesignedTemplate(TemplateModel original, InstantiableModel forParent) {
 		TemplateModel designed = new TemplateModel(original, original.getArchitecture());
 		String startName = forParent.getName() + "Template";		
@@ -74,6 +80,13 @@ public class ModelHelper {
 		return designed;
 	}
 	
+	/**
+	 * Create a name that is unique within a paren'ts symbol table
+	 * @param initialName Initial name
+	 * @param parent Parent to use for uniqueness
+	 * @return Name that is unique for the chose parent. Tries with the preferred name, and if
+	 * it fails, it will keep appending increasing numbers until the name is unique
+	 */
 	public static String createUniqueName(String initialName, ElementModel parent) {
 		StringBuilder finalName = new StringBuilder(initialName);
 		int suffix = 1;
@@ -94,6 +107,10 @@ public class ModelHelper {
 		return start + rest;		
 	}
 
+	/**
+	 * Uses {@link #createUniqueName(String, ElementModel)} on an element
+	 * @param element Element that has parent and name != null
+	 */
 	public static void ensureUniqueName(ElementModel element) {
 		ElementModel parent = element.getParent();
 		String initialName = element.getName();

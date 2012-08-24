@@ -47,7 +47,7 @@ public abstract class InstantiableModel extends BecauseModel {
 
 	/**
 	 * Get list of rererences ot the arguments that were used to instantiate the template
-	 * @return
+	 * @return Arguments
 	 */
 	public ObservableSet<FirstClassModel> getArguments() {
 		return arguments;
@@ -55,7 +55,7 @@ public abstract class InstantiableModel extends BecauseModel {
 
 	/**
 	 * Get the template which was instantiated into this element
-	 * @return
+	 * @return Template
 	 */
 	public TemplateModel getBase() {
 		return base;

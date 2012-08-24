@@ -67,7 +67,7 @@ public class LinkEditPart extends AbstractElementNodeEditPart<LinkModel> {
 	/**
 	 * Produce a shorter name than qualified name
 	 * @param iface Interface
-	 * @return
+	 * @return Interface name
 	 */
 	protected String buildInterfaceName(InterfaceModel iface) {
 		StringBuilder sb = new StringBuilder();

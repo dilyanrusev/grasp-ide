@@ -1,5 +1,10 @@
 package uk.ac.standrews.grasp.ide.model;
 
+/**
+ * Grasp layer element
+ * @author Dilyan Rusev
+ *
+ */
 public class LayerModel extends BecauseModel 
 	implements IConnectionEndpoint {
 	
@@ -7,15 +12,28 @@ public class LayerModel extends BecauseModel
 	private ObservableList<ConnectionModel> sourceConnections = new ObservableList<ConnectionModel>();
 	private ObservableList<ConnectionModel> targetConnections = new ObservableList<ConnectionModel>();
 	
+	/**
+	 * Construct a copy of another layer
+	 * @param other Source
+	 * @param parent Parent of copy
+	 */
 	public LayerModel(LayerModel other, FirstClassModel parent) {
 		super(other, parent);
 		copyCollectionAtTheEndOfCopy(other.getOver(), over);
 	}
 	
+	/**
+	 * Construct a new layer
+	 * @param parent Parent of this layer
+	 */
 	public LayerModel(FirstClassModel parent) {
 		super(ElementType.LAYER, parent);
 	}
 
+	/**
+	 * Get list of references to layers this one is based on
+	 * @return List of references to layers this is based on
+	 */
 	public ObservableSet<LayerModel> getOver() {
 		return over;
 	}

@@ -37,7 +37,7 @@ public abstract class EvaluableModel extends BecauseModel {
 
 	/**
 	 * Get the raw expression
-	 * @return
+	 * @return Raw expression
 	 */
 	public ExpressionModel getExpression() {
 		return expression;
@@ -45,7 +45,7 @@ public abstract class EvaluableModel extends BecauseModel {
 
 	/**
 	 * Get the evaluated value of the expression
-	 * @return
+	 * @return evaluated value of the expression
 	 */
 	public Object getValue() {
 		return isInitialized() ? expression.getValue() : null;
@@ -53,7 +53,7 @@ public abstract class EvaluableModel extends BecauseModel {
 
 	/**
 	 * Return true if the element contains an expression
-	 * @return
+	 * @return true if the element contains an expression
 	 */
 	public boolean isInitialized() {
 		return expression != null;
@@ -61,7 +61,7 @@ public abstract class EvaluableModel extends BecauseModel {
 
 	/**
 	 * Set the raw expression
-	 * @param expression
+	 * @param expression Raw expression
 	 */
 	public void setExpression(ExpressionModel expression) {		
 		this.expression = expression;

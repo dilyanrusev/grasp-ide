@@ -6,8 +6,19 @@ package uk.ac.standrews.grasp.ide.model;
  *
  */
 public interface IConnectionEndpoint {
+	/**
+	 * Defines the types of connection endpoints
+	 * @author Dilyan Rusev
+	 *
+	 */
 	public enum EndpointKind {
+		/**
+		 * Endpoint that is the connection source
+		 */
 		Source,
+		/**
+		 * Endpoint that is the connection target
+		 */
 		Target
 	}
 	
@@ -28,13 +39,13 @@ public interface IConnectionEndpoint {
 	
 	/**
 	 * Retrieves connections where this endpoint is source
-	 * @return
+	 * @return Source connections
 	 */
 	ObservableList<ConnectionModel> getSourceConnections();
 	
 	/**
 	 * Retrieves connections where this endpoint is target 
-	 * @return
+	 * @return Target connections
 	 */
 	ObservableList<ConnectionModel> getTargetConnections();
 	

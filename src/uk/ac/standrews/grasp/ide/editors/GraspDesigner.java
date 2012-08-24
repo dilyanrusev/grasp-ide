@@ -45,10 +45,18 @@ import uk.ac.standrews.grasp.ide.model.GraspModel;
 import uk.ac.standrews.grasp.ide.model.IGraspFileChangedListener;
 import uk.ac.standrews.grasp.ide.model.ModelToSourceSerializer;
 
+/**
+ * Graphical designer for manipulating Grasp architectures
+ * @author Dilyan Rusev
+ *
+ */
 public class GraspDesigner extends GraphicalEditorWithFlyoutPalette 
 		implements IGraspFileChangedListener {	
 	private ArchitectureModel model;
 	
+	/**
+	 * Construt a new designer
+	 */
 	public GraspDesigner() {
 		setEditDomain(new DefaultEditDomain(this));		
 	}

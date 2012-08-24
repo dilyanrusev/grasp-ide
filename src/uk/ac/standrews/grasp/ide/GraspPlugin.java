@@ -48,12 +48,6 @@ public class GraspPlugin extends AbstractUIPlugin {
 	private Map<RGB, Color> colours;	
 	private List<Runnable> pluginCloseTasks;
 	
-	/**
-	 * The constructor
-	 */
-	public GraspPlugin() {
-	}
-
 	/*
 	 * (non-Javadoc)
 	 * @see org.eclipse.ui.plugin.AbstractUIPlugin#start(org.osgi.framework.BundleContext)
@@ -83,6 +77,10 @@ public class GraspPlugin extends AbstractUIPlugin {
 		
 	}	
 	
+	/**
+	 * Execute a task when {@link #stop(BundleContext)} is called
+	 * @param task Task to execute
+	 */
 	public void executeAtPluginStop(Runnable task) {
 		pluginCloseTasks.add(task);
 	}

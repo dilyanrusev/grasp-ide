@@ -14,10 +14,22 @@ import uk.ac.standrews.grasp.ide.model.ElementModel;
 import uk.ac.standrews.grasp.ide.model.properties.PropertyBuilderImpl.ReadOnlyBuilder;
 import uk.ac.standrews.grasp.ide.model.properties.PropertyBuilderImpl.TextBuilder;
 
+/**
+ * Base class for property sources that map to Grasp model elements
+ * @author Dilyan Rusev
+ *
+ * @param <T> Type of the element model the implementation is bound to
+ */
 public abstract class AbstractElementPropertySource<T extends ElementModel> 
 		implements IPropertySource {
 
+	/**
+	 * Model this source is bound to
+	 */
 	protected final T model;
+	/**
+	 * Properties of this source
+	 */
 	protected final IPropertyDescriptor[] properties;
 	
 	/**
@@ -33,7 +45,7 @@ public abstract class AbstractElementPropertySource<T extends ElementModel>
 
 	/**
 	 * Return the model passed to the constructor
-	 * @return
+	 * @return Element this source is bound to
 	 */
 	protected T getModel() {
 		return model;
@@ -88,7 +100,7 @@ public abstract class AbstractElementPropertySource<T extends ElementModel>
 	 * that the name is unique within the architecture graph
 	 * @param id ID of the property
 	 * @param displayName Name to be displayed in the property editor
-	 * @return
+	 * @return Writeable text property builder that validates its value to be Grasp identifier
 	 */
 	public TextBuilder identifier(Object id, String displayName) {
 		return text(id, displayName)

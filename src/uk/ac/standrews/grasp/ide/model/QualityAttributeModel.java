@@ -29,7 +29,7 @@ public class QualityAttributeModel extends FirstClassModel {
 
 	/**
 	 * Return a list of references to elements that support the use of this quality attribute
-	 * @return
+	 * @return Support statements
 	 */
 	public ObservableSet<FirstClassModel> getSupports() {
 		return supports;

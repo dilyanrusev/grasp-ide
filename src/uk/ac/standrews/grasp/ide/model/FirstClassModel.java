@@ -78,12 +78,17 @@ public abstract class FirstClassModel extends ElementModel {
 
 	/**
 	 * Get this element's annotations
-	 * @return 
+	 * @return Annotations
 	 */
 	public ObservableSet<AnnotationModel> getAnnotations() {
 		return annotations;
 	}
 	
+	/**
+	 * Get a value stored in the designer annotation
+	 * @param key Key of the value
+	 * @return Null or the value stored in the designer annotation
+	 */
 	protected String getDesignerValue(String key) {
 		NamedValueModel nv = getDesignerNamedValue(key, false);
 		if (nv != null && nv.isInitialized() 
@@ -93,6 +98,11 @@ public abstract class FirstClassModel extends ElementModel {
 		return null;
 	}
 	
+	/**
+	 * Set a value into the designer annotation
+	 * @param key Key of the value
+	 * @param value New value. Will create annotation if necessary.
+	 */
 	protected void setDesignerValue(String key, String value) {
 		NamedValueModel nv = getDesignerNamedValue(key, true);
 		ExpressionModel expr = new ExpressionModel(nv);
@@ -139,7 +149,7 @@ public abstract class FirstClassModel extends ElementModel {
 	
 	/**
 	 * Get this element's children
-	 * @return
+	 * @return Child elements
 	 */
 	public ObservableSet<FirstClassModel> getBody() {
 		return body;
@@ -147,7 +157,7 @@ public abstract class FirstClassModel extends ElementModel {
 	
 	/**
 	 * Return a list of children removed by the designer, to be restored when re-added. Provides support for undo and redo
-	 * @return
+	 * @return Removed child elements for undo/redo
 	 */
 	Set<FirstClassModel> getRemovedChildren() {
 		return removedChildren;
@@ -156,7 +166,7 @@ public abstract class FirstClassModel extends ElementModel {
 	/**
 	 * Get direct children of this element by type
 	 * @param elementtype Type of children to look for
-	 * @return
+	 * @return Filtered child elements by type
 	 */
 	public Collection<FirstClassModel> getBodyByType(ElementType elementtype) {
 		// do not need to observe; should be fast since body is sorted
@@ -241,7 +251,7 @@ public abstract class FirstClassModel extends ElementModel {
 	 * Helper method that constructs a copy via the copy constructor of another element
 	 * @param source Source to be copied
 	 * @param parent Parent of the requested copy
-	 * @return
+	 * @return Copy of the source element
 	 */
 	@SuppressWarnings("unchecked")
 	protected static <T extends FirstClassModel> T createCopyOf(T source, FirstClassModel parent) {

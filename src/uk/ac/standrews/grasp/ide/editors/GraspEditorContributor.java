@@ -28,14 +28,26 @@ public class GraspEditorContributor extends MultiPageEditorActionBarContributor 
 	private List<RetargetAction> retargetActions = new ArrayList<RetargetAction>();
 	private List<String> globalActionKeys = new ArrayList<String>();
 	
+	/**
+	 * Emulate {@link org.eclipse.gef.ui.actions.ActionBarContributor#getActionRegistry()}
+	 * @return the registry
+	 */
 	protected ActionRegistry getActionRegistry() {
 		return registry;
 	}
 	
+	/**
+	 * Emulate {@link org.eclipse.gef.ui.actions.ActionBarContributor#addAction(IAction)}
+	 * @param action Action to add to the registry
+	 */
 	protected void addAction(IAction action) {
 		getActionRegistry().registerAction(action);
 	}
 	
+	/**
+	 * Emulate {@link org.eclipse.gef.ui.actions.ActionBarContributor#addRetargetAction(RetargetAction)}
+	 * @param action Retarget action to add
+	 */ 
 	protected void addRetargetAction(RetargetAction action) {
 		addAction(action);
 		retargetActions.add(action);
@@ -43,16 +55,26 @@ public class GraspEditorContributor extends MultiPageEditorActionBarContributor 
 		addGlobalActionKey(action.getId());
 	}
 	
+	/**
+	 * Emulate {@link org.eclipse.gef.ui.actions.ActionBarContributor#addGlobalActionKey(String)}
+	 * @param key Key identifying the global action
+	 */
 	protected void addGlobalActionKey(String key) {
 		globalActionKeys.add(key);
 	}
 	
+	/**
+	 * Emulate {@link org.eclipse.gef.ui.actions.ActionBarContributor#buildActions()}
+	 */
 	protected void buildActions() {
 		addRetargetAction(new UndoRetargetAction());
 		addRetargetAction(new RedoRetargetAction());
 		addRetargetAction(new DeleteRetargetAction());
 	}
 	
+	/**
+	 * Emulate {@link org.eclipse.gef.ui.actions.ActionBarContributor#declareGlobalActionKeys()}
+	 */
 	protected void declareGlobalActionKeys() {
 		addGlobalActionKey(ActionFactory.UNDO.getId());
 		addGlobalActionKey(ActionFactory.REDO.getId());
@@ -79,6 +101,11 @@ public class GraspEditorContributor extends MultiPageEditorActionBarContributor 
 		registry = null;
 	}
 	
+	/**
+	 * Emulate {@link org.eclipse.gef.ui.actions.ActionBarContributor#getAction(String)}
+	 * @param id Action id
+	 * @return Action from registry or null
+	 */
 	protected IAction getAction(String id) {
 		return getActionRegistry().getAction(id);
 	}

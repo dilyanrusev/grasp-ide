@@ -36,7 +36,7 @@ public class AnnotationModel extends ElementModel {
 	
 	/**
 	 * Return the values stored in this annotation
-	 * @return
+	 * @return Named values
 	 */
 	public ObservableSet<NamedValueModel> getNamedValues() {
 		return namedValues;

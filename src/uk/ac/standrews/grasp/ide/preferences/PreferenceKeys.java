@@ -35,12 +35,17 @@ public enum PreferenceKeys {
 	
 	/**
 	 * Retrieve the setting name used in preferences store
-	 * @return
+	 * @return Setting key
 	 */
 	public String getSettingName() {
 		return settingName;
 	}
 	
+	/**
+	 * Asserts that the name in the event is equal to this
+	 * @param propChangeEvent Event to test
+	 * @return True of the event property is equal to this
+	 */
 	public boolean equals(PropertyChangeEvent propChangeEvent) {
 		return settingName.equals(propChangeEvent.getProperty());
 	}

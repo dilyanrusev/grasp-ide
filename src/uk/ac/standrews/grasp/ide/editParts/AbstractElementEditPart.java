@@ -124,8 +124,8 @@ public abstract class AbstractElementEditPart<TModel extends FirstClassModel>
 	}
 
 	/**
-	 * Returns the value of {@link #getModel()} cast to {@link TModel}
-	 * @return
+	 * Returns the value of {@link #getModel()} cast to TModel
+	 * @return Casted model
 	 */
 	@SuppressWarnings("unchecked")
 	public TModel getElement() {

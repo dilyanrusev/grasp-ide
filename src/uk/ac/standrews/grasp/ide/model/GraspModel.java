@@ -75,7 +75,7 @@ public final class GraspModel {
 	/**
 	 * Retrieve file-model mapping for a particular file. Mapping will be created if it didn't exist
 	 * @param file File whose model is requested
-	 * @return
+	 * @return File-model mapping
 	 */
 	public GraspFile ensureFileStats(IFile file) {
 		GraspFile stats = fileStats.get(file);
@@ -115,7 +115,7 @@ public final class GraspModel {
 	/**
 	 * Print an architecture to a string for debugging purposes
 	 * @param arch Architecture to print
-	 * @return
+	 * @return Dump
 	 */
 	public String dumpArchitecture(ArchitectureModel arch) {
 		StringBuilder sb = new StringBuilder();

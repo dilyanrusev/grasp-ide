@@ -39,7 +39,7 @@ public class FoldedCornerHeaderBorder extends HeaderBorder {
 	
 	/**
 	 * Vertical space between the border and the figure's children
-	 * @return
+	 * @return Space between border and the figure's children
 	 */
 	public int getVertSpace() {
 		return vertSpace;

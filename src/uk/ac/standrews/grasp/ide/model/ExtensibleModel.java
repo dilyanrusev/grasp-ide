@@ -40,7 +40,7 @@ public abstract class ExtensibleModel extends BecauseModel {
 
 	/**
 	 * Get a reference to the extended element
-	 * @return
+	 * @return extended element
 	 */
 	public FirstClassModel getExtendee() {
 		return extendee;
@@ -48,7 +48,7 @@ public abstract class ExtensibleModel extends BecauseModel {
 
 	/**
 	 * Set a reference to the extended element
-	 * @param extendee
+	 * @param extendee New extended element
 	 */
 	public void setExtendee(FirstClassModel extendee) {
 		this.extendee = extendee;

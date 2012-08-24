@@ -39,7 +39,7 @@ public abstract class ParameterizedModel extends ExtensibleModel {
 
 	/**
 	 * Return a list of parameters to be replaced during instantiation
-	 * @return
+	 * @return Parameters
 	 */
 	public ObservableSet<String> getParameters() {
 		return params;

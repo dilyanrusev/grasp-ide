@@ -31,7 +31,7 @@ public class ConnectionModel {
 	
 	/**
 	 * Get the source model
-	 * @return
+	 * @return Source model
 	 */
 	public IConnectionEndpoint getSource() {
 		return source;
@@ -39,7 +39,7 @@ public class ConnectionModel {
 	
 	/**
 	 * Get the target model
-	 * @return
+	 * @return Target model
 	 */
 	public IConnectionEndpoint getTarget() {
 		return target;
@@ -47,7 +47,7 @@ public class ConnectionModel {
 	
 	/**
 	 * Get the type of the endpoints
-	 * @return
+	 * @return Type of contained endpoints
 	 */
 	public ElementType getEndpointType() {
 		return endpointType;

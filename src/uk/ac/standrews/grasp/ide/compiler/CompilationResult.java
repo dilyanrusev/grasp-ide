@@ -31,7 +31,7 @@ public class CompilationResult {
 	
 	/**
 	 *  Errors reported by the compiler
-	 * @return
+	 * @return Errors reported by the compiler
 	 */
 	public List<CompilationError> getErrors() {
 		return errors;
@@ -39,7 +39,7 @@ public class CompilationResult {
 	
 	/**
 	 * Reports whether or not the compilation was successful (does not include XML generation)
-	 * @return
+	 * @return True if there were no errors during the build
 	 */
 	public boolean isSuccessful() {
 		return errors.size() == 0;
@@ -47,7 +47,7 @@ public class CompilationResult {
 	
 	/**
 	 * Whether or not the compiler was able to produce XML
-	 * @return
+	 * @return True if XML was built
 	 */
 	public boolean isXmlBuilt() {
 		return xmlBuilt;

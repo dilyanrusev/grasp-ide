@@ -37,7 +37,7 @@ public class NamedValueModel extends ElementModel {
 
 	/**
 	 * Retrieve the expression which defines the value of this named value pair
-	 * @return
+	 * @return Raw expression
 	 */
 	public ExpressionModel getExpression() {
 		return expression;
@@ -45,7 +45,7 @@ public class NamedValueModel extends ElementModel {
 
 	/**
 	 * Retrieve the value of this named value pair
-	 * @return
+	 * @return Evaluated expression
 	 */
 	public Object getValue() {
 		Assert.isNotNull(expression);
@@ -54,7 +54,7 @@ public class NamedValueModel extends ElementModel {
 
 	/**
 	 * Determine whether the expression was evaluated. Do not call {@link #getValue()} unless this is true
-	 * @return
+	 * @return True if has raw expression
 	 */
 	public boolean isInitialized() {
 		return expression != null;

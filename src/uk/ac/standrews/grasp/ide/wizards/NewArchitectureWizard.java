@@ -16,7 +16,15 @@ import org.eclipse.ui.ide.IDE;
 import uk.ac.standrews.grasp.ide.Log;
 import uk.ac.standrews.grasp.ide.Msg;
 
+/**
+ * Wizards that creates Grasp Architecture files and adds them to the project
+ * @author Dilyan Rusev
+ *
+ */
 public class NewArchitectureWizard extends Wizard implements INewWizard {
+	/**
+	 * ID of the wizard, as specified in plugin.xml
+	 */
 	public static final String ID = "uk.ac.standrews.grasp.ide.wizards.newArchitecture";
 	
 	private NewArchitectureWizardPage page;
@@ -24,6 +32,9 @@ public class NewArchitectureWizard extends Wizard implements INewWizard {
 	private IContainer fileContainer;
 	private IProject project;
 
+	/**
+	 * Construct the wizard
+	 */
 	public NewArchitectureWizard() {
 		setWindowTitle("New Grasp architecture");
 		setNeedsProgressMonitor(false);

@@ -6,8 +6,16 @@ import org.eclipse.gef.ui.actions.RedoRetargetAction;
 import org.eclipse.gef.ui.actions.UndoRetargetAction;
 import org.eclipse.ui.actions.ActionFactory;
 
+/**
+ * Contributor for GraspDesginer if used on its own.
+ * @author Dilyan Rusev
+ *
+ */
 public class GraspDesignerContributor extends ActionBarContributor {
 
+	/**
+	 * Construct a new contributor
+	 */
 	public GraspDesignerContributor() {
 		
 	}

@@ -14,6 +14,11 @@ import org.eclipse.ui.IWorkbenchWindow;
 
 import uk.ac.standrews.grasp.ide.GraspPlugin;
 
+/**
+ * Watches for changes in the workbench and notifies when the active editor has changed
+ * @author Dilyan Rusev
+ *
+ */
 public class ActiveEditorChangeWatcher {
 	private IWorkbench workbench;
 	private IWorkbenchWindow initialActiveWindow;
@@ -53,10 +58,17 @@ public class ActiveEditorChangeWatcher {
 	};
 	
 	
+	/**
+	 * Construct a new watcher
+	 */
 	public ActiveEditorChangeWatcher() {		
 		
 	}
 	
+	/**
+	 * Start watching the workbench. Will fire notification immediately for the currently selected editor.
+	 * @param workbench Eclipse Workbench
+	 */
 	public void start(IWorkbench workbench) {
 		this.initialActiveWindow = workbench.getActiveWorkbenchWindow();
 		this.workbench = workbench;
@@ -74,6 +86,9 @@ public class ActiveEditorChangeWatcher {
 		}
 	}
 	
+	/**
+	 * Remove listeners. Must be called after {@link #start(IWorkbench)}
+	 */
 	public void dispose() {
 		if (initialActiveWindow != null) {
 			initialActiveWindow.removePageListener(pageListener);
@@ -86,10 +101,18 @@ public class ActiveEditorChangeWatcher {
 		}
 	}
 	
+	/**
+	 * Add listener
+	 * @param listener Listener to receive notifications
+	 */
 	public void addEditorVisibilityListener(IActiveEditorChangedListener listener) {
 		listeners.add(listener);
 	}
 	
+	/**
+	 * Remove listener
+	 * @param listener Listener that shall no longer receive notifications
+	 */
 	public void removeEditorVisibilityListener(IActiveEditorChangedListener listener) {
 		listeners.remove(listener);
 	}

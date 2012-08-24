@@ -16,7 +16,7 @@ public final class Preferences {
 	
 	/**
 	 * Queries preference store if syntax highlighting is enabled
-	 * @return
+	 * @return True if syntax highlighting is enabled
 	 */
 	public static boolean isSyntaxHighlightingEnabled() {
 		return getStore().getBoolean(
@@ -25,7 +25,7 @@ public final class Preferences {
 	
 	/**
 	 * Queries preference store if text editor should enable keyword code completion processor
-	 * @return
+	 * @return True if text editor should enable keyword code completion processor
 	 */
 	public static boolean isKeywordCompletionEnabled() {
 		return getStore().getBoolean(
@@ -34,7 +34,7 @@ public final class Preferences {
 	
 	/**
 	 * Queries preference store for the keyword colour
-	 * @return
+	 * @return keyword colour
 	 */
 	public static RGB getKeywordRgb() {		
 		return PreferenceConverter.getColor(getStore(), 
@@ -43,7 +43,7 @@ public final class Preferences {
 	
 	/**
 	 * Queries preference store for the inline comments colour
-	 * @return
+	 * @return inline comments colour
 	 */
 	public static RGB getInlineCommentRgb() {		
 		return PreferenceConverter.getColor(getStore(), 
@@ -52,7 +52,7 @@ public final class Preferences {
 	
 	/**
 	 * Queries preference store for the block comments colour 
-	 * @return
+	 * @return block comments colour
 	 */
 	public static RGB getBlockCommentRgb() {		
 		return PreferenceConverter.getColor(getStore(), 
@@ -61,7 +61,7 @@ public final class Preferences {
 	
 	/**
 	 * Queries preference store for the string literal colour
-	 * @return
+	 * @return string literal colour
 	 */
 	public static RGB getStringLiteralRgb() {		
 		return PreferenceConverter.getColor(getStore(), 
@@ -70,7 +70,7 @@ public final class Preferences {
 	
 	/**
 	 * Queries preference store for the declarative literal colour 
-	 * @return
+	 * @return declarative literal colour 
 	 */
 	public static RGB getDeclarativeLiteralRgb() {		
 		return PreferenceConverter.getColor(getStore(), 
@@ -79,7 +79,7 @@ public final class Preferences {
 	
 	/**
 	 * Queries preference store if the integrated compiler should be used over the external compiler
-	 * @return
+	 * @return True if the integrated compiler should be used over the external compiler
 	 */
 	public static boolean isIntegratedCompilerEnabled() {
 		return getStore().getBoolean(
@@ -88,7 +88,7 @@ public final class Preferences {
 	
 	/**
 	 * Queries preference store for the absolute path to the external compiler's jar file
-	 * @return
+	 * @return absolute path to the external compiler's jar file
 	 */
 	public static String getExternalCompilerPath() {
 		return getStore().getString(
@@ -97,7 +97,7 @@ public final class Preferences {
 	
 	/**
 	 * Shortcut for GraspPlugin.getDefault().getPreferenceStore()
-	 * @return
+	 * @return This plugin's preference store
 	 */
 	public static IPreferenceStore getStore() {
 		return GraspPlugin.getDefault().getPreferenceStore();

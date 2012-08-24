@@ -96,7 +96,7 @@ public class ArchitectureModel extends FirstClassModel {
 	
 	/**
 	 * Return the file from which this architecture was read
-	 * @return
+	 * @return File containing the architecture
 	 */
 	public IFile getFile() {
 		return file;

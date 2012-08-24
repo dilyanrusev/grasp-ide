@@ -21,7 +21,7 @@ public class DesignerPalette extends PaletteRoot {
 	
 	/**
 	 * Returns the singleton instance
-	 * @return
+	 * @return Singleton
 	 */
 	public static DesignerPalette getDefault() {
 		if (INSTANCE == null) {
@@ -120,18 +120,33 @@ public class DesignerPalette extends PaletteRoot {
 		return elementsDrawer;
 	}
 	
+	/**
+	 * Simple factory for creating new items
+	 * @author Dilyan Rusev
+	 *
+	 */
 	public static class Factory implements CreationFactory {
 		private final ElementType type;
 		
+		/**
+		 * Construct a new factory
+		 * @param type Type of elements to create
+		 */
 		public Factory(ElementType type) {
 			this.type = type;
 		}
 
+		/**
+		 * Always returns null
+		 */
 		@Override
 		public Object getNewObject() {
 			return null;
 		}
 
+		/**
+		 * Returns the value passed at the constructor
+		 */
 		@Override
 		public Object getObjectType() {
 			return type;
