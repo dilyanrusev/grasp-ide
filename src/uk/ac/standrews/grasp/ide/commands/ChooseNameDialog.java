@@ -2,6 +2,7 @@ package uk.ac.standrews.grasp.ide.commands;
 
 import org.eclipse.jface.dialogs.Dialog;
 import org.eclipse.jface.util.Util;
+import org.eclipse.jface.window.Window;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.ModifyEvent;
 import org.eclipse.swt.events.ModifyListener;
@@ -18,18 +19,33 @@ import uk.ac.standrews.grasp.ide.Msg;
 import uk.ac.standrews.grasp.ide.editors.TextUtil;
 import uk.ac.standrews.grasp.ide.model.FirstClassModel;
 
+/**
+ * Dialog that prompts the user for a valid and unique element name
+ * @author Dilyan Rusev
+ *
+ */
 public class ChooseNameDialog extends Dialog {
 	private String elementName;
 	private final FirstClassModel parent;
 	private Label errorLabel;
 	private Text entryText;
 
-	protected ChooseNameDialog(FirstClassModel parent, String initialName) {
+	/**
+	 * Construct a new dialog
+	 * @param parent Parent element. This will determine whether
+	 * @param initialName
+	 */
+	public ChooseNameDialog(FirstClassModel parent, String initialName) {
 		super(Msg.getShell());
 		this.parent = parent;
 		this.elementName = initialName;
 	}
 	
+	/**
+	 * Retrieve the stored element name. Value will be valid only after {@link #open()} returns 
+	 * {@link Window#OK}.
+	 * @return
+	 */
 	public String getElementName() {
 		return elementName;
 	}
@@ -55,7 +71,7 @@ public class ChooseNameDialog extends Dialog {
 		contents.setLayout(rootLayout);
 		
 		errorLabel = createLabel(contents, Util.ZERO_LENGTH_STRING);
-		createLabel(contents, "Entern name");
+		createLabel(contents, "Enter name");
 		entryText = new Text(contents, SWT.SINGLE);
 		entryText.setLayoutData(new GridData(GridData.FILL_HORIZONTAL));
 		entryText.addModifyListener(new ModifyListener() {			
@@ -64,7 +80,7 @@ public class ChooseNameDialog extends Dialog {
 				updateElementName();
 			}
 		});
-		String initialText = elementName;
+		String initialText = ModelHelper.createUniqueName(elementName, parent);
 		elementName = null;
 		entryText.setText(initialText);
 		entryText.setSelection(0, initialText.length());

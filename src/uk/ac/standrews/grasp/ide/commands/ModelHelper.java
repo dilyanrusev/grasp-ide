@@ -67,11 +67,22 @@ public class ModelHelper {
 	
 	public static TemplateModel createDesignedTemplate(TemplateModel original, InstantiableModel forParent) {
 		TemplateModel designed = new TemplateModel(original, original.getArchitecture());
-		String startName = forParent.getName() + "Template";
-		String name = ModelHelper.getUniqueName(startName, designed.getParent());
-		designed.setName(name);
+		String startName = forParent.getName() + "Template";		
+		designed.setName(startName);
+		ModelHelper.ensureUniqueName(designed);
 		designed.setDesignerCreated(true);
 		return designed;
+	}
+	
+	public static String createUniqueName(String initialName, ElementModel parent) {
+		StringBuilder finalName = new StringBuilder(initialName);
+		int suffix = 1;
+		while (parent.symLookup(finalName.toString())) {
+			finalName.delete(initialName.length(), finalName.length());
+			finalName.append(suffix);
+			suffix++;
+		}
+		return finalName.toString();
 	}
 	
 	private static String getNameForType(ElementType type) {
@@ -86,13 +97,7 @@ public class ModelHelper {
 	public static void ensureUniqueName(ElementModel element) {
 		ElementModel parent = element.getParent();
 		String initialName = element.getName();
-		StringBuilder finalName = new StringBuilder(initialName);
-		int suffix = 1;
-		while (parent.symLookup(finalName.toString())) {
-			finalName.delete(initialName.length(), finalName.length());
-			finalName.append(suffix);
-			suffix++;
-		}
-		element.setName(finalName.toString());
+		String finalName = createUniqueName(initialName, parent);
+		element.setName(finalName);
 	}
 }

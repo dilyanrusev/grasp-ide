@@ -1,9 +1,7 @@
 package uk.ac.standrews.grasp.ide.commands;
 
-import org.eclipse.core.runtime.Assert;
-import org.eclipse.gef.commands.Command;
-
 import uk.ac.standrews.grasp.ide.model.ElementType;
+import uk.ac.standrews.grasp.ide.model.FirstClassModel;
 import uk.ac.standrews.grasp.ide.model.LayerModel;
 import uk.ac.standrews.grasp.ide.model.SystemModel;
 
@@ -12,31 +10,19 @@ import uk.ac.standrews.grasp.ide.model.SystemModel;
  * @author Dilyan Rusev
  *
  */
-public class AddLayerCommand extends Command {
-	private final SystemModel parent;
-	private final LayerModel layer;
-	
+public class AddLayerCommand extends AbstractCreateElementCommand {
 	/**
 	 * Create a new layer command
 	 * @param parent Parent element
 	 */
 	public AddLayerCommand(SystemModel parent) {
-		Assert.isNotNull(parent);
-		
-		this.parent = parent;
-		layer = new LayerModel(parent);
-		layer.setName(ModelHelper.getUniqueName(ElementType.LAYER, parent));
-		
-		setLabel("Add layer");
+		super(parent, ElementType.LAYER);
 	}
 	
 	@Override
-	public void execute() {
-		parent.addChildElement(layer);
-	}
-	
-	@Override
-	public void undo() {
-		layer.removeFromParent();
+	protected FirstClassModel createElement(String name) {
+		LayerModel layer = new LayerModel(getParent());
+		layer.setName(name);
+		return layer;
 	}
 }

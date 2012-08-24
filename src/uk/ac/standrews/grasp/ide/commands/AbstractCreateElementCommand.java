@@ -54,7 +54,7 @@ public abstract class AbstractCreateElementCommand extends Command {
 	 * Return the parent element. By default, returns the value passed at the constructor
 	 * @return
 	 */
-	protected final FirstClassModel getParent() {
+	protected FirstClassModel getParent() {
 		return parent;
 	}
 	
@@ -149,14 +149,23 @@ public abstract class AbstractCreateElementCommand extends Command {
 	}
 	
 	/**
-	 * By default, calls {@link ElementModel#removeFromParent()} if the element was successfully created by
-	 * in {@link #execute()}
+	 * @see #doUndo(ElementModel)
 	 */
 	@Override
-	public void undo() {
+	public final void undo() {
 		if (element != null) {
-			element.removeFromParent();
+			doUndo(element);
 		}
 		fakeUndo = false;
+	}
+	
+
+	/**
+	 * By default, calls {@link ElementModel#removeFromParent()} if the element was successfully created by
+	 * in {@link #execute()}
+	 * @param element Element cached by {@link #createElement(String)}
+	 */
+	protected void doUndo(FirstClassModel element) {
+		element.removeFromParent();
 	}
 }

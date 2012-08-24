@@ -2,6 +2,7 @@ package uk.ac.standrews.grasp.ide.editors;
 
 
 import org.eclipse.core.resources.IFile;
+import org.eclipse.core.resources.IMarker;
 import org.eclipse.core.resources.IResource;
 import org.eclipse.core.resources.IResourceChangeEvent;
 import org.eclipse.core.resources.IResourceChangeListener;
@@ -18,6 +19,7 @@ import org.eclipse.ui.IEditorSite;
 import org.eclipse.ui.IFileEditorInput;
 import org.eclipse.ui.IWorkbenchPage;
 import org.eclipse.ui.PartInitException;
+import org.eclipse.ui.ide.IGotoMarker;
 import org.eclipse.ui.part.EditorPart;
 import org.eclipse.ui.part.FileEditorInput;
 import org.eclipse.ui.part.MultiPageEditorPart;
@@ -32,7 +34,8 @@ import uk.ac.standrews.grasp.ide.Log;
  * @author Dilyan Rusev
  * @see GraspTextEditor
  */
-public class GraspEditor extends MultiPageEditorPart implements IResourceChangeListener {
+public class GraspEditor extends MultiPageEditorPart 
+		implements IResourceChangeListener, IGotoMarker {
 	/** Attribute of the grasp marker that contains the architecture */
 	public static final String ARCHITECTURE_ATTRIBUTE = "architecture";
 
@@ -84,6 +87,17 @@ public class GraspEditor extends MultiPageEditorPart implements IResourceChangeL
 		}
 	}
 	
+	@Override
+	public void gotoMarker(IMarker marker) {
+		if (textEditor != null) {
+			IGotoMarker gotoMarker = (IGotoMarker) textEditor.getAdapter(IGotoMarker.class);
+			if (gotoMarker != null) {
+				setActiveEditor(textEditor);
+				gotoMarker.gotoMarker(marker);
+			}
+		}
+	}
+	
 	/**
 	 * Creates the pages of the multi-page editor.
 	 */
@@ -116,6 +130,7 @@ public class GraspEditor extends MultiPageEditorPart implements IResourceChangeL
 		designerIndex = addPage(designer, getEditorInput());
 		setPageText(designerIndex, "Designer");
 	}		
+	
 	
 	
 	/**
