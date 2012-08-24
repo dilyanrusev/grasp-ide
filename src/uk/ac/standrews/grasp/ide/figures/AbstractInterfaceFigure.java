@@ -15,12 +15,19 @@ import org.eclipse.swt.graphics.Image;
 public abstract class AbstractInterfaceFigure extends Label 
 		implements IFirstClassFigure {
 	
+	/**
+	 * Construct the figure
+	 */
 	public AbstractInterfaceFigure() {
 		setIcon(createIcon());		
 		setBorder(new SelectionBorder(new NullBorder()));		
-		setToolTip(new Label());
+		setToolTip(new Label(getIcon()));
 	}
 
+	/**
+	 * Create an image to be used for the figure and its tooltip
+	 * @return Image
+	 */
 	protected abstract Image createIcon();
 	
 	@Override
