@@ -67,6 +67,7 @@ public class ChooseNameDialog extends Dialog {
 		String initialText = elementName;
 		elementName = null;
 		entryText.setText(initialText);
+		entryText.setSelection(0, initialText.length());
 	}
 	
 	@Override
