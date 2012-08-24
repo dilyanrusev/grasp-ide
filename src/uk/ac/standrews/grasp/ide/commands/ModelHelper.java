@@ -82,4 +82,17 @@ public class ModelHelper {
 		}
 		return start + rest;		
 	}
+
+	public static void ensureUniqueName(ElementModel element) {
+		ElementModel parent = element.getParent();
+		String initialName = element.getName();
+		StringBuilder finalName = new StringBuilder(initialName);
+		int suffix = 1;
+		while (parent.symLookup(finalName.toString())) {
+			finalName.delete(initialName.length(), finalName.length());
+			finalName.append(suffix);
+			suffix++;
+		}
+		element.setName(finalName.toString());
+	}
 }

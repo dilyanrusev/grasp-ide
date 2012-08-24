@@ -20,6 +20,7 @@ public class AddInstantiableCommand extends Command {
 	private final ElementType childType;
 	private InstantiableModel child;
 	private boolean added;
+	private boolean fakeUndo;
 	
 	/**
 	 * Construct a new command
@@ -42,28 +43,40 @@ public class AddInstantiableCommand extends Command {
 	@Override
 	public void execute() {
 		if (child == null) {
-			if (childType == ElementType.COMPONENT) {
-				child = new ComponentModel(parent);			
-			} else {
-				child = new ConnectorModel(parent);
+			ChooseNameDialog dlg = new ChooseNameDialog(parent, childType.getDisplayName());
+			if (dlg.open() == ChooseNameDialog.OK) {
+				String name = dlg.getElementName();
+				if (childType == ElementType.COMPONENT) {
+					child = new ComponentModel(parent);			
+				} else {
+					child = new ConnectorModel(parent);
+				}			
+				child.setName(name);
+				TemplateModel template = new TemplateModel(parent.getArchitecture());
+				template.setName(name + "Template");
+				ModelHelper.ensureUniqueName(template);
+				template.setDesignerCreated(true);
+				child.setBase(template);
 			}
-			child.setName(ModelHelper.getUniqueName(childType, parent));
-			TemplateModel template = new TemplateModel(parent.getArchitecture());
-			template.setName(ModelHelper.getUniqueName(child.getName() + "Template", template.getParent()));
-			template.setDesignerCreated(true);
-			child.setBase(template);
 		}
-		added = parent.addChildElement(child);
+		if (child != null) {
+			added = parent.addChildElement(child);
+		} else {
+			fakeUndo = true;
+		}
 	}
 	
 	@Override
 	public boolean canUndo() {
-		return child != null && added;
+		return fakeUndo || (child != null && added);
 	}
 	
 	@Override
 	public void undo() {
-		child.removeFromParent();
-		added = false;
+		if (child != null) {
+			child.removeFromParent();
+			added = false;
+		}
+		fakeUndo = false;
 	}
 }
