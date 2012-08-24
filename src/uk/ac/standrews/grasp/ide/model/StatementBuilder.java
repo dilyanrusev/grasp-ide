@@ -165,7 +165,11 @@ class StatementBuilder {
 	 */
 	public StatementBuilder endBody() {		
 		decreaseIndent();
-		sb.append(currentIndent);
+		if (lastOperation != Operations.START_BODY) {
+			sb.append(currentIndent);
+		} else {
+			sb.append(' ');
+		}
 		sb.append('}');		
 		newLine();
 		lastOperation = Operations.END_BODY;
@@ -216,6 +220,39 @@ class StatementBuilder {
 		}
 		sb.append(forModel.getType().getKeyword());		
 		lastOperation = forModel.getType() != ElementType.ANNOTATION ? Operations.KEYWORD : Operations.KEYWORD_ANNOTATION;
+		return this;
+	}
+	
+	/**
+	 * Add a comment and a new line
+	 * @param text Text of the comment
+	 * @return This
+	 */
+	public StatementBuilder inlineComment(String text) {
+		if (lastOperation == Operations.END_BODY || lastOperation == Operations.START_BODY) {
+			newLine();
+		}
+		sb.append(currentIndent);
+		sb.append("// ");
+		sb.append(text);
+		newLine();
+		lastOperation = Operations.INLINE_COMMENT;
+		return this;
+	}
+	
+	/**
+	 * Add block comment
+	 * @param lines Lines in the block comment
+	 * @return This
+	 */
+	public StatementBuilder blockComment(String... lines) {
+		sb.append("/*");
+		for (String line: lines) {
+			sb.append(line);
+			newLine();
+		}
+		sb.append("*/");
+		lastOperation = Operations.BLOCK_COMMENT;
 		return this;
 	}
 	
@@ -273,7 +310,9 @@ class StatementBuilder {
 		COMMA,
 		EQUALS,
 		KEYWORD,
-		KEYWORD_ANNOTATION
+		KEYWORD_ANNOTATION,
+		INLINE_COMMENT,
+		BLOCK_COMMENT
 		;
 		
 		

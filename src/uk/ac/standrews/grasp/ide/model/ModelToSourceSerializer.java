@@ -305,6 +305,9 @@ public class ModelToSourceSerializer {
 	
 	private void writeTemplate(StatementBuilder builder
 			, TemplateModel model) {
+		if (model.isCreatedByDesigner()) {
+			builder.inlineComment("Do not modify this template. It is handled by the designer.");
+		}
 		startFirstClass(builder, model);
 		writeParameters(builder, model);
 		writeExtendee(builder, model);
@@ -342,7 +345,7 @@ public class ModelToSourceSerializer {
 		builder.closeStatement(model);
 	}	
 	
-	private void writeAnnotation(StatementBuilder builder, AnnotationModel annotation) {
+	private void writeAnnotation(StatementBuilder builder, AnnotationModel annotation) {		
 		builder
 			.openStatement(annotation);
 		if (annotation.getName() != null) {

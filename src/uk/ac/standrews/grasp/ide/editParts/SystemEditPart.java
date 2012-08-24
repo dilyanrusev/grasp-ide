@@ -31,11 +31,6 @@ public class SystemEditPart extends AbstractElementNodeEditPart<SystemModel> {
 		// super.createEditPolicies(); // -> no delete		
 		installEditPolicy(EditPolicy.LAYOUT_ROLE, new SystemLayoutPolicy());
 	}
-	
-	@Override
-	protected String getHeaderText() {
-		return getElement().getArchitecture().getName() + " :: " + getElement().getName();
-	}
 
 	@Override
 	protected boolean isModelChildSupported(FirstClassModel child) {
