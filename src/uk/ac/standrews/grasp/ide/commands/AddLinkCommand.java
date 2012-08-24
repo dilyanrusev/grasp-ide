@@ -150,12 +150,11 @@ public class AddLinkCommand extends Command {
 		
 		if (parent.getType() == ElementType.SYSTEM) {
 			for (FirstClassModel sysChild: parent.getBody()) {
-				if (sysChild instanceof InterfaceModel && 
-						((InterfaceModel) sysChild).getConnections().size() == 0) {
-					ifaces.add((InterfaceModel) sysChild);
+				if (sysChild instanceof InstantiableModel) {
+					extractInterfacesFromInstantiable((InstantiableModel) sysChild, ifaces);
 				} else if (sysChild instanceof LayerModel) {
 					extractInterfacesFromLayer((LayerModel) sysChild, ifaces);
-				}				
+				} 				
 			}
 		} else {
 			extractInterfacesFromLayer((LayerModel) parent, ifaces);
@@ -165,17 +164,22 @@ public class AddLinkCommand extends Command {
 		return ifaces;
 	}
 	
-	private void extractInterfacesFromLayer(LayerModel layer,
+	private static void extractInterfacesFromLayer(LayerModel layer,
 			List<InterfaceModel> list) {
 		for (FirstClassModel layerChild: layer.getBody()) {
 			if (layerChild instanceof InstantiableModel) {
-				for (FirstClassModel instChild: layerChild.getBody()) {
-					if (instChild instanceof InterfaceModel &&
-							((InterfaceModel) instChild).getConnections().size() == 0) {
-						list.add((InterfaceModel) instChild);
-					}
-				}
+				extractInterfacesFromInstantiable((InstantiableModel) layerChild, list);
 			}
+		}
+	}
+	
+	private static void extractInterfacesFromInstantiable(InstantiableModel inst,
+			List<InterfaceModel> list) {
+		for (FirstClassModel instChild: inst.getBody()) {			
+			if (instChild instanceof InterfaceModel &&
+					((InterfaceModel) instChild).getConnections().size() == 0) {
+				list.add((InterfaceModel) instChild);
+			}			
 		}
 	}
 	
